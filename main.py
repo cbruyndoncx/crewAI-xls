@@ -1,6 +1,7 @@
 # main.py
 
 import gradio as gr
+import shutil
 import os
 import sys
 import openpyxl
@@ -11,6 +12,10 @@ from importlib import import_module
 
 crews_dir = ''
  
+XLS_FOLDER = "./xls"    
+if not os.path.exists(XLS_FOLDER):    
+    os.mkdir(XLS_FOLDER)    
+
 import argparse
 from logger import ComplexLogger
 logfile = "output.log"
@@ -53,7 +58,7 @@ def list_xls_files_in_dir(directory):
     This is used to generate the list of template files to choose from
     """
     files_in_directory = os.listdir(directory)
-    xlsfiles = [file for file in files_in_directory if file.endswith('.xls') or file.endswith('.xlsx')]
+    xlsfiles = [directory + '/' + file for file in files_in_directory if file.endswith('.xls') or file.endswith('.xlsx')]
     return xlsfiles
 
 def md_list(items):
@@ -181,38 +186,53 @@ def get_crews_jobs_from_template(template, input_crew, input_job):
 
 crews_list = list()
 jobs_list = list()    
-templates_list = list_xls_files_in_dir('.')
+templates_list = list_xls_files_in_dir(XLS_FOLDER)
 crewjobs_list = get_crew_jobs_list('crews/')
 
+def upload_file(in_files):  
+    # theoretically allow for multiple, might add output file
+    file_paths = [file.name for file in in_files]
+    for file in in_files:
+        shutil.copy(file, XLS_FOLDER)    
+    gr.Info("Files Uploaded!!!")    
 
-with gr.Blocks() as demo:
+    return file_paths
+
+#with gr.Blocks() as demo:
+with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
+    ...
     gr.Markdown("# Your CREWAI XLS Runner")
     with gr.Row():
         with gr.Column(scale=1, variant="compact"):
             #get_crew_jobs_btn = gr.Button("Get prepared teams and")
+            gr.Markdown("## Inputs ")
             crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True)
-            gr.Markdown("### Specify what exactly needs to be done")
-            jobdetails = gr.Textbox(lines=5, label="Job Details")
+            jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
             run_crew_btn = gr.Button("Run Crew-Job for job details")
+            metrics = gr.Textbox(lines=2, label="Usage Metrics")
         with gr.Column(scale=2):
             gr.Markdown("## Results")
             output = gr.Textbox(lines=20, label="Final output")
-            metrics = gr.Textbox(lines=2, label="Usage Metrics")
-    with gr.Row():
-        with gr.Column(scale=1, variant="compact"):
-            gr.Markdown("### Prepare new Crew-Job combination from loaded template")
-            template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
-            read_template_btn = gr.Button("Get Crews and Jobs defined")
-            #crew = gr.Textbox(label="2) Enter Crew")
-            crew = gr.Dropdown(choices=crews_list, label="Select crew")
-            jobs =  gr.Markdown(f"{jobs_list}")
-            #job = gr.Textbox(label="3) Enter Job")
-            job = gr.Dropdown(choices=jobs_list, label="Select job")
-            setup_btn = gr.Button("Generate Crew-Job combination")
-            setup_result = gr.Markdown(".")
+    with gr.Accordion("Open to Load and generate crews", open=False):
+        with gr.Row():
+            with gr.Column(scale=1, variant="compact"):
+                gr.Markdown("### Prepare new Crew-Job combination from loaded template")
+                template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
+                read_template_btn = gr.Button("Get Crews and Jobs defined")
+                #crew = gr.Textbox(label="2) Enter Crew")
+                crew = gr.Dropdown(choices=crews_list, label="Select crew")
+                jobs =  gr.Markdown(f"{jobs_list}")
+                #job = gr.Textbox(label="3) Enter Job")
+                job = gr.Dropdown(choices=jobs_list, label="Select job")
+                setup_btn = gr.Button("Generate Crew-Job combination")
+                setup_result = gr.Markdown(".")
 
-            gr.Markdown("### Or load a new configuration template first")
-            xls = gr.UploadButton(label="Upload xls crewAI template")
+                gr.Markdown("### Or load a new configuration template first")
+                xls_template = gr.File()
+                upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
+                upload_button.upload(upload_file, upload_button, xls_template)
+
+
     # with gr.Row():
     #     with gr.Column():
     #         with gr.Accordion("Console Logs"):
