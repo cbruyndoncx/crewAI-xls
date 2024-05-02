@@ -4,7 +4,10 @@ import gradio as gr
 import shutil
 import os
 import sys
+import json
+from datetime import datetime
 import openpyxl
+import glob
 import pandas as pd
 
 from generate_crew import read_variables_xls, snake_case
@@ -23,10 +26,100 @@ logger = ComplexLogger(logfile)
 logger.reset_logs()
 sys.stdout = ComplexLogger(logfile)
 
-# def read_logs():
-#     sys.stdout.flush()
-#     with open(logfile, "r") as f:
-#         return f.read()
+def read_logs():
+    sys.stdout.flush()
+    with open(logfile, "r") as f:
+        return f.read()
+
+import re
+
+# Function to sanitize a string for Excel
+def sanitize_for_excel(value):
+    if not isinstance(value, str):
+        return value
+    
+    # Remove leading and trailing whitespaces
+    sanitized_value = value.strip()
+    
+    # Escape characters that are interpreted by Excel as formulas
+    if sanitized_value.startswith(('=', '+', '-', '@')):
+        sanitized_value = "'" + sanitized_value
+    
+    # Remove non-printable characters
+    sanitized_value = re.sub(r'[^\x20-\x7E]+', '', sanitized_value)
+    sanitized_value = sanitized_value.replace('"', '').replace("'", '')
+    
+    return sanitized_value
+    
+def write_log_sheet(filename, input, output, final, metrics):
+
+    # Load the workbook and select the active worksheet
+    wb = openpyxl.load_workbook(filename)
+
+    # Select the default sheet
+    log_sheet = wb.active
+
+    # Add some column headers
+    log_sheet.append(["Timestamp", "Input","Output", "Final Result", "Metrics"])
+
+    # Get the current timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+    # Append a row
+    log_sheet.append([timestamp, input, sanitize_for_excel(output), sanitize_for_excel(final),sanitize_for_excel(metrics)])
+
+    # Save the workbook to an xlsx file
+    wb.save(filename)
+
+def add_md_files_to_log_sheet(filename, directory):
+    
+    # Create a new workbook or load an existing one
+    try:
+        wb = openpyxl.load_workbook("log.xlsx")
+    except FileNotFoundError:
+        print(f"The file {filename} does not exist. Creating a new workbook.")
+        wb = openpyxl.Workbook(filename)
+
+    # Find all markdown files with the .md extension
+    # Check for permission and existence of directory
+    if os.path.exists(directory):
+        md_files = glob.glob(os.path.join(directory, '*.md'))
+
+        # If you want to include subdirectories
+        # md_files = glob.glob(os.path.join(directory, '**/*.md'), recursive=True)
+
+        print(md_files)
+    else:
+        print("Directory does not exist or cannot be accessed.")
+
+    #md_files = glob.glob(directory+'/*.md')
+    print(md_files)
+
+    # Add content of each markdown file to a new sheet
+    for md_file in md_files:
+        # Read the content of the current markdown file
+        with open(md_file, 'r', encoding='utf-8') as file:
+            content = file.read()
+
+        # Create a new sheet with the name of the markdown file (without extension)
+        sheet_title = os.path.basename(md_file)[:-3] # Remove the last 3 characters (.md)
+        sheet = wb.create_sheet(title=sheet_title)
+
+        # Split content into lines and write each line into a new row
+        for row_index, line in enumerate(content.splitlines(), start=1):
+            # Assuming the content of each line fits within Excel's cell limit
+            line = sanitize_for_excel(line)
+            sheet.cell(row=row_index, column=1).value = "'"+line
+
+    # Remove the default sheet created by openpyxl if it's untouched
+    #if 'Sheet' in wb.sheetnames and wb['Sheet'].max_row == 1 and wb['Sheet'].max_column == 1:
+    #    del wb['Sheet']
+
+    # Save the workbook
+    wb.save(filename)
+
+    print(f"Workbook saved as {filename}")
+
 def module_callback(crew,job, crewjob, details):
     """
 
@@ -120,6 +213,9 @@ def run_crew(crew,job, crewjob, details):
 
     (result, metrics) = custom_crew.run()
 
+    write_log_sheet('log.xlsx',details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
+    add_md_files_to_log_sheet('log.xlsx',f"./crews/{crew}-{job}")
+ 
     return (result['final_output'], metrics)
     #return f"{result}"
 
@@ -202,23 +298,24 @@ def upload_file(in_files):
 with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
     ...
     gr.Markdown("# Your CREWAI XLS Runner")
-    with gr.Row():
-        with gr.Column(scale=1, variant="compact"):
-            #get_crew_jobs_btn = gr.Button("Get prepared teams and")
-            gr.Markdown("## Inputs ")
-            crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True)
-            jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
-            run_crew_btn = gr.Button("Run Crew-Job for job details")
-            metrics = gr.Textbox(lines=2, label="Usage Metrics")
-        with gr.Column(scale=2):
-            gr.Markdown("## Results")
-            output = gr.Textbox(lines=20, label="Final output")
-    with gr.Accordion("Open to Load and generate crews", open=False):
+    gr.Markdown("__Easy as 1 - 2 - 3__")
+    with gr.Tab("1 - Download xls Template"):
         with gr.Row():
-            with gr.Column(scale=1, variant="compact"):
+            with gr.Column(scale=1, variant="compact"):            
+                gr.Markdown("### load a new configuration template")
+    with gr.Tab("2 - Prepare"):
+        #with gr.Accordion("Open to Load and generate crews", open=False):
+        with gr.Row():
+            with gr.Column(scale=1, variant="compact"):            
+                gr.Markdown("### load a new configuration template")
+                xls_template = gr.File()
+                upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
+                upload_button.upload(upload_file, upload_button, xls_template)
+            with gr.Column(scale=1, variant="compact"): 
                 gr.Markdown("### Prepare new Crew-Job combination from loaded template")
                 template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
                 read_template_btn = gr.Button("Get Crews and Jobs defined")
+            with gr.Column(scale=2, variant="compact"): 
                 #crew = gr.Textbox(label="2) Enter Crew")
                 crew = gr.Dropdown(choices=crews_list, label="Select crew")
                 jobs =  gr.Markdown(f"{jobs_list}")
@@ -227,10 +324,20 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")
                 setup_btn = gr.Button("Generate Crew-Job combination")
                 setup_result = gr.Markdown(".")
 
-                gr.Markdown("### Or load a new configuration template first")
-                xls_template = gr.File()
-                upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
-                upload_button.upload(upload_file, upload_button, xls_template)
+
+    with gr.Tab("3 - Run"):
+        with gr.Row():
+            with gr.Column(scale=1, variant="compact"):
+                #get_crew_jobs_btn = gr.Button("Get prepared teams and")
+                gr.Markdown("## Inputs ")
+                crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True)
+                jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
+                run_crew_btn = gr.Button("Run Crew-Job for job details")
+                metrics = gr.Textbox(lines=2, label="Usage Metrics")
+            with gr.Column(scale=2):
+                gr.Markdown("## Results")
+                output = gr.Textbox(lines=20, label="Final output")
+
 
 
     # with gr.Row():
@@ -246,6 +353,8 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")
     
     #output = run_crew_btn.click(module_callback,[crew,job, crewjob,jobdetails])
     run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails], outputs=[output, metrics])
+
+    log = read_logs()
 
 demo.queue().launch(show_error=True)
 #demo.queue().launch(share=True, auth=("brncx", "carine"))

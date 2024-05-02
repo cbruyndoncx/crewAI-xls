@@ -1,4 +1,5 @@
 #import os
+import json
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 #from decouple import config
@@ -71,7 +72,7 @@ class CustomCrew:
         self.GPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.1)
         self.GroqMixtral = ChatGroq(temperature=0, groq_api_key="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", model_name="mixtral-8x7b-32768")
         self.GroqGemma = ChatGroq(temperature=0, groq_api_key="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", model_name="gemma-7b-it")
-
+    
     def run(self):
         # Define your custom agents and tasks in agents.py and tasks.py
         # agents = CustomAgents()
