@@ -1,5 +1,6 @@
 crewai
 crewai_tools
+duckduckgo-search
 gradio
 Jinja2
 langchain
