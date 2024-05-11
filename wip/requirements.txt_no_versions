@@ -1,0 +1,14 @@
+crewai
+crewai_tools
+gradio
+Jinja2
+langchain
+langchain_community
+langchain_groq
+langchain_openai
+mdpdf
+openai
+openpyxl
+pandas
+Requests
+unstructured

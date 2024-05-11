@@ -1,0 +1,14 @@
+crewai==0.28.8
+crewai_tools==0.2.3
+gradio==4.29.0
+Jinja2==3.1.3
+langchain==0.1.17
+langchain_community==0.0.36
+langchain_groq==0.1.3
+langchain_openai==0.1.6
+mdpdf==0.0.18
+openai==1.25.2
+openpyxl==3.1.2
+pandas==2.2.2
+Requests==2.31.0
+unstructured==0.13.6

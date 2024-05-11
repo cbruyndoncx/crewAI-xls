@@ -89,8 +89,8 @@ class CustomCrew:
         self.tasks = CustomTasks()
         self.GPT35 = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1)
         self.GPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.1)
-        self.GroqMixtral = ChatGroq(temperature=0, groq_api_key="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", model_name="mixtral-8x7b-32768")
-        self.GroqGemma = ChatGroq(temperature=0, groq_api_key="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", model_name="gemma-7b-it")
+        self.GroqMixtral = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
+        self.GroqGemma = ChatGroq(temperature=0, model_name="gemma-7b-it")
     
     def run(self):
         # Define your custom agents and tasks in agents.py and tasks.py

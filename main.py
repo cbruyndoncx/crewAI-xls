@@ -362,7 +362,7 @@ with gr.Blocks(theme='freddyaboulton/dracula_revamped') as demo:
                 gr.Markdown("### load a new configuration template")
                 xls_template = gr.File()
                 upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
-                gr.Markdown("### Prepare new Crew-Job combination from loaded template (REFRESH Browser if just loaded)")
+                gr.Markdown("### Prepare new Crew-Job combination from loaded template")
                 template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
                 upload_button.upload(upload_file, upload_button, outputs=[xls_template, template])
                 read_template_btn = gr.Button("Get Crews and Jobs defined")
