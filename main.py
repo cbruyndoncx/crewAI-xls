@@ -20,33 +20,33 @@ from importlib import import_module
 #######################################
 # initialisations
 #######################################
-def create_default_dir(folder):
-    if not os.path.exists(folder):    
-        os.mkdir(folder)    
-
 crews_dir = ""
 CREWS_FOLDER_NAME = "crews"
 CREWS_FOLDER = "./" + CREWS_FOLDER_NAME + "/"
-create_default_dir(CREWS_FOLDER)
-
 XLS_FOLDER = "./xls/"    
-create_default_dir(XLS_FOLDER)
-
 OUT_FOLDER = "./out/"
-create_default_dir(OUT_FOLDER)
-
 LOG_FOLDER = "./log/"
-create_default_dir(LOG_FOLDER)
-
 logfile = LOG_FOLDER + "output.log"
 output_log_sheet = OUT_FOLDER + "output_log.xlsx"
 
 #######################################
-# logging
+# Functions
 #######################################
-logger = ComplexLogger(logfile)
-logger.reset_logs()
-sys.stdout = ComplexLogger(logfile)
+def create_default_dir(folder):
+    if not os.path.exists(folder):    
+        os.mkdir(folder)   
+
+def init_default_dirs():
+    create_default_dir(CREWS_FOLDER)  
+    create_default_dir(XLS_FOLDER)
+    create_default_dir(OUT_FOLDER)
+    create_default_dir(LOG_FOLDER)
+
+def init_logging():
+    logger = ComplexLogger(logfile)
+    logger.reset_logs()
+    sys.stdout = ComplexLogger(logfile)
+    return logger
 
 def read_logs():
     sys.stdout.flush()
@@ -226,7 +226,7 @@ def get_distinct_column_values_by_name(workbook_path, sheet_name, column_name):
 
     return sorted(list(distinct_values))
 
-def run_crew(crew,job, crewjob, details):
+def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
     """
     This is the main function that you will use to run your custom crew.
     """
@@ -234,10 +234,17 @@ def run_crew(crew,job, crewjob, details):
     crews_dir=f"{CREWS_FOLDER_NAME}.{crew}-{job}"
     select_language='en'
 
+    input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
+    #print(details)
+    #print(input_mapping)
+    #print(input1,input2,input3,input4,input5)
+    expanded_details = details.format(**input_mapping)
+
+    #print(expanded_details)
     # Import the  module dynamically
     crew_module = import_module(f"{crews_dir}.crew")
     CustomCrew = getattr(crew_module, 'CustomCrew')
-    custom_crew = CustomCrew(details, select_language)
+    custom_crew = CustomCrew(expanded_details, select_language)
 
     # NOK does not work properly
     #from document_crew import describe_crew_instances2
@@ -254,7 +261,6 @@ def run_crew(crew,job, crewjob, details):
     add_md_files_to_log_sheet(output_log_sheet,f"{CREWS_FOLDER}{crew}-{job}")
  
     return (result['final_output'], metrics)
-    #return f"{result}"
 
 def get_crew_jobs_list(crewdir):
     crewjobs_list = os.listdir(crewdir)
@@ -329,11 +335,6 @@ def get_crews_jobs_from_template(template, input_crew, input_job):
     
     return (crew, crews_md, job, jobs_md)
 
-crews_list = list()
-jobs_list = list()    
-templates_list = list_xls_files_in_dir(XLS_FOLDER)
-crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
-
 def upload_file(in_files):  
     # theoretically allow for multiple, might add output file
     file_paths = [file.name for file in in_files]
@@ -346,67 +347,197 @@ def upload_file(in_files):
 
     return (file_paths, template)
 
-#with gr.Blocks() as demo:
-with gr.Blocks(theme='freddyaboulton/dracula_revamped') as demo:
-#with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
-    gr.Markdown("# Your CREWAI XLS Runner")
-    gr.Markdown("__Easy as 1 - 2 - 3__")
-    with gr.Tab("1 - Download xls Template"):
-        with gr.Row():
-            with gr.Column(scale=1, variant="compact"):            
-                gr.Markdown("### load a new configuration template")
-    with gr.Tab("2 - Prepare"):
-        #with gr.Accordion("Open to Load and generate crews", open=False):
-        with gr.Row():
-            with gr.Column(scale=1, variant="compact"):            
-                gr.Markdown("### load a new configuration template")
-                xls_template = gr.File()
-                upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
-                gr.Markdown("### Prepare new Crew-Job combination from loaded template")
-                template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
-                upload_button.upload(upload_file, upload_button, outputs=[xls_template, template])
-                read_template_btn = gr.Button("Get Crews and Jobs defined")
-            with gr.Column(scale=2, variant="compact"): 
-                #crew = gr.Textbox(label="2) Enter Crew")
-                crews =  gr.Markdown(f"# CREWS {crews_list}")
-                crew = gr.Dropdown(choices=crews_list, label="Select crew")
-            with gr.Column(scale=2, variant="compact"): 
-                jobs =  gr.Markdown(f"# JOBS {jobs_list}")
-                #job = gr.Textbox(label="3) Enter Job")
-                job = gr.Dropdown(choices=jobs_list, label="Select job")
-            with gr.Column(scale=1, variant="compact"): 
-                setup_btn = gr.Button("Generate Crew-Job combination")
-                setup_result = gr.Markdown(".")
+def get_job_prompt(template, select_crew, select_job):
+    # JOB
+    df = pd.read_excel(template, sheet_name='jobs', usecols=['job', 'crew', 'job_default_prompt','input_var_1','input_var_2',
+                                                             'input_var_3','input_var_4','input_var_5'])
+    df_records = df.to_records()
+    job_prompt = ''
+    for record in df_records:
+        #print(record['job'], record['crew'], record['job_default_prompt'])
+        if  record['crew'] == select_crew and record['job'] == select_job:
+            job_prompt = record['job_default_prompt']
+            break
+    return job_prompt
 
-
-    with gr.Tab("3 - Run"):
-        with gr.Row():
-            with gr.Column(scale=1, variant="compact"):
-                #get_crew_jobs_btn = gr.Button("Get prepared teams and")
-                gr.Markdown("## Inputs ")
-                crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True)
-                jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
-                run_crew_btn = gr.Button("Run Crew-Job for job details")
-                metrics = gr.Textbox(lines=2, label="Usage Metrics")
-            with gr.Column(scale=2):
-                gr.Markdown("## Results")
-                output = gr.Textbox(lines=20, label="Final output")
-
-    # with gr.Row():
-    #     with gr.Column():
-    #         with gr.Accordion("Console Logs"):
-    #             # Add logs
-    #             logs = gr.Code(label="", language="shell", interactive=False, container=True, lines=30)
-    #             #logs = gr.Textbox()
-    #             demo.load(logger.read_logs, None, logs, every=1)
-    read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, crews, job, jobs])
-    setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
-    #get_crew_jobs_btn.click(get_crew_job, inputs=[], outputs=[crewjob])
+def extract_variables(details):
+    from textwrap import dedent
     
-    #output = run_crew_btn.click(module_callback,[crew,job, crewjob,jobdetails])
-    run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails], outputs=[output, metrics])
+    # Regular expression pattern to find {variable} occurrences
+    pattern = re.compile(r'\{(.*?)\}')
+    
+    # Find all matches of the pattern in the details
+    matches = pattern.findall(details)
+    
+    # Return a list of unique variable names without duplicates
+    return sorted(list(set(matches)))
 
-    log = read_logs()
+def map_variables_to_ui_fields(description, ui_fields):
+    # Extract variables from the description
+    variables = extract_variables(description)
 
-demo.queue().launch(show_error=True)
-#demo.queue().launch(share=True, auth=("brncx", "carine"))
+    # Map extracted variables to UI fields based on their order
+    ui_field_values = {}
+    for i, var in enumerate(variables):
+        if i < len(ui_fields):
+            ui_field_values[i] = var 
+        else:
+            print(f"Warning: Not enough UI fields to map all variables. Variable '{var}' is ignored.")
+            break
+    
+    return ui_field_values
+
+def get_ui_fields():
+    # Let's assume these are the values from your UI fields
+    return ['input1', 'input2', 'input3', 'input4', 'input5']
+
+def get_mapped_variables(details):
+    ui_fields_values = get_ui_fields()
+
+    # Map variables to UI fields
+    mapped_variables= map_variables_to_ui_fields(details, ui_fields_values)
+    print(mapped_variables)  # Output: {'var1': 'Value 1', 'var2': 'Value 2', ..., 'var5': 'Value 5'}
+    return mapped_variables
+
+def get_input_mapping(details, input1, input2, input3, input4, input5):
+    ui_fields =  [ input1, input2, input3, input4, input5]
+    variables = extract_variables(details)
+
+    # Map extracted variables to UI fields based on their order
+    input_mapping = {}
+    for i, var in enumerate(variables):
+        if i < len(ui_fields):
+            input_mapping[var] = ui_fields[i]
+        else:
+            print(f"Warning: Not enough UI fields to map all variables. Variable '{var}' is ignored.")
+            break
+    
+    return input_mapping
+
+def parse_details(details):
+
+    # Map variables to UI fields
+    mapped_variables = get_mapped_variables(details)
+  
+    # Zero indexed !!!
+    input_vars = len(mapped_variables)
+
+    local_input1 = gr.Textbox(lines=1, label="input x")
+    local_input2 = gr.Textbox(lines=1, label="input x")
+    local_input3 = gr.Textbox(lines=1, label="input x")
+    local_input4 = gr.Textbox(lines=1, label="input x")
+    local_input5 = gr.Textbox(lines=1, label="input x")
+    if input_vars > 0:
+        local_input1 = gr.Textbox(lines=1, label=mapped_variables[0])
+    if input_vars > 1:
+        local_input2 = gr.Textbox(lines=1, label=mapped_variables[1])
+    if input_vars > 2:
+        local_input3 = gr.Textbox(lines=1, label=mapped_variables[2])
+    if input_vars > 3:
+        local_input4 = gr.Textbox(lines=1, label=mapped_variables[3])
+    if input_vars > 4:
+        local_input5 = gr.Textbox(lines=1, label=mapped_variables[4])
+    
+    return (local_input1, local_input2, local_input3, local_input4, local_input5)
+    
+def get_jobdetails(crewjob):
+
+    (crew, job) = crewjob.split('-', maxsplit=1)   
+
+    job_default_prompt =  get_job_prompt(f"{XLS_FOLDER}crews_cb_2.xlsx", crew, job)
+    #"enter stuff {var1} {var6}here"
+
+    jobdetails = gr.Textbox(lines=5, value=job_default_prompt, label="Got default prompt")
+    
+    return (jobdetails)
+
+def run_gradio():
+    with gr.Blocks(theme='freddyaboulton/dracula_revamped') as demo:
+    #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
+        gr.Markdown("# Your CREWAI XLS Runner")
+        gr.Markdown("__Easy as 1 - 2 - 3__")
+        with gr.Tab("1 - Download xls Template"):
+            with gr.Row():
+                with gr.Column(scale=1, variant="compact"):            
+                    gr.Markdown("### load a new configuration template")
+        with gr.Tab("2 - Prepare"):
+            #with gr.Accordion("Open to Load and generate crews", open=False):
+            with gr.Row():
+                with gr.Column(scale=1, variant="compact"):            
+                    gr.Markdown("### load a new configuration template")
+                    xls_template = gr.File()
+                    upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
+                    gr.Markdown("### Prepare new Crew-Job combination from loaded template")
+                    template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
+                    upload_button.upload(upload_file, upload_button, outputs=[xls_template, template])
+                    read_template_btn = gr.Button("Get Crews and Jobs defined")
+                with gr.Column(scale=2, variant="compact"): 
+                    #crew = gr.Textbox(label="2) Enter Crew")
+                    crews =  gr.Markdown(f"# CREWS {crews_list}")
+                    crew = gr.Dropdown(choices=crews_list, label="Select crew")
+                with gr.Column(scale=2, variant="compact"): 
+                    jobs =  gr.Markdown(f"# JOBS {jobs_list}")
+                    #job = gr.Textbox(label="3) Enter Job")
+                    job = gr.Dropdown(choices=jobs_list, label="Select job")
+                with gr.Column(scale=1, variant="compact"): 
+                    setup_btn = gr.Button("Generate Crew-Job combination")
+                    setup_result = gr.Markdown(".")
+
+
+        with gr.Tab("3 - Run"):
+            with gr.Row():
+                with gr.Column(scale=1, variant="compact"):
+                    #get_crew_jobs_btn = gr.Button("Get prepared teams and")
+                    gr.Markdown("## Inputs ")
+                    crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True)
+                    jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
+                    input1 = gr.Textbox(lines=1, label="input 1")
+                    input2 = gr.Textbox(lines=1, label="input 2")
+                    input3 = gr.Textbox(lines=1, label="input 3")
+                    input4 = gr.Textbox(lines=1, label="input 4")
+                    input5 = gr.Textbox(lines=1, label="input 5")
+                    crewjob.change(get_jobdetails, inputs=[crewjob], outputs=[jobdetails])
+                    jobdetails.blur(parse_details, inputs=[jobdetails], outputs=[input1,input2,input3,input4,input5])
+
+                    run_crew_btn = gr.Button("Run Crew-Job for job details")
+                    metrics = gr.Textbox(lines=2, label="Usage Metrics")
+                with gr.Column(scale=2):
+                    gr.Markdown("## Results")
+                    output = gr.Textbox(lines=20, label="Final output")
+
+            with gr.Row():
+                with gr.Column():
+                    with gr.Accordion("Console Logs"):
+                        # Add logs
+                        logs = gr.Code(label="", language="shell", interactive=False, container=True, lines=30)
+                        #logs = gr.Textbox()
+                        demo.load(logger.read_logs, None, logs, every=1)
+
+        read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, crews, job, jobs])
+        setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
+        #get_crew_jobs_btn.click(get_crew_job, inputs=[], outputs=[crewjob])
+        
+        #output = run_crew_btn.click(module_callback,[crew,job, crewjob,jobdetails])
+        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics])
+
+        log = read_logs()
+
+    demo.queue().launch(show_error=True)
+    #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))
+
+#############################################################################
+# START PROCESSING
+#############################################################################
+
+# Ensure default directories exist
+init_default_dirs()
+
+# start logging
+logger=init_logging()
+
+crews_list = list()
+jobs_list = list()    
+templates_list = list_xls_files_in_dir(XLS_FOLDER)
+crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
+
+run_gradio()
