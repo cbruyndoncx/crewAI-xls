@@ -4,6 +4,7 @@ from textwrap import dedent
 
 import openpyxl
 from jinja2 import Environment, FileSystemLoader
+import pandas as pd
 
 models = {}
 models['temperature']=0.1
@@ -64,6 +65,25 @@ def read_variables_sheet(sheet):
 
     return all_records
 
+def write_prompt_to_disk(prompt, file_name):
+    with open(file_name, 'w') as file:
+        file.write(prompt)
+
+def get_job_prompt(template, select_crew, select_job):
+    # JOB
+    df = pd.read_excel(template, sheet_name='jobs', usecols=['job', 'crew', 'job_default_prompt','input_var_1','input_var_2',
+                                                              'input_var_3','input_var_4','input_var_5'])
+    df_records = df.to_records()
+
+    job_prompt = ''
+
+    for record in df_records:
+        if record['crew'] == select_crew and record['job'] == select_job:
+            job_prompt = record['job_default_prompt']
+            break
+
+    return job_prompt
+
 def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
 
     # Load the workbook and select the active worksheet
@@ -107,6 +127,9 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
 
                 crew_task_list_template+=env.get_template('crew_task_list_template.py').render(record)
                 job_records.append(record)
+    # JOB PROMPT
+    write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{crews_dir}job_default_prompt.txt")
+    
     # CUSTOM VARS 
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
     # If you want to append to an existing file instead, use 'a' mode.

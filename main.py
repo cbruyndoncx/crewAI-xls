@@ -235,12 +235,8 @@ def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
-    #print(details)
-    #print(input_mapping)
-    #print(input1,input2,input3,input4,input5)
     expanded_details = details.format(**input_mapping)
 
-    #print(expanded_details)
     # Import the  module dynamically
     crew_module = import_module(f"{crews_dir}.crew")
     CustomCrew = getattr(crew_module, 'CustomCrew')
@@ -267,10 +263,11 @@ def get_crew_jobs_list(crewdir):
     crewjobs_list.sort()
     return crewjobs_list
 
-def get_crew_job(crewdir=CREWS_FOLDER):
+def get_crew_job(crewdir=CREWS_FOLDER):   
     crewjobs_list = get_crew_jobs_list(crewdir)
-    crewjob = gr.Dropdown(choices=crewjobs_list, label="Prepared teams")
+    crewjob = gr.Dropdown(choices=crewjobs_list , label="Prepared teams")
     return crewjob
+    
 
 def setup(template,crew, job):
     """
@@ -316,20 +313,12 @@ def get_crews_jobs_from_template(template, input_crew, input_job):
     """
     This is used to fetch list of available crews and jobs in selected template
     """
+    crews_list = get_distinct_column_values_by_name(template, 'crews', 'crew')
+    jobs_list = get_distinct_column_values_by_name(template, 'tasks', 'job')
     
-    crews_list=get_distinct_column_values_by_name(template, 'crews', 'crew')
-    for value in crews_list:
-        print(value)
-
-    jobs_list=get_distinct_column_values_by_name(template, 'tasks', 'job')
-    for value in jobs_list:
-        print(value)
-
     crew = gr.Dropdown(choices=crews_list, label="Select crew")
     job = gr.Dropdown(choices=jobs_list, label="Select job")
 
-    #crews_md =  gr.Markdown(md_list(crews_list))
-    #jobs_md =  gr.Markdown(md_list(jobs_list))
     crews_md = gr.Markdown('# CREWS\n' + get_crews_details(template))
     jobs_md = gr.Markdown('# JOBS\n' + get_jobs_details(template))
     
@@ -346,19 +335,6 @@ def upload_file(in_files):
     template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
 
     return (file_paths, template)
-
-def get_job_prompt(template, select_crew, select_job):
-    # JOB
-    df = pd.read_excel(template, sheet_name='jobs', usecols=['job', 'crew', 'job_default_prompt','input_var_1','input_var_2',
-                                                             'input_var_3','input_var_4','input_var_5'])
-    df_records = df.to_records()
-    job_prompt = ''
-    for record in df_records:
-        #print(record['job'], record['crew'], record['job_default_prompt'])
-        if  record['crew'] == select_crew and record['job'] == select_job:
-            job_prompt = record['job_default_prompt']
-            break
-    return job_prompt
 
 def extract_variables(details):
     from textwrap import dedent
@@ -387,19 +363,16 @@ def map_variables_to_ui_fields(description, ui_fields):
     
     return ui_field_values
 
-def get_ui_fields():
-    # Let's assume these are the values from your UI fields
+def get_ui_field_labels():
+    # Let's assume these are the fieldnames from your UI fields
     return ['input1', 'input2', 'input3', 'input4', 'input5']
 
 def get_mapped_variables(details):
-    ui_fields_values = get_ui_fields()
-
     # Map variables to UI fields
-    mapped_variables= map_variables_to_ui_fields(details, ui_fields_values)
-    print(mapped_variables)  # Output: {'var1': 'Value 1', 'var2': 'Value 2', ..., 'var5': 'Value 5'}
-    return mapped_variables
+    return map_variables_to_ui_fields(details,  get_ui_field_labels())
 
 def get_input_mapping(details, input1, input2, input3, input4, input5):
+    # actual field names, so we can replace corresponsing labels
     ui_fields =  [ input1, input2, input3, input4, input5]
     variables = extract_variables(details)
 
@@ -428,28 +401,25 @@ def parse_details(details):
     local_input4 = gr.Textbox(lines=1, label="input x")
     local_input5 = gr.Textbox(lines=1, label="input x")
     if input_vars > 0:
-        local_input1 = gr.Textbox(lines=1, label=mapped_variables[0])
+        local_input1 = gr.Textbox(lines=1, visible=True, label=mapped_variables[0])
     if input_vars > 1:
-        local_input2 = gr.Textbox(lines=1, label=mapped_variables[1])
+        local_input2 = gr.Textbox(lines=1, visible=True, label=mapped_variables[1])
     if input_vars > 2:
-        local_input3 = gr.Textbox(lines=1, label=mapped_variables[2])
+        local_input3 = gr.Textbox(lines=1, visible=True, label=mapped_variables[2])
     if input_vars > 3:
-        local_input4 = gr.Textbox(lines=1, label=mapped_variables[3])
+        local_input4 = gr.Textbox(lines=1, visible=True, label=mapped_variables[3])
     if input_vars > 4:
-        local_input5 = gr.Textbox(lines=1, label=mapped_variables[4])
+        local_input5 = gr.Textbox(lines=1, visible=True, label=mapped_variables[4])
     
     return (local_input1, local_input2, local_input3, local_input4, local_input5)
     
 def get_jobdetails(crewjob):
+    def read_prompt_from_disk(file_name):
+        with open(file_name, 'r') as file:
+            prompt = file.read()
+        return prompt
 
-    (crew, job) = crewjob.split('-', maxsplit=1)   
-
-    job_default_prompt =  get_job_prompt(f"{XLS_FOLDER}crews_cb_2.xlsx", crew, job)
-    #"enter stuff {var1} {var6}here"
-
-    jobdetails = gr.Textbox(lines=5, value=job_default_prompt, label="Got default prompt")
-    
-    return (jobdetails)
+    return gr.Textbox(lines=5, value=read_prompt_from_disk( f"{CREWS_FOLDER}{crewjob}/job_default_prompt.txt"), label="Got default prompt")
 
 def run_gradio():
     with gr.Blocks(theme='freddyaboulton/dracula_revamped') as demo:
@@ -486,23 +456,25 @@ def run_gradio():
 
         with gr.Tab("3 - Run"):
             with gr.Row():
-                with gr.Column(scale=1, variant="compact"):
+                with gr.Column(scale=1, variant="default"):
                     #get_crew_jobs_btn = gr.Button("Get prepared teams and")
-                    gr.Markdown("## Inputs ")
+                    gr.Markdown("## Complete the prompt ")
                     crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True)
                     jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
-                    input1 = gr.Textbox(lines=1, label="input 1")
-                    input2 = gr.Textbox(lines=1, label="input 2")
-                    input3 = gr.Textbox(lines=1, label="input 3")
-                    input4 = gr.Textbox(lines=1, label="input 4")
-                    input5 = gr.Textbox(lines=1, label="input 5")
+                    input1 = gr.Textbox(lines=1, visible=False, label="input 1")
+                    input2 = gr.Textbox(lines=1, visible=False, label="input 2")
+                    input3 = gr.Textbox(lines=1, visible=False, label="input 3")
+                    input4 = gr.Textbox(lines=1, visible=False, label="input 4")
+                    input5 = gr.Textbox(lines=1, visible=False, label="input 5")
                     crewjob.change(get_jobdetails, inputs=[crewjob], outputs=[jobdetails])
                     jobdetails.blur(parse_details, inputs=[jobdetails], outputs=[input1,input2,input3,input4,input5])
-
+                with gr.Column(scale=1, variant="default"):
+                    gr.Markdown("##  Hit the button")
                     run_crew_btn = gr.Button("Run Crew-Job for job details")
                     metrics = gr.Textbox(lines=2, label="Usage Metrics")
                 with gr.Column(scale=2):
-                    gr.Markdown("## Results")
+                    gr.Markdown("## Wait for results below")
+                    gr.Markdown("#### (or watch progress in the console at the bottom)")
                     output = gr.Textbox(lines=20, label="Final output")
 
             with gr.Row():
