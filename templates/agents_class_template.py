@@ -46,15 +46,17 @@ class BaseAgents():
 
     
     def main_job(self, based_upon_agent):
-        def handle_websearch():
+        def case_websearch():
             self.role=""
             self.backstory=""
             self.goal=""
             self.tools=[
-                     SearchTools.search_internet
+                SearchTools.search_internet,
+                BrowserTools.scrape_and_summarize_website,
+                CalculatorTools.calculate
                 ]
             
-        def handle_webscrape():
+        def case_webscrape():
             self.role=""
             self.backstory=""
             self.goal=""
@@ -62,7 +64,7 @@ class BaseAgents():
                      web_scrape_tool
                 ]
             
-        def handle_webRAG():
+        def case_webRAG():
             self.role=""
             self.backstory=""
             self.goal=""
@@ -70,7 +72,7 @@ class BaseAgents():
                     web_search_tool
                 ]
         
-        def handle_ytchannelRAG():
+        def case_ytchannelRAG():
             self.role=""
             self.backstory=""
             self.goal=""
@@ -78,7 +80,7 @@ class BaseAgents():
                     youtube_channel_rag_tool
                 ]
             
-        def handle_ytvideoRAG():
+        def case_ytvideoRAG():
             self.role=""
             self.backstory=""
             self.goal=""
@@ -86,7 +88,7 @@ class BaseAgents():
                     youtube_video_rag_tool
                 ]
             
-        def handle_browse():
+        def case_browse():
             serper_dev_tool = SerperDevTool()
             self.role=""
             self.backstory=""
@@ -95,55 +97,44 @@ class BaseAgents():
                      serper_dev_tool,
                 ]
 
-        def handle_summarize():
+        def case_summarize():
             self.role=""
             self.backstory=""
             self.goal=""
             self.tools=[]
             #self.llm=self.OpenAIGPT35
 
-        def handle_translate():
+        def case_translate():
             self.role=""
             self.backstory=""
             self.goal=""
             self.tools=[]
     
-        def handle_default():
+        def case_default():
             self.role=""
             self.backstory=""
             self.goal=""
             self.tools=[]
 
-        case_functions = {
-            'webscrape': handle_webscrape,
-            'websearch': handle_websearch,
-            'webRAG': handle_webRAG,
-            'ytchannel': handle_ytchannelRAG,
-            'ytvideo': handle_ytvideoRAG,
-            'browse': handle_browse,
-            'summarize': handle_summarize,
-            'translate': handle_translate
+        def case_calculate():
+            self.role=""
+            self.backstory=""
+            self.goal=""
+            self.tools=[self.calculatortools]
+
+        handle_case_functions = {
+            'websearch': case_websearch,
+            'browse': case_browse,
+            'webscrape': case_webscrape,
+            'webRAG': case_webRAG,
+            'ytchannel': case_ytchannelRAG,
+            'ytvideo': case_ytvideoRAG,
+            'calculate': case_calculate,
+            'summarize': case_summarize,
+            'translate': case_translate
         }
         # The get method of dictionaries accepts a default value if key doesn't exist.
-        return case_functions.get(based_upon_agent, handle_default)()
-
-    # def research_agent(self, role, goal,backstory,allow_delegation,verbose,llm,max_iter,max_rpm,step_callback, memory):
-    #     """
-    #     function_calling_llm
-    #     """
-    #     return Agent(
-    #         role=role,
-    #         backstory=backstory,
-    #         goal=goal,
-    #         allow_delegation=allow_delegation,
-    #         verbose=verbose,
-    #         llm=llm,
-    #         max_iter=max_iter,
-    #         max_rpm=max_rpm,
-    #         step_callback=step_callback,
-    #         memory=memory,
-    #     )
-    
+        return handle_case_functions.get(based_upon_agent, case_default)()
 
 # This is an example of how to define custom agents.
 # You can define as many agents as you want.
