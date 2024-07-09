@@ -17,8 +17,8 @@ from logger import ComplexLogger
 from generate_crew import read_variables_xls, snake_case
 from importlib import import_module
 
-import init_config
-import excel_operations
+from init_config import create_default_dir, CREWS_FOLDER
+from excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
 
 def module_callback(crew,job, crewjob, details):
     """
