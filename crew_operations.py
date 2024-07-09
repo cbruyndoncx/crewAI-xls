@@ -20,9 +20,9 @@ from importlib import import_module
 from init_config import create_default_dir, CREWS_FOLDER, logfile, CREWS_FOLDER_NAME, output_log_sheet, read_logs, XLS_FOLDER
 from excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
 
-def module_callback(crew,job, crewjob, details):
+def module_callback(crew, job, crewjob, details):
     """
-
+    Callback function to run the crew job.
     """
     console = sys.stdout
     sys.stdout = ComplexLogger(logfile)
@@ -37,12 +37,12 @@ def module_callback(crew,job, crewjob, details):
     try:
         # Call the function
         gr.Info("Starting process...")
-        run_crew(crew,job, crewjob, details)
+        run_crew(crew, job, crewjob, details)
         print("\nDone.")
         gr.Info("Completed process!")
     except Exception as e:
         gr.Error("Could not complete process!")
-        #print(f"ERROR: {e}\n{traceback.format_exc()}")
+        print(f"ERROR: {e}\n{traceback.format_exc()}")
 
     sys.stdout = console
     
