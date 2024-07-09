@@ -1,23 +1,10 @@
 # main.py
 
-import gradio as gr
-import shutil
 import os
-import sys
 import re
-import json
+import glob
 from datetime import datetime
 import openpyxl
-import glob
-import pandas as pd
-
-import argparse
-from logger import ComplexLogger
-
-from generate_crew import read_variables_xls, snake_case
-from importlib import import_module
-
-import init_config
 
 # Function to sanitize a string for Excel
 def sanitize_for_excel(value):
