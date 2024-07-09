@@ -482,6 +482,7 @@ def run_gradio():
                     with gr.Accordion("Console Logs"):
                         # Add logs
                         logs = gr.Code(label="", language="shell", interactive=False, container=True, lines=30, elem_id="console-logs")
+                        demo.load(read_logs, None, logs, every=1)
                         #logs = gr.Textbox()
                         demo.load(logger.read_logs, None, logs, every=1)
 
@@ -494,7 +495,7 @@ def run_gradio():
 
         log = read_logs()
 
-    demo.queue().launch(show_error=True, css=".console-logs { background-color: black; }")
+    demo.queue().launch(show_error=True, css="#console-logs { background-color: black; }")
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))
 
 #############################################################################
