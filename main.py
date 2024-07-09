@@ -484,7 +484,6 @@ def run_gradio():
                         logs = gr.Code(label="", language="shell", interactive=False, container=True, lines=30, elem_id="console-logs")
                         demo.load(read_logs, None, logs, every=1)
                         #logs = gr.Textbox()
-                        demo.load(logger.read_logs, None, logs, every=1)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, crews, job, jobs])
         setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
