@@ -432,7 +432,7 @@ def run_gradio():
                     gr.Markdown("### Available Templates")
                     xls_files = list_xls_files_in_dir(XLS_FOLDER)
                     for xls_file in xls_files:
-                        gr.Markdown(f"[{os.path.basename(xls_file)}](file=xls/{os.path.basename(xls_file)})")
+                        gr.Markdown(f"[{os.path.basename(xls_file)}](file=files/xls/{os.path.basename(xls_file)})")
         with gr.Tab("2 - Prepare"):
             #with gr.Accordion("Open to Load and generate crews", open=False):
             with gr.Row():
