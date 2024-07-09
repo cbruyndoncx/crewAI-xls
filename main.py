@@ -498,6 +498,7 @@ def run_gradio():
 
         log = read_logs()
 
+    global demo
     demo.queue().launch(show_error=True)
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))
 
