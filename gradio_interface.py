@@ -1,6 +1,9 @@
+import gradio as gr
+import os
 from excel_operations import list_xls_files_in_dir
 from crew_operations import get_crews_jobs_from_template, setup, get_jobdetails, parse_details, run_crew, upload_file
-from init_config import read_logs
+from init_config import read_logs, XLS_FOLDER
+from main import templates_list, crews_list, jobs_list, crewjobs_list
 
 def run_gradio():
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css="#console-logs { background-color: black; }") as demo:
