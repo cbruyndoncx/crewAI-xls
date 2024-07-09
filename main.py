@@ -422,7 +422,7 @@ def get_jobdetails(crewjob):
     return gr.Textbox(lines=5, value=read_prompt_from_disk( f"{CREWS_FOLDER}{crewjob}/job_default_prompt.txt"), label="Got default prompt")
 
 def run_gradio():
-    with gr.Blocks(theme='freddyaboulton/dracula_revamped') as demo:
+    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css="#console-logs { background-color: black; }") as demo:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
         gr.Markdown("# Your CREWAI XLS Runner")
         gr.Markdown("__Easy as 1 - 2 - 3__")
@@ -495,7 +495,7 @@ def run_gradio():
 
         log = read_logs()
 
-    demo.queue().launch(show_error=True, css="#console-logs { background-color: black; }")
+    demo.queue().launch(show_error=True)
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))
 
 #############################################################################
