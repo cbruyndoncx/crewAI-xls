@@ -77,13 +77,6 @@ class CustomCrew:
      """
     def __init__(self, additional_details, language='en'):
         self.job_to_do = additional_details
-        # Got error 
-        #    agent.i18n = I18N(language=self.language)
-        # File "/home/cb/miniconda/envs/mypi310/lib/python3.10/site-packages/pydantic/main.py", line 171, in __init__
-        # self.__pydantic_validator__.validate_python(data, self_instance=self)
-        # File "/home/cb/miniconda/envs/mypi310/lib/python3.10/site-packages/crewai/utilities/i18n.py", line 27, in load_translation
-        #  raise ValidationError(
-        # TypeError: No constructor defined
         self.language = language
         self.agents = CustomAgents()
         self.tasks = CustomTasks()
@@ -93,9 +86,6 @@ class CustomCrew:
         self.GroqGemma = ChatGroq(temperature=0, model_name="gemma-7b-it")
     
     def run(self):
-        # Define your custom agents and tasks in agents.py and tasks.py
-        # agents = CustomAgents()
-        # tasks = CustomTasks()
         agents = self.agents
         tasks = self.tasks
 
