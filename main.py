@@ -6,7 +6,6 @@ import sys
 from init_config import init_default_dirs, init_logging, XLS_FOLDER, CREWS_FOLDER
 from excel_operations import list_xls_files_in_dir
 from crew_operations import get_crew_jobs_list
-from gradio_interface import run_gradio
 
 # Ensure default directories exist
 init_default_dirs()
