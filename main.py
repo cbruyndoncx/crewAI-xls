@@ -429,10 +429,6 @@ def run_gradio():
         with gr.Tab("1 - Download xls Template"):
             with gr.Row():
                 with gr.Column(scale=1, variant="compact"):            
-                    gr.Markdown("### load a new configuration template")
-        with gr.Tab("1 - Download xls Template"):
-            with gr.Row():
-                with gr.Column(scale=1, variant="compact"):            
                     gr.Markdown("### Available Templates")
                     xls_files = list_xls_files_in_dir(XLS_FOLDER)
                     for xls_file in xls_files:
