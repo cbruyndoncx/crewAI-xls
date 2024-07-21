@@ -104,9 +104,18 @@ class CustomCrew:
             full_output={{full_output}},
         )
 
-        result = {{crew_name}}.kickoff()
+        #result = {{crew_name}}.kickoff()
+        crew_output = {{crew_name}}.kickoff()
+        # Accessing the crew output
+        result = (f"Raw Output: {crew_output.raw}")
+        if crew_output.json_dict:
+            result = f"JSON Output: {json.dumps(crew_output.json_dict, indent=2)}"
+        if crew_output.pydantic:
+            result = f"Pydantic Output: {crew_output.pydantic}"
+        print(f"Tasks Output: {crew_output.tasks_output}")
+        metrics = f"Token Usage: {crew_output.token_usage}"
 
-        metrics={{crew_name}}.usage_metrics
+        #metrics={{crew_name}}.usage_metrics
 
         return (result, metrics)
     

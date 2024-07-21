@@ -1,21 +1,8 @@
 # main.py
 
-import gradio as gr
-import shutil
 import os
 import sys
-import re
-import json
-from datetime import datetime
-import openpyxl
-import glob
-import pandas as pd
-
-import argparse
 from logger import ComplexLogger
-
-from generate_crew import read_variables_xls, snake_case
-from importlib import import_module
 
 #######################################
 # initialisations
@@ -24,7 +11,7 @@ crews_dir = ""
 CREWS_FOLDER_NAME = "crews"
 CREWS_FOLDER = "./" + CREWS_FOLDER_NAME + "/"
 XLS_FOLDER = "./xls/"    
-OUT_FOLDER = "./out/"
+OUT_FOLDER = "./output/"
 LOG_FOLDER = "./log/"
 logfile = LOG_FOLDER + "output.log"
 output_log_sheet = OUT_FOLDER + "output_log.xlsx"
@@ -48,8 +35,15 @@ def init_logging():
     sys.stdout = ComplexLogger(logfile)
     return logger
 
+# Convert ANSI escape sequences to HTML
+#from ansi2html import Ansi2HTMLConverter
+#conv = Ansi2HTMLConverter()
+
 def read_logs():
     sys.stdout.flush()
     with open(logfile, "r") as f:
-        return f.read()
+        tmplog = f.read()
+        #return '<code>' + conv.convert(tmplog, full=False) + '</code><br/>'
+        #return conv.convert(tmplog, full=False)
+        return tmplog
 

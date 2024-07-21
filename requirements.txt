@@ -13,3 +13,4 @@ openpyxl
 pandas
 Requests
 unstructured
+ansi2html

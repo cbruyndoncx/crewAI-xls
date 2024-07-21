@@ -25,12 +25,14 @@ def sanitize_for_excel(value):
     return sanitized_value
 
 def open_workbook(filename):
-    # Create a new workbook or load an existing one
+    """
+    Create a new workbook or load an existing one.
+    """
     try:
         wb = openpyxl.load_workbook(filename)
     except FileNotFoundError:
         print(f"The file {filename} does not exist. Creating a new workbook.")
-        wb = openpyxl.Workbook(filename)
+        wb = openpyxl.Workbook()
         sheet = wb.create_sheet()
 
     return wb

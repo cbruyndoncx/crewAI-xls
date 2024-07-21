@@ -74,10 +74,15 @@ def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
 
     (result, metrics) = custom_crew.run()
 
-    write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
+    print('before xls out')
+    print(result)
+
+    #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
+    #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
     add_md_files_to_log_sheet(output_log_sheet,f"{CREWS_FOLDER}{crew}-{job}")
  
-    return (result['final_output'], metrics)
+    #return (result['final_output'], metrics)
+    return (result, metrics)
 
 def get_crew_jobs_list(crewdir):
     crewjobs_list = os.listdir(crewdir)
@@ -94,6 +99,9 @@ def setup(template,crew, job):
     """
     This is used to generate a new crew-job combination
     """
+    (crew, agents) = crew.split(' (', maxsplit=1) 
+    (job, tasks) = job.split(' (', maxsplit=1) 
+
     crews_dir = f"{CREWS_FOLDER}{crew}-{job}/"
     create_default_dir(crews_dir)
 
@@ -105,45 +113,29 @@ def setup(template,crew, job):
 def get_crews_details(template):
     df = pd.read_excel(template, sheet_name='crewmembers', usecols=['crewmember', 'crew'])
 
-    # Group the DataFrame by 'Crew' and qgents into lists
+    # Group the DataFrame by 'Crew' and agents into lists
     grouped_crews = df.groupby('crew')['crewmember'].apply(list)
-
-    # Generate Markdown output
-    markdown_output = ""
-    for crew, agent in grouped_crews.items():
-        # Format each job with its subtasks as a bullet point in Markdown
-        markdown_output += f"* {crew} ({', '.join(agent)})\n"
-
-    return markdown_output
+    
+    return [(f"{crew} ({', '.join(agent)})") for crew, agent in grouped_crews.items()]
 
 def get_jobs_details(template):
     df = pd.read_excel(template, sheet_name='tasks', usecols=['task', 'job'])
 
     # Group the DataFrame by 'Job' and aggregate subtasks into lists
     grouped_jobs = df.groupby('job')['task'].apply(list)
-
-    # Generate Markdown output
-    markdown_output = ""
-    for job, task in grouped_jobs.items():
-        # Format each job with its subtasks as a bullet point in Markdown
-        markdown_output += f"* {job} ({', '.join(task)})\n"
-
-    return markdown_output
+    return [(f"{job} ({', '.join(task)})") for job, task in grouped_jobs.items()]
 
 def get_crews_jobs_from_template(template, input_crew, input_job):
     """
     This is used to fetch list of available crews and jobs in selected template
     """
-    crews_list = get_distinct_column_values_by_name(template, 'crews', 'crew')
-    jobs_list = get_distinct_column_values_by_name(template, 'tasks', 'job')
+    #crews_list = get_distinct_column_values_by_name(template, 'crews', 'crew')
+    #jobs_list = get_distinct_column_values_by_name(template, 'tasks', 'job')
     
-    crew = gr.Dropdown(choices=crews_list, label="Select crew")
-    job = gr.Dropdown(choices=jobs_list, label="Select job")
-
-    crews_md = gr.Markdown('# CREWS\n' + get_crews_details(template))
-    jobs_md = gr.Markdown('# JOBS\n' + get_jobs_details(template))
+    crew = gr.Radio(choices=get_crews_details(template), label="Select crew", elem_classes="gr.dropdown")
+    job = gr.Radio(choices=get_jobs_details(template), label="Select job", elem_classes="gr.dropdown")
     
-    return (crew, crews_md, job, jobs_md)
+    return (crew, job)
 
 def upload_file(in_files):  
     # theoretically allow for multiple, might add output file
