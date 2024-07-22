@@ -1,7 +1,7 @@
 #import os
 import json
 from langtrace_python_sdk import langtrace
-langtrace.init(api_key='<LANGTRACE_API_KEY>')
+langtrace.init(api_key=os.getenv('LANGTRACE_API_KEY'))
 
 from crewai import Agent, Task, Crew, Process, AgentOps
 from langchain_openai import ChatOpenAI
