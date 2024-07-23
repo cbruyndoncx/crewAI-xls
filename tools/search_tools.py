@@ -6,8 +6,7 @@ from langchain.agents import Tool
 
 from langchain_community.tools import DuckDuckGoSearchRun
 
-from langchain.utilities.tavily_search import TavilySearchAPIWrapper
-from langchain.tools.tavily_search import TavilySearchResults
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 
 class SearchTools():

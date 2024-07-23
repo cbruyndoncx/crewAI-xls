@@ -14,3 +14,5 @@ pandas
 Requests
 unstructured
 ansi2html
+agentops
+crewai_agentops

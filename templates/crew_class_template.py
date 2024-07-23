@@ -1,9 +1,7 @@
 #import os
 import json
-from langtrace_python_sdk import langtrace
-langtrace.init(api_key=os.getenv('LANGTRACE_API_KEY'))
 
-from crewai import Agent, Task, Crew, Process, AgentOps
+from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 #from decouple import config
 
@@ -97,9 +95,7 @@ class CustomCrew:
         {{crew_task_list_template}}
 
         # Define your custom crew here
-        agent_ops = AgentOps()
         {{crew_name}} = Crew(
-            agents=[{{crew_agent_list}}, agent_ops],
             agents=[{{crew_agent_list}}],
             tasks=[{{crew_task_list}}],
             language="{{language}}",
@@ -110,8 +106,8 @@ class CustomCrew:
         )
 
         #result = {{crew_name}}.kickoff()
-        with langtrace.trace("CrewAI Task Execution"):
-            crew_output = {{crew_name}}.kickoff()
+        crew_output = {{crew_name}}.kickoff()
+        
         # Accessing the crew output
         print(f"Raw Output: {crew_output.raw}")
         if crew_output.json_dict:
