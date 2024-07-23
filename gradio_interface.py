@@ -20,7 +20,13 @@ logger = init_logging()
 
 def run_gradio():
     custom_css = """
-    #console-logs { 
+    #console-logs {
+        background-color: black; 
+    }
+    .gr-textbox {
+        background-color: #333333; /* Darker background for input fields */
+        color: white; /* Optional: Change text color to white for better contrast */
+    }
         background-color: black; 
     }
     .gr-button, .gr-dropdown {
