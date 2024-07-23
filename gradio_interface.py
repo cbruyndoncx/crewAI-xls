@@ -27,6 +27,12 @@ def run_gradio():
         background-color: black; /* Match the background color of the surrounding area */
         color: white; /* Optional: Change text color to white for better contrast */
     }
+    .gr-textbox textarea {
+        background-color: black; /* Set textarea background to black */
+        color: white; /* Optional: Change textarea text color to white for better contrast */
+    }
+        color: white; /* Optional: Change text color to white for better contrast */
+    }
         background-color: black; 
     }
     .gr-button, .gr-dropdown {
