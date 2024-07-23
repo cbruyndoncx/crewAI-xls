@@ -24,7 +24,7 @@ def run_gradio():
         background-color: black; 
     }
     .gr-textbox {
-        background-color: #333333; /* Darker background for input fields */
+        background-color: black; /* Match the background color of the surrounding area */
         color: white; /* Optional: Change text color to white for better contrast */
     }
         background-color: black; 
