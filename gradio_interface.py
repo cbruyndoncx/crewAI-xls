@@ -87,28 +87,28 @@ def run_gradio():
                     #get_crew_jobs_btn = gr.Button("Get prepared teams and")
                     gr.Markdown("## Complete the prompt ")
                     crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True , elem_classes="gr.dropdown")
-                    jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done")
-                    input1 = gr.Textbox(lines=1, visible=False, label="input 1")
-                    input2 = gr.Textbox(lines=1, visible=False, label="input 2")
-                    input3 = gr.Textbox(lines=1, visible=False, label="input 3")
-                    input4 = gr.Textbox(lines=1, visible=False, label="input 4")
-                    input5 = gr.Textbox(lines=1, visible=False, label="input 5")
+                    jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done", elem_classes="gr-textbox")
+                    input1 = gr.Textbox(lines=1, visible=False, label="input 1", elem_classes="gr-textbox")
+                    input2 = gr.Textbox(lines=1, visible=False, label="input 2", elem_classes="gr-textbox")
+                    input3 = gr.Textbox(lines=1, visible=False, label="input 3", elem_classes="gr-textbox")
+                    input4 = gr.Textbox(lines=1, visible=False, label="input 4", elem_classes="gr-textbox")
+                    input5 = gr.Textbox(lines=1, visible=False, label="input 5", elem_classes="gr-textbox")
                     crewjob.change(get_jobdetails, inputs=[crewjob], outputs=[jobdetails])
                     jobdetails.blur(parse_details, inputs=[jobdetails], outputs=[input1,input2,input3,input4,input5])
                 with gr.Column(scale=1, variant="default"):
                     gr.Markdown("##  Hit the button")
                     run_crew_btn = gr.Button("Run Crew-Job for job details", elem_classes="gr-button")
-                    metrics = gr.Textbox(lines=2, label="Usage Metrics")
+                    metrics = gr.Textbox(lines=2, label="Usage Metrics", elem_classes="gr-textbox")
                 with gr.Column(scale=2):
                     gr.Markdown("## Wait for results below")
                     gr.Markdown("#### (or watch progress in the console at the bottom)")
-                    output = gr.Textbox(lines=20, label="Final output")
+                    output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox")
 
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         # Add logs
-                        logs = gr.Textbox(label="", lines=30, elem_id="console-logs")
+                        logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
                         demo.load(read_logs, None, logs, every=3)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
