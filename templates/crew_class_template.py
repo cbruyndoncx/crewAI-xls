@@ -4,12 +4,11 @@ import json
 from crewai import Agent, Task, Crew, Process
 #from decouple import config
 
-from langchain_groq import ChatGroq
+
 #from langchain.chains import LLMChain
 #from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 #from langchain.prompts import PromptTemplate
 
-from langchain.llms import Ollama
 
 from textwrap import dedent
 from .agents import CustomAgents
@@ -25,7 +24,7 @@ from llm_providers import LLMProviders
 
 # This is the main class that you will use to define your custom crew.
 # You can define as many agents and tasks as you want in agents.py and tasks.py
-class CustomCrew:
+class CustomCrew(LLMProviders):
     """
         Help on the Crew class attributes v0.22.5:
 
@@ -78,10 +77,9 @@ class CustomCrew:
                 to make the library better, and allow us to train models. 
                 Default is False.
      """
-    from llm_providers import LLMProviders
 
     def __init__(self, additional_details, language='en'):
-        self.llm_providers = LLMProviders()
+        super().__init__()
         self.job_to_do = additional_details
         self.language = language
         self.agents = CustomAgents()
@@ -103,7 +101,7 @@ class CustomCrew:
             language="{{language}}",
             process=Process.{{process}},
             verbose={{crew_verbose}},
-            manager_llm=self.llm_providers['{{manager_llm}}'],
+            manager_llm=self.models['{{manager_llm}}'],
             full_output={{full_output}},
         )
 

@@ -12,7 +12,7 @@
             allow_delegation={{allow_delegation}},
             verbose={{verbose}},
             tools=self.tools,
-            llm=self.llm,
+            llm=self.models['{{llm}}'],
             max_iter=min(self.max_iter,{{max_iter}}),
             max_rpm=min(self.max_rpm,{{max_rpm}}),
             step_callback="{{step_callback}}",
