@@ -86,15 +86,15 @@ class CustomCrew:
         self.language = language
         self.agents = CustomAgents()
         self.tasks = CustomTasks()
-        self.GPT35 = self.llm_providers.OpenAIGPT35
-        self.GPT4 = self.llm_providers.OpenAIGPT4
-        self.GroqMixtral = self.llm_providers.GroqMixtral
-        self.GroqGemma = self.llm_providers.GroqGemma
-        self.OllamaLlama2 = self.llm_providers.OllamaLlama2
-        self.OllamaLlama31 = self.llm_providers.OllamaLlama31
-        self.OllamaGemma2 = self.llm_providers.OllamaGemma2
-        self.OllamaMistralNemo = self.llm_providers.OllamaMistralNemo
-        self.OllamaPhi3 = self.llm_providers.OllamaPhi3
+        self.GPT35 = self.llm_providers.models["OpenAIGPT35"]
+        self.GPT4 = self.llm_providers.models["OpenAIGPT4"]
+        self.GroqMixtral = self.llm_providers.models["GroqMixtral"]
+        self.GroqGemma = self.llm_providers.models["GroqGemma"]
+        self.OllamaLlama2 = self.llm_providers.models["OllamaLlama2"]
+        self.OllamaLlama31 = self.llm_providers.models["OllamaLlama31"]
+        self.OllamaGemma2 = self.llm_providers.models["OllamaGemma2"]
+        self.OllamaMistralNemo = self.llm_providers.models["OllamaMistralNemo"]
+        self.OllamaPhi3 = self.llm_providers.models["OllamaPhi3"]
         
     
     def run(self):
