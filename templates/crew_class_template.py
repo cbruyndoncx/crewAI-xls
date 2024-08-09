@@ -2,7 +2,7 @@ import os
 import json
 
 from crewai import Agent, Task, Crew, Process
-from langchain_openai import ChatOpenAI
+from llm_providers import LLMProviders
 #from decouple import config
 
 from langchain_groq import ChatGroq
@@ -86,17 +86,15 @@ class CustomCrew:
         self.language = language
         self.agents = CustomAgents()
         self.tasks = CustomTasks()
-        self.GPT35 = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1)
-        self.GPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.1)
-        self.GroqMixtral = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
-        self.GroqGemma = ChatGroq(temperature=0, model_name="gemma-7b-it")
-        
-        #os.environ["OPENAI_API_KEY"] = "NA"
-        self.OllamaLlama2 = Ollama( model = "llama2")
-        self.OllamaLlama31 = Ollama( model = "llama3.1")
-        self.OllamaGemma2 = Ollama( model = "gemma2")
-        self.OllamaMistralNemo = Ollama( model = "mistral-nemo")
-        self.OllamaPhi3 = Ollama( model = "phi3")
+        self.GPT35 = self.llm_providers.OpenAIGPT35
+        self.GPT4 = self.llm_providers.OpenAIGPT4
+        self.GroqMixtral = self.llm_providers.GroqMixtral
+        self.GroqGemma = self.llm_providers.GroqGemma
+        self.OllamaLlama2 = self.llm_providers.OllamaLlama2
+        self.OllamaLlama31 = self.llm_providers.OllamaLlama31
+        self.OllamaGemma2 = self.llm_providers.OllamaGemma2
+        self.OllamaMistralNemo = self.llm_providers.OllamaMistralNemo
+        self.OllamaPhi3 = self.llm_providers.OllamaPhi3
         
     
     def run(self):
