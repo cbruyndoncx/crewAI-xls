@@ -28,9 +28,8 @@ class BaseAgents(LLMProviders):
 
     def __init__(self):
         super().__init__()
-        super().__init__()
         self.tools = []
-        self.models = self.models  # Directly use models from LLMProviders
+        #self.models = self.models  # Directly use models from LLMProviders
         self.max_iter = 15
         self.max_rpm = 20
         self.allow_delegation = True

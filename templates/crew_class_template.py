@@ -2,7 +2,6 @@ import os
 import json
 
 from crewai import Agent, Task, Crew, Process
-from llm_providers import LLMProviders
 #from decouple import config
 
 from langchain_groq import ChatGroq
@@ -103,7 +102,7 @@ class CustomCrew:
             language="{{language}}",
             process=Process.{{process}},
             verbose={{crew_verbose}},
-            manager_llm=self.{{manager_llm}},
+            manager_llm=self.llm_providers['{{manager_llm}}'],
             full_output={{full_output}},
         )
 
