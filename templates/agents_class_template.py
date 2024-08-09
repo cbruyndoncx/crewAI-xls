@@ -1,7 +1,5 @@
 from crewai import Agent
 from textwrap import dedent
-from langchain_community.llms import OpenAI, Ollama
-from langchain_openai import ChatOpenAI
 
 from tools.browser_tools import BrowserTools
 from tools.calculator_tools import CalculatorTools
@@ -30,7 +28,9 @@ class BaseAgents(LLMProviders):
 
     def __init__(self):
         super().__init__()
+        super().__init__()
         self.tools = []
+        self.models = self.models  # Directly use models from LLMProviders
         self.max_iter = 15
         self.max_rpm = 20
         self.allow_delegation = True
