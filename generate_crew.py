@@ -106,7 +106,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
     llm_records = read_variables_sheet(workbook['llms'])
     
     # LLMs
-    with open(f"{crews_dir}llms.py", 'w') as file:
+    with open(f"{crews_dir}llm_providers.py", 'w') as file:
         llm_records = replace_none_with_empty_string(llm_records)
         for record in llm_records:
             file.write(env.get_template('llm_list_template.py').render(clean_dict(record)))
