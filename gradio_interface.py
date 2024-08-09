@@ -20,24 +20,18 @@ logger = init_logging()
 
 def run_gradio():
     custom_css = """
-    #console-logs {
+    #console-logs textarea {
         background-color: black; 
     }
-    .gr-textbox {
-        background-color: black; /* Match the background color of the surrounding area */
-        color: white; /* Optional: Change text color to white for better contrast */
+    .gr-input textarea {
+        background-color: white; /* Set textarea background to black */
+        color: black; /* Optional: Change textarea text color to white for better contrast */
     }
-    .gr-textbox textarea {
-        background-color: black; /* Set textarea background to black */
-        color: white; /* Optional: Change textarea text color to white for better contrast */
+    .gr-button, .gr-dropdown .wrap, .gr-radio label, .gr-input textarea {
+        border: 2px solid #FFFFFF !important;
     }
-        color: white; /* Optional: Change text color to white for better contrast */
-    }
-        background-color: black; 
-    }
-    .gr-button, .gr-dropdown {
+    .gr-button{
         font-weight: bold;
-        border: 5px solid #FFFFFF;
     }
     """
     crews_list = []
@@ -58,7 +52,7 @@ def run_gradio():
                 with gr.Column(scale=1, variant="compact"):                       
                     gr.Markdown("### Upload a new configuration template")
                     xls_template = gr.File()
-                    upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple")
+                    upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple", elem_classes="gr-button")
         with gr.Tab("2 - Prepare"):
             #with gr.Accordion("Open to Load and generate crews", open=False):
             with gr.Row():
@@ -66,7 +60,7 @@ def run_gradio():
             with gr.Row():
                 gr.Markdown("### TEMPLATES ")  
                 with gr.Column():       
-                    template = gr.Dropdown(choices=templates_list, label='')
+                    template = gr.Dropdown(choices=templates_list, label='' , elem_classes="gr-dropdown")
                     upload_button.upload(upload_file, upload_button, outputs=[xls_template, template])
                 with gr.Column():     
                     read_template_btn = gr.Button("Get Crews and Jobs defined", elem_classes="gr-button")
@@ -76,11 +70,11 @@ def run_gradio():
                 with gr.Column(scale=1, variant="compact"): 
                     #crew = gr.Textbox(label="2) Enter Crew")
                     gr.Markdown("### CREWS")
-                    crew = gr.Radio(choices=[], label='')
+                    crew = gr.Radio(choices=[], label='' , elem_classes="gr-radio")
                 with gr.Column(scale=1, variant="compact"): 
                     jobs =  gr.Markdown(f"### JOBS")
                     #job = gr.Textbox(label="3) Enter Job")
-                    job = gr.Radio(choices=jobs_list, label='')
+                    job = gr.Radio(choices=jobs_list, label='', elem_classes="gr-radio")
             with gr.Row():
                 with gr.Column(scale=1, variant="compact"): 
                     setup_btn = gr.Button("Generate Crew-Job combination", elem_classes="gr-button")
@@ -92,13 +86,13 @@ def run_gradio():
                 with gr.Column(scale=1, variant="default"):
                     #get_crew_jobs_btn = gr.Button("Get prepared teams and")
                     gr.Markdown("## Complete the prompt ")
-                    crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True , elem_classes="gr.dropdown")
-                    jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done", elem_classes="gr-textbox")
-                    input1 = gr.Textbox(lines=1, visible=False, label="input 1", elem_classes="gr-textbox")
-                    input2 = gr.Textbox(lines=1, visible=False, label="input 2", elem_classes="gr-textbox")
-                    input3 = gr.Textbox(lines=1, visible=False, label="input 3", elem_classes="gr-textbox")
-                    input4 = gr.Textbox(lines=1, visible=False, label="input 4", elem_classes="gr-textbox")
-                    input5 = gr.Textbox(lines=1, visible=False, label="input 5", elem_classes="gr-textbox")
+                    crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True , elem_classes="gr-dropdown")
+                    jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done", elem_classes="gr-input")
+                    input1 = gr.Textbox(lines=1, visible=False, label="input 1", elem_classes="gr-input")
+                    input2 = gr.Textbox(lines=1, visible=False, label="input 2", elem_classes="gr-input")
+                    input3 = gr.Textbox(lines=1, visible=False, label="input 3", elem_classes="gr-input")
+                    input4 = gr.Textbox(lines=1, visible=False, label="input 4", elem_classes="gr-input")
+                    input5 = gr.Textbox(lines=1, visible=False, label="input 5", elem_classes="gr-input")
                     crewjob.change(get_jobdetails, inputs=[crewjob], outputs=[jobdetails])
                     jobdetails.blur(parse_details, inputs=[jobdetails], outputs=[input1,input2,input3,input4,input5])
                 with gr.Column(scale=1, variant="default"):

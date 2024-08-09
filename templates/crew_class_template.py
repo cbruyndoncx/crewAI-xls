@@ -1,4 +1,4 @@
-#import os
+import os
 import json
 
 from crewai import Agent, Task, Crew, Process
@@ -9,6 +9,8 @@ from langchain_groq import ChatGroq
 #from langchain.chains import LLMChain
 #from langchain.memory import ConversationBufferMemory, ReadOnlySharedMemory
 #from langchain.prompts import PromptTemplate
+
+from langchain.llms import Ollama
 
 from textwrap import dedent
 from .agents import CustomAgents
@@ -85,6 +87,14 @@ class CustomCrew:
         self.GPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.1)
         self.GroqMixtral = ChatGroq(temperature=0, model_name="mixtral-8x7b-32768")
         self.GroqGemma = ChatGroq(temperature=0, model_name="gemma-7b-it")
+        
+        #os.environ["OPENAI_API_KEY"] = "NA"
+        self.OllamaLlama2 = Ollama( model = "llama2")
+        self.OllamaLlama31 = Ollama( model = "llama3.1")
+        self.OllamaGemma2 = Ollama( model = "gemma2")
+        self.OllamaMistralNemo = Ollama( model = "mistral-nemo")
+        self.OllamaPhi3 = Ollama( model = "phi3")
+        
     
     def run(self):
         agents = self.agents

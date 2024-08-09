@@ -22,6 +22,7 @@
                 context=[{{context}}],
                 output_file="{{output_file}}",
                 callback="{{callback}}",
+                human_input={{human_input}},
             )
         else:
             tempTask = Task(
@@ -43,6 +44,7 @@
                 context=[{{context}}],
                 output_file="{{output_file}}",
                 callback="{{callback}}",
+                human_input={{human_input}},
             )
 
         # Function to write the extracted print statements into a markdown file.
@@ -57,6 +59,7 @@
             f.write(f"Context: {tempTask.context}"+ '\n')
             f.write(f"Output File: {tempTask.output_file}"+ '\n')
             f.write(f"Callback: {tempTask.callback}"+ '\n')
+            f.write(f"Human input: {tempTask.human_input}"+ '\n')
         
         return tempTask
 

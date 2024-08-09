@@ -16,7 +16,11 @@
             max_iter=min(self.max_iter,{{max_iter}}),
             max_rpm=min(self.max_rpm,{{max_rpm}}),
             step_callback="{{step_callback}}",
-            memory={{memory}},
+            allow_code_execution={{allow_code_execution}},
+            #system_template="{{system_template}}",
+            #prompt_template="{{prompt_template}}",
+    	    #response_template="{{response_template}}",
+
         )
 
         # Function to write the extracted print statements into a markdown file.
@@ -30,6 +34,11 @@
             f.write(f"Allow Delegation: {tempAgent.allow_delegation}"+ '\n')
             f.write(f"Max Iter: {tempAgent.max_iter}"+ '\n')
             f.write(f"Max RPM: {tempAgent.max_rpm}"+ '\n')
-            f.write(f"LLM: {tempAgent.llm}"+ '\n')
+            f.write(f"LLM: {tempAgent.llm}"+ '\n')        
+            f.write(f"Step Callback: {tempAgent.step_callback}"+ '\n')
+            f.write(f"Allow Code Execution: {tempAgent.allow_code_execution}"+ '\n')
+            f.write(f"System Template: {tempAgent.system_template}"+ '\n')
+            f.write(f"Prompt Template: {tempAgent.prompt_template}"+ '\n')
+            f.write(f"Response Template: {tempAgent.response_template}"+ '\n')
         return tempAgent
 
