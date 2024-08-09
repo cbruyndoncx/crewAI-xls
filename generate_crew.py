@@ -119,6 +119,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 record['task_name'] = snake_case(record['task'])
                 record['context'] = snake_case(record['context'])
                 record['crews_dir'] = crews_dir
+                print(record)
                 file.write(env.get_template('task_template.py').render(record))
                 if record['assigned_agent'] == '' :
                     record['assigned_agent_name'] = 'None'
