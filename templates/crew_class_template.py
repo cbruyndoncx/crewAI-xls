@@ -78,7 +78,10 @@ class CustomCrew:
                 to make the library better, and allow us to train models. 
                 Default is False.
      """
+    from llm_providers import LLMProviders
+
     def __init__(self, additional_details, language='en'):
+        self.llm_providers = LLMProviders()
         self.job_to_do = additional_details
         self.language = language
         self.agents = CustomAgents()

@@ -24,17 +24,16 @@ youtube_video_rag_tool = YoutubeVideoSearchTool()
 web_scrape_tool = ScrapeWebsiteTool()
 
 
-class BaseAgents():
+from llm_providers import LLMProviders
+
+class BaseAgents(LLMProviders):
 
     def __init__(self):
-        self.OpenAIGPT35 = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1)
-        self.OpenAIGPT4 = ChatOpenAI(model_name="gpt-4", temperature=0.1)
-        #self.Ollama = Ollama(model="openhermes")
+        super().__init__()
         self.tools = []
-        self.max_iter=15
-        self.max_rpm=20
-        self.llm=self.OpenAIGPT4
-        self.allow_delegation=True
+        self.max_iter = 15
+        self.max_rpm = 20
+        self.allow_delegation = True
 
         self.searchtools=[
                 SearchTools.search_internet,
