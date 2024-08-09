@@ -129,7 +129,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 else:
                     record['assigned_agent_name'] = snake_case(record['assigned_agent'])
 
-                crew_task_list_template+=env.get_template('crew_task_list_template.py').render(record)
+                crew_task_list_template+=env.get_template('crew_task_list_template.py').render(clean_dict(record))
                 job_records.append(record)
     # JOB PROMPT
     write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{crews_dir}job_default_prompt.txt")
@@ -179,8 +179,8 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 record['agent_name'] = snake_case(record['agent'])
                 if member['crewmember'] == record['agent_name']: 
                     record['crews_dir'] = crews_dir
-                    file.write(env.get_template('agent_template.py').render(record))
-                    crew_agent_list_template+=env.get_template('crew_agent_list_template.py').render(record)
+                    file.write(env.get_template('agent_template.py').render(clean_dict(record)))
+                    crew_agent_list_template+=env.get_template('crew_agent_list_template.py').render(clean_dict(record))
 
     # CREW
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
@@ -196,7 +196,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
             record['crew_agent_list']=crew_agent_list
             record['crew_task_list']=crew_task_list
 
-            result=env.get_template('crew_class_template.py').render(record)
+            result=env.get_template('crew_class_template.py').render(clean_dict(record))
 
             with open(f"{crews_dir}crew.py", 'w') as file:
                 file.write(result)
