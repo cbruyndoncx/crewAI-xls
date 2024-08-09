@@ -84,6 +84,9 @@ def get_job_prompt(template, select_crew, select_job):
 
     return job_prompt
 
+def clean_dict(d):
+    return {k: v for k, v in d.items() if k is not None}
+
 def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
 
     # Load the workbook and select the active worksheet
@@ -120,7 +123,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 record['context'] = snake_case(record['context'])
                 record['crews_dir'] = crews_dir
                 print(record)
-                file.write(env.get_template('task_template.py').render(record))
+                file.write(env.get_template('task_template.py').render(clean_dict(record)))
                 if record['assigned_agent'] == '' :
                     record['assigned_agent_name'] = 'None'
                 else:
