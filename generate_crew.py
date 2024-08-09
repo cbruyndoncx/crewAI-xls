@@ -103,9 +103,13 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
     custom_records = read_variables_sheet(workbook['custom'])
     crew_records = read_variables_sheet(workbook['crews'])
     crew_member_records = read_variables_sheet(workbook['crewmembers'])
-    # Now `all_records` is a list of dictionaries with details for all records in the different sheets
+    llm_records = read_variables_sheet(workbook['llms'])
     
-    # TASKS 
+    # LLMs
+    with open(f"{crews_dir}llms.py", 'w') as file:
+        llm_records = replace_none_with_empty_string(llm_records)
+        for record in llm_records:
+            file.write(env.get_template('llm_list_template.py').render(clean_dict(record)))
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
     # If you want to append to an existing file instead, use 'a' mode.
     with open(f"{crews_dir}tasks.py", 'w') as file:
