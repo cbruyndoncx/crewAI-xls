@@ -18,7 +18,7 @@ from logger import ComplexLogger
 from generate_crew import read_variables_xls, snake_case
 from importlib import import_module
 
-from init_config import create_default_dir, CREWS_FOLDER, logfile, CREWS_FOLDER_NAME, output_log_sheet, read_logs, XLS_FOLDER
+from init_config import create_default_dir, CREWS_FOLDER, logfile, CREWS_FOLDER_NAME, output_log_sheet, reset_logs, XLS_FOLDER
 from excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
 
 def module_callback(crew, job, crewjob, details):
@@ -51,6 +51,7 @@ def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
     """
     This is the main function that you will use to run your custom crew.
     """
+    reset_logs()
     (crew, job) = crewjob.split('-', maxsplit=1)   
     crews_dir=f"{CREWS_FOLDER_NAME}.{crew}-{job}"
     select_language='en'
@@ -82,12 +83,19 @@ def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
     add_md_files_to_log_sheet(output_log_sheet,f"{CREWS_FOLDER}{crew}-{job}")
+
+    # copy contents of output subdirectory to directory up one level
+    shutil.copytree(src=f"{CREWS_FOLDER}{crew}-{job}/output", dst=f"{CREWS_FOLDER}output", dirs_exist_ok=True)
  
+    download_files = gr.Markdown("Fetching")
+    outfiles = os.listdir(f"{CREWS_FOLDER}output")
+    if (outfiles):
+        download_files = gr.Column()
     #return (result['final_output'], metrics)
-    return (result, metrics)
+    return (result, metrics, download_files)
 
 def get_crew_jobs_list(crewdir):
-    crewjobs_list = os.listdir(crewdir)
+    crewjobs_list = [f for f in os.listdir(crewdir) if not f.startswith('output')]    
     crewjobs_list.sort()
     return crewjobs_list
 
@@ -106,6 +114,7 @@ def setup(template,crew, job):
 
     crews_dir = f"{CREWS_FOLDER}{crew}-{job}/"
     create_default_dir(crews_dir)
+    create_default_dir(f"{CREWS_FOLDER}{crew}-{job}/output/")
 
     read_variables_xls(template,crew, job, crews_dir)
     crewjob = get_crew_job(CREWS_FOLDER)

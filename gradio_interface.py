@@ -1,11 +1,8 @@
 import gradio as gr
 import os
+from crew_operations import get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
+from init_config import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER
 from excel_operations import list_xls_files_in_dir
-from crew_operations import get_crews_jobs_from_template, setup, get_jobdetails, parse_details, run_crew, upload_file
-from init_config import read_logs, XLS_FOLDER
-from init_config import init_default_dirs, init_logging, XLS_FOLDER, CREWS_FOLDER
-from excel_operations import list_xls_files_in_dir
-from crew_operations import get_crew_jobs_list
 
 # Ensure default directories exist
 init_default_dirs()
@@ -38,6 +35,7 @@ def run_gradio():
     jobs_list = []
     templates_list = list_xls_files_in_dir(XLS_FOLDER)
     crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
+    download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as demo:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
         gr.Markdown("# Your CREWAI XLS Runner")
@@ -54,7 +52,6 @@ def run_gradio():
                     xls_template = gr.File()
                     upload_button = gr.UploadButton("Upload xls crewAI template", file_types=["file"], file_count="multiple", elem_classes="gr-button")
         with gr.Tab("2 - Prepare"):
-            #with gr.Accordion("Open to Load and generate crews", open=False):
             with gr.Row():
                 gr.Markdown("## Prepare new Crew-Job combination from loaded template")
             with gr.Row():
@@ -72,7 +69,7 @@ def run_gradio():
                     gr.Markdown("### CREWS")
                     crew = gr.Radio(choices=[], label='' , elem_classes="gr-radio")
                 with gr.Column(scale=1, variant="compact"): 
-                    jobs =  gr.Markdown(f"### JOBS")
+                    gr.Markdown(f"### JOBS")
                     #job = gr.Textbox(label="3) Enter Job")
                     job = gr.Radio(choices=jobs_list, label='', elem_classes="gr-radio")
             with gr.Row():
@@ -102,23 +99,25 @@ def run_gradio():
                 with gr.Column(scale=2):
                     gr.Markdown("## Wait for results below")
                     gr.Markdown("#### (or watch progress in the console at the bottom)")
-                    output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox")
-
+                    output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox") 
+            with gr.Row():
+                with gr.Column():
+                    download_files = gr.Markdown("init")
+                    gr.Markdown("### Download Results")
+                    output_files = os.listdir(f"{CREWS_FOLDER}output")
+                    for output_file in output_files:
+                        gr.File(value=f"{CREWS_FOLDER}output/{output_file}", label=os.path.basename(output_file))
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
-                        # Add logs
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
                         demo.load(read_logs, None, logs, every=3)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
         setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
-        #get_crew_jobs_btn.click(get_crew_job, inputs=[], outputs=[crewjob])
-        
-        #output = run_crew_btn.click(module_callback,[crew,job, crewjob,jobdetails])
-        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics])
+        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files])
 
-        log = read_logs()
+        #log = read_logs()
 
     demo.queue().launch(show_error=True)
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))

@@ -14,7 +14,7 @@ from textwrap import dedent
 from .agents import CustomAgents
 from .tasks import CustomTasks
 from importlib import import_module
-from llm_providers import LLMProviders
+from .llm_providers import LLMProviders
 
 #agent_module = import_module(".agents")
 # Access Class from the imported module

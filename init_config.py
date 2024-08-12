@@ -11,7 +11,7 @@ crews_dir = ""
 CREWS_FOLDER_NAME = "crews"
 CREWS_FOLDER = "./" + CREWS_FOLDER_NAME + "/"
 XLS_FOLDER = "./xls/"    
-OUT_FOLDER = "./output/"
+OUT_FOLDER = CREWS_FOLDER  + "output/"
 LOG_FOLDER = "./log/"
 logfile = LOG_FOLDER + "output.log"
 output_log_sheet = OUT_FOLDER + "output_log.xlsx"
@@ -22,7 +22,8 @@ output_log_sheet = OUT_FOLDER + "output_log.xlsx"
 def create_default_dir(folder):
     if not os.path.exists(folder):    
         os.mkdir(folder)   
-
+    print(folder +"  created or exists")
+    
 def init_default_dirs():
     create_default_dir(CREWS_FOLDER)  
     create_default_dir(XLS_FOLDER)
@@ -47,3 +48,6 @@ def read_logs():
         #return conv.convert(tmplog, full=False)
         return tmplog
 
+def reset_logs():
+    logger = ComplexLogger(logfile)
+    logger.reset_logs()

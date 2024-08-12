@@ -22,7 +22,7 @@ youtube_video_rag_tool = YoutubeVideoSearchTool()
 web_scrape_tool = ScrapeWebsiteTool()
 
 
-from llm_providers import LLMProviders
+from .llm_providers import LLMProviders
 
 class BaseAgents(LLMProviders):
 

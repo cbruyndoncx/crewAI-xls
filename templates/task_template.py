@@ -3,49 +3,27 @@
             Tasks defined for every or specific agent
             Outputs markdown description of task input details for logging
         """
-        if agent is None:     
-            tempTask = Task(
-                description=dedent(
-                    f"""
-                {{description}}
-                {{extra1}} {{extra2}} {{extra3}}
-                {var1} 
-                {var2}
-            """
-                ),
-                expected_output=dedent(
-                    f"""
-                {{expected_output}}
-            """),
-                tools=[{{task_tools}}],
-                async_execution={{async_execution}},
-                context=[{{context}}],
-                output_file="{{output_file}}",
-                callback="{{callback}}",
-                human_input={{human_input}},
-            )
-        else:
-            tempTask = Task(
-                description=dedent(
-                    f"""
-                {{description}}
-                {{extra1}} {{extra2}} {{extra3}}
-                {var1} 
-                {var2}
-            """
-                ),
-                expected_output=dedent(
-                    f"""
-                {{expected_output}}
-            """),
-                agent=agent,
-                tools=[{{task_tools}}],
-                async_execution={{async_execution}},
-                context=[{{context}}],
-                output_file="{{output_file}}",
-                callback="{{callback}}",
-                human_input={{human_input}},
-            )
+        tempTask = Task(
+            description=dedent(
+                f"""
+            {{description}}
+            {{extra1}} {{extra2}} {{extra3}}
+            {var1} 
+            {var2}
+        """
+            ),
+            expected_output=dedent(
+                f"""
+            {{expected_output}}
+        """),
+            agent=agent,
+            tools=[{{task_tools}}],
+            async_execution={{async_execution}},
+            context=[{{context}}],
+            output_file="{{output_file}}",
+            callback="{{callback}}",
+            human_input={{human_input}},
+        )
 
         # Function to write the extracted print statements into a markdown file.
         markdown_file="{{crews_dir}}task_{{task_name}}.md"

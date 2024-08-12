@@ -94,13 +94,11 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
     
     # Set up the Jinja2 environment and specify the directory containing templates
     env = Environment(loader=FileSystemLoader('templates'))
-        #sheet = workbook[sheet_name]
     crew_agent_list_template = ''
     crew_task_list_template = ''
     
     agent_records = read_variables_sheet(workbook['agents'])
     task_records = read_variables_sheet(workbook['tasks'])
-    custom_records = read_variables_sheet(workbook['custom'])
     crew_records = read_variables_sheet(workbook['crews'])
     crew_member_records = read_variables_sheet(workbook['crewmembers'])
     llm_records = read_variables_sheet(workbook['llms'])
@@ -111,7 +109,6 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
         llm_records = replace_none_with_empty_string(llm_records)
         for record in llm_records:
             llm_list_template+=env.get_template('llm_list_template.py').render(clean_dict(record))
-        print(llm_list_template)
         models['llm_list']=llm_list_template
         file.write(env.get_template('llm_class_template.py').render(models))
 
@@ -132,7 +129,8 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 record['task_name'] = snake_case(record['task'])
                 record['context'] = snake_case(record['context'])
                 record['crews_dir'] = crews_dir
-                print(record)
+                if record['output_file'] : 
+                    record['output_file'] = f"{crews_dir}output/{record['output_file']}"
                 file.write(env.get_template('task_template.py').render(clean_dict(record)))
                 if record['assigned_agent'] == '' :
                     record['assigned_agent_name'] = 'None'
@@ -223,9 +221,8 @@ if __name__ == "__main__":
     input_job = snake_case(input(dedent("""Specify your job: """)))
 
     crews_dir = f"./crews/{input_crew}-{input_job}/"
+    xls_template = "./xls/crews_cb_3.xlsx"
     create_directory(crews_dir)
 
-    read_variables_xls('vars_in.xlsx',input_crew, input_job, crews_dir)    
+    read_variables_xls(xls_template,input_crew, input_job, crews_dir)    
 
-    # If everything is successful, you can either omit sys.exit() or explicitly exit with zero
-    sys.exit(0)  # This line is optional since Python exits with 0 by default
