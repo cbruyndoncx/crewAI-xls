@@ -111,7 +111,9 @@ def run_gradio():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
-                        demo.load(read_logs, None, logs, every=3)
+                        t = gr.Timer(3, active=False)
+                        t.tick(lambda x:x, logs)
+                        demo.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
         setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])

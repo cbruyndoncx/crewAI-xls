@@ -29,12 +29,14 @@ class BaseAgents(LLMProviders):
     def __init__(self):
         super().__init__()
         self.tools = []
+        print(self.models)
         #self.models = self.models  # Directly use models from LLMProviders
         self.max_iter = 15
         self.max_rpm = 20
         self.allow_delegation = True
 
         self.searchtools=[
+            
                 SearchTools.search_internet,
                 BrowserTools.scrape_and_summarize_website,
             ]

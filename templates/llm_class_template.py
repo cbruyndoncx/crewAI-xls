@@ -3,6 +3,7 @@ from langchain_groq import ChatGroq
 #from langchain.llms import Ollama
 #from langchain_community.chat_models import ChatOllama
 from langchain_ollama import ChatOllama
+from crewai import LLM
 
 class LLMProviders:
     def __init__(self):
