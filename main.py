@@ -84,8 +84,6 @@ async def register(request: Request):
     <form action="/register" method="post">
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username"><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br>
         <label for="team">Team:</label><br>
         <input type="text" id="team" name="team"><br>
         <input type="submit" value="Register">
@@ -104,7 +102,6 @@ async def login(request: Request):
 async def register_user(request: Request):
     form = await request.form()
     username = form.get('username')
-    password = form.get('password')
     team = form.get('team')
 
     # Here you would add logic to save the user and team to the database
