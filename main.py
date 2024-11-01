@@ -71,7 +71,7 @@ def public(user: dict = Depends(get_user)):
     if user:
         return RedirectResponse(url='/gradio')
     else:
-        return RedirectResponse(url='/login-demo')
+        return RedirectResponse(url='/login')
 
 @app.route('/logout')
 async def logout(request: Request):
