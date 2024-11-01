@@ -29,7 +29,7 @@ def open_workbook(filename, team_id):
     Create a new workbook or load an existing one.
     """
     # Adjust file path to include team directory
-    team_file_path = f"/data/team_{team_id}/{filename}"
+    team_file_path = f"{TEAM_FOLDER_TEMPLATE.format(team_id=team_id)}{filename}"
     try:
         wb = openpyxl.load_workbook(team_file_path)
     except FileNotFoundError:

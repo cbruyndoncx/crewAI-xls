@@ -1,5 +1,6 @@
+TEAM_FOLDER_TEMPLATE = "/data/team_{team_id}/"
 CREWS_FOLDER_NAME = "crews"
-CREWS_FOLDER = "./" + CREWS_FOLDER_NAME + "/"
+CREWS_FOLDER = TEAM_FOLDER_TEMPLATE + CREWS_FOLDER_NAME + "/"
 XLS_FOLDER = "./xls/"    
 OUT_FOLDER = CREWS_FOLDER  + "output/"
 LOG_FOLDER = "./log/"

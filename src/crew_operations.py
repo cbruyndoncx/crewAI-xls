@@ -55,13 +55,13 @@ def upload_env_file(file, tenant_id):
         f.write(file.read())
     return f"Environment file for tenant {tenant_id} uploaded successfully."
     
-def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
+def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5, team_id):
     """
     This is the main function that you will use to run your custom crew.
     """
     reset_logs()
-    (crew, job) = crewjob.split('-', maxsplit=1)   
-    crews_dir=f"{CREWS_FOLDER_NAME}.{crew}-{job}"
+    (crew, job) = crewjob.split('-', maxsplit=1)
+    crews_dir = f"{TEAM_FOLDER_TEMPLATE.format(team_id=team_id)}{CREWS_FOLDER_NAME}.{crew}-{job}"
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)

@@ -49,9 +49,9 @@ def init_tenant():
     #    load_dotenv(dotenv_path=dotenv_path)
 
 def create_dir(folder):
-    if not os.path.exists(folder):    
-        os.mkdir(folder)   
-    logging.info(folder +"  created or exists")
+    if not os.path.exists(folder):
+        os.makedirs(folder, exist_ok=True)
+    logging.info(folder + " created or exists")
     
 def init_default_dirs():
     create_dir(CREWS_FOLDER)  
