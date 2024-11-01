@@ -36,6 +36,9 @@ def init_env():
     # Load environment variables from a .env file
     load_dotenv()
 
+    # Load demo environment variables
+    load_dotenv(".env.demo")
+
     # OAuth settings
     load_dotenv(".env.google")
 
