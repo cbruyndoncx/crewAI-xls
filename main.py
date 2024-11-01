@@ -102,7 +102,34 @@ async def register_user(request: Request):
     print(f"Registering user: {username}, Team: {team}")
 
     return RedirectResponse(url='/login-demo')
-async def auth(request: Request):
+@app.route('/setup-team')
+async def setup_team(request: Request):
+    user = get_user(request)
+    if not user:
+        return RedirectResponse(url='/login')
+
+    return """
+    <form action="/setup-team" method="post">
+        <label for="team">Team Name:</label><br>
+        <input type="text" id="team" name="team"><br>
+        <input type="submit" value="Create Team">
+    </form>
+    """
+
+@app.post('/setup-team')
+async def create_team(request: Request):
+    user = get_user(request)
+    if not user:
+        return RedirectResponse(url='/login')
+
+    form = await request.form()
+    team_name = form.get('team')
+
+    # Here you would add logic to save the team to the database
+    # For now, we'll just print the team name
+    print(f"Creating team: {team_name} for user: {user}")
+
+    return RedirectResponse(url='/gradio')
     try:
         access_token = await oauth.google.authorize_access_token(request)
     except OAuthError: # type: ignore
