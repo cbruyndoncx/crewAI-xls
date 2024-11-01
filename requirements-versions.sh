@@ -10,10 +10,10 @@ grep -E "crew|gradio|Jinja2|langchain|langchain-community|langchain-groq|langcha
 # this only documents the versions of actually used packages into requirements.txt
 mv requirements.txt requirements.bak
 mv requirements-versions.txt requirements-versions.bak
-pipreqs --ignore templates .
+pipreqs --ignore src/templates .
 mv requirements.txt requirements-versions.txt
 
-pipreqs --ignore templates --mode no-pin .
+pipreqs --ignore src/templates --mode no-pin .
 
 exit
 
