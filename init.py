@@ -3,11 +3,11 @@
 
 import os
 import sys
-from config import CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
+from src.config import CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
 
 from dotenv import load_dotenv
 
-from complex_logger import ComplexLogger
+from src.complex_logger import ComplexLogger
 
 import logging
 logging.basicConfig(
