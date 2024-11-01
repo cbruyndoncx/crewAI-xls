@@ -93,6 +93,40 @@ docs for more detail on building and pushing.
 ### References
 * [Docker's Python guide](https://docs.docker.com/language/python/)
 
+## Source Code Structure
+
+The source code is organized in the `src` directory as follows:
+
+```
+src/
+├── __init__.py
+├── config.py
+├── gradio_interface.py
+├── generate_crew.py
+├── main.py
+├── complex_logger.py
+├── init.py
+├── document_crew.py
+├── crew_operations.py
+├── excel_operations.py
+├── templates/
+│   ├── agent_template.py
+│   ├── agents_class_template.py
+│   ├── crew_agent_list_template.py
+│   ├── crew_class_template.py
+│   ├── crew_task_list_template.py
+│   ├── llm_class_template.py
+│   ├── llm_list_template.py
+│   ├── task_template.py
+│   └── tasks_class_template.py
+└── tools/
+    ├── __init__.py
+    ├── book_publishing_tools.py
+    ├── browser_tools.py
+    ├── calculator_tools.py
+    └── search_tools.py
+```
+
 ## Screenshots
 
 ### Browser GradioUI
