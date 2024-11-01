@@ -4,6 +4,7 @@ import os
 import re
 import glob
 from datetime import datetime
+from config import TEAM_FOLDER_TEMPLATE
 import openpyxl
 
 # Function to sanitize a string for Excel
