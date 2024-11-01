@@ -80,15 +80,8 @@ async def logout(request: Request):
 
 @app.route('/register')
 async def register(request: Request):
-    return """
-    <form action="/register" method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="team">Team:</label><br>
-        <input type="text" id="team" name="team"><br>
-        <input type="submit" value="Register">
-    </form>
-    """
+    redirect_uri = request.url_for('auth')
+    return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.route('/login')
 async def login(request: Request):
