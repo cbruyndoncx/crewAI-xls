@@ -110,7 +110,7 @@ async def setup_team(request: Request):
 
     # Fetch teams from Google Sheets
     try:
-        teams = get_teams_from_sheet(sheet_url='YOUR_GOOGLE_SHEET_URL', credentials_file='path/to/credentials.json')
+        teams = get_teams_from_sheet(sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/', credentials_file='gsheet_credentials.json')
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error accessing Google Sheets: {e}")
 
