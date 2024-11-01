@@ -8,6 +8,7 @@ There is a set of basic agents which have tools defined. This is only a subset o
 ## Prerequisites
 
 ### CrewAI
+CrewAI is a framework for managing and executing tasks using AI agents. It allows for quick prototyping and iterations without having to edit code.
 A new clean requirements.txt is generated; command is in .sh file
 
 #### CrewAI package
@@ -17,6 +18,7 @@ Default pip install of the package
 Default install of the crewai tools
 
 #### Langchain
+Langchain is a library for building applications with language models. It provides tools for managing and orchestrating language model interactions.
 Other langchain packages that are used are listed in requirements.txt
 
 ### XLS
@@ -63,8 +65,8 @@ The `Makefile` provides several commands to manage Docker containers and the dev
 - **logs**: Follows the logs from the running Docker container.
 - **rerun**: Stops, removes, rebuilds, and runs the Docker container.
 - **clean**: Cleans up all unused Docker images and containers.
-- **conda**: Activates the specified Conda environment.
-- **pyrun**: Runs the application using Uvicorn for local development.
+- **conda**: Activates the specified Conda environment. This is useful for managing dependencies in a consistent environment.
+- **pyrun**: Runs the application using Uvicorn for local development. This command is useful for testing the application locally before deploying.
 - **reqs**: Generates a `requirements.txt` file using `pipreqs`.
 To allow easy deployment a docker image is provided;
 
