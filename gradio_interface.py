@@ -1,8 +1,8 @@
 import os
 import gradio as gr
-from crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
-from excel_operations import list_xls_files_in_dir
-from init import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER
+from src.crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
+from src.excel_operations import list_xls_files_in_dir
+from src.init import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER
 
 # Ensure default directories exist
 init_default_dirs()

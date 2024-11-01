@@ -14,9 +14,9 @@ from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 import gradio as gr
-from init import init_env
+from src.init import init_env
 
-from gradio_interface import run_gradio
+from src.gradio_interface import run_gradio
 
 # init environment variables
 init_env()

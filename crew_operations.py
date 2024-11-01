@@ -13,10 +13,10 @@ import glob
 import pandas as pd
 
 import argparse
-from complex_logger import ComplexLogger
-from init import create_dir,reset_logs
+from src.complex_logger import ComplexLogger
+from src.init import create_dir,reset_logs
 
-from generate_crew import read_variables_xls, snake_case
+from src.generate_crew import read_variables_xls, snake_case
 from importlib import import_module
 
 from config import CREWS_FOLDER, logfile, CREWS_FOLDER_NAME, output_log_sheet, XLS_FOLDER
