@@ -18,8 +18,8 @@ from src.init import init_env, create_dir
 
 # Configuration for demo mode
 DEMO_MODE = os.environ.get('DEMO_MODE', 'false').lower() == 'true'
-DEMO_USERNAME = 'demo'
-DEMO_PASSWORD = 'demo'
+DEMO_USERNAME = os.environ.get('DEMO_USERNAME', 'demo')
+DEMO_PASSWORD = os.environ.get('DEMO_PASSWORD', 'demo')
 
 from src.gradio_interface import run_gradio
 from hello import hello
