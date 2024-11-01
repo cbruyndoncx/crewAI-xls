@@ -16,6 +16,11 @@ from starlette.middleware.sessions import SessionMiddleware
 import gradio as gr
 from src.init import init_env, create_dir
 
+# Configuration for demo mode
+DEMO_MODE = os.environ.get('DEMO_MODE', 'false').lower() == 'true'
+DEMO_USERNAME = 'demo'
+DEMO_PASSWORD = 'demo'
+
 from src.gradio_interface import run_gradio
 from hello import hello
 
@@ -44,10 +49,21 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # Dependency to get the current user
 def get_user(request: Request):
-    user = request.session.get('user')
-    if user:
-        return user['name']
-    return None
+    if DEMO_MODE:
+        # Bypass OAuth and use demo credentials
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_type, credentials = auth_header.split()
+            if auth_type.lower() == 'basic':
+                username, password = credentials.split(':')
+                if username == DEMO_USERNAME and password == DEMO_PASSWORD:
+                    return DEMO_USERNAME
+        return None
+    else:
+        user = request.session.get('user')
+        if user:
+            return user['name']
+        return None
 
 ## FastAPI Routes
 @app.get('/')
@@ -64,8 +80,11 @@ async def logout(request: Request):
 
 @app.route('/login')
 async def login(request: Request):
-    redirect_uri = request.url_for('auth')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    if DEMO_MODE:
+        return RedirectResponse(url='/gradio')
+    else:
+        redirect_uri = request.url_for('auth')
+        return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.route('/auth')
 async def auth(request: Request):
