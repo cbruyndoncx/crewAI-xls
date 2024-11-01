@@ -88,7 +88,7 @@ async def login(request: Request):
     if DEMO_MODE:
         return RedirectResponse(url='/gradio')
     else:
-        redirect_uri = request.url_for('auth')
+        redirect_uri = request.url_for('setup-team')  # Change 'auth' to an existing route
         return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.post('/register')
