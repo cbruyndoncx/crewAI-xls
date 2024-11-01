@@ -17,6 +17,7 @@ import gradio as gr
 from src.init import init_env
 
 from src.gradio_interface import run_gradio
+from hello import hello
 
 # init environment variables
 init_env()
