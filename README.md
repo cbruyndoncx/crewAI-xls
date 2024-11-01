@@ -1,7 +1,7 @@
 # CrewAI excel xls template runner
 
 ## Intro
-This repository contains code to load crewAI configuration usin gq Grqdio UI from excel xls and generate the python code for a crew-job combination. A job is a sequence of tasks. 
+This repository contains code to load CrewAI configuration using Gradio UI from Excel xls and generate the Python code for a crew-job combination. A job is a sequence of tasks. 
 The source of the crews is defined in the xls. It allows for quick prototyping and iterations without having to edit code,
 There is a set of basic agents which have tools defined. This is only a subset of what currently is available through crewai tools. 
 
