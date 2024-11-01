@@ -26,8 +26,24 @@ The actual preparation of the crews is done beforehand as the crew details do no
 ### API Keys
 API keys need to be provided as part of the environment, both running straight from source and when using docker container eg when hosting on render.com
 
-## Run locally
-First get the project dependencies installed
+## Docker Setup
+
+The application is containerized using Docker. Below are the key configurations and steps to build and run the Docker container:
+
+- **Base Image**: The application uses a slim version of Python 3.10.13 as the base image.
+- **Environment Variables**:
+  - `PYTHONDONTWRITEBYTECODE=1`: Prevents Python from writing `.pyc` files.
+  - `PYTHONUNBUFFERED=1`: Ensures that Python output is not buffered, which is useful for logging.
+- **Working Directory**: The application code is located in the `/app` directory within the container.
+- **Dependencies**: Dependencies are installed from `requirements.txt` using `pip`.
+- **Port**: The application listens on port `8000`.
+- **Command**: The application is run using Uvicorn with the command:
+  ```
+  CMD ["python", "-m", "uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+  ```
+
+### Run locally
+First, get the project dependencies installed
  
 `pip install -r requirements.txt`
 
