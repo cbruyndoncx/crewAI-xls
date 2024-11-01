@@ -40,11 +40,12 @@ def open_workbook(filename, team_id):
 
     return wb
 
-def save_workbook(wb, filename):
-        # Save the workbook
-    wb.save(filename)
+def save_workbook(wb, filename, team_id):
+    # Adjust file path to include team directory
+    team_file_path = f"{TEAM_FOLDER_TEMPLATE.format(team_id=team_id)}{filename}"
+    wb.save(team_file_path)
 
-    return f"Workbook saved as {filename}"
+    return f"Workbook saved as {team_file_path}"
 
 def write_log_sheet(filename, input, output, final, metrics):
 
