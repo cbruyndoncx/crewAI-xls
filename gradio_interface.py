@@ -1,19 +1,14 @@
-import gradio as gr
 import os
-from crew_operations import get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
-from init_config import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER
+import gradio as gr
+from crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
 from excel_operations import list_xls_files_in_dir
+from init import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER
 
 # Ensure default directories exist
 init_default_dirs()
 
 # start logging
 logger = init_logging()
-
-#crews_list = []
-#jobs_list = []
-#templates_list = list_xls_files_in_dir(XLS_FOLDER)
-#crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
 
 def run_gradio():
     custom_css = """
@@ -36,10 +31,21 @@ def run_gradio():
     templates_list = list_xls_files_in_dir(XLS_FOLDER)
     crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
     download_files=gr.Markdown("running")  
-    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as demo:
+    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
+        gr.Button("Logout", link="/logout")
         gr.Markdown("# Your CREWAI XLS Runner")
         gr.Markdown("__Easy as 1 - 2 - 3__")
+        with gr.Tab("0 - Upload Environment"):
+            with gr.Row():
+                gr.Markdown("### Upload Environment File")
+                env_file = gr.File(label="Select .env file")
+                tenant_id = gr.Textbox(label="Tenant ID")
+                upload_env_btn = gr.Button("Upload", elem_classes="gr-button")
+                upload_env_result = gr.Markdown("")
+
+            upload_env_btn.click(upload_env_file, inputs=[env_file, tenant_id], outputs=upload_env_result)
+
         with gr.Tab("1 - Setup Template"):
             with gr.Row():
                 with gr.Column(scale=1, variant="compact"):            
@@ -100,6 +106,8 @@ def run_gradio():
                     gr.Markdown("## Wait for results below")
                     gr.Markdown("#### (or watch progress in the console at the bottom)")
                     output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox") 
+                    
+                    
             with gr.Row():
                 with gr.Column():
                     download_files = gr.Markdown("init")
@@ -111,15 +119,15 @@ def run_gradio():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
-                        t = gr.Timer(3, active=False)
+                        t = gr.Timer(3, active=True)
                         t.tick(lambda x:x, logs)
-                        demo.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
+                        crewUI_gradio.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
         setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
         run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files])
 
-        #log = read_logs()
+    return crewUI_gradio.queue()
 
-    demo.queue().launch(show_error=True)
+    #crewUI.queue().launch(show_error=True, auth=get_authenticated())
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))

@@ -1,21 +1,96 @@
 # main.py
 
-import gradio as gr
 import sys
+from fastapi import Depends, FastAPI, Request
+#from fastapi.middleware.wsgi import WSGIMiddleware
+#from fastapi.responses import RedirectResponse
+import uvicorn
+#from auth import app as auth_app  # Import the FastAPI app for authentication
 
-from init_config import init_default_dirs, init_logging, XLS_FOLDER, CREWS_FOLDER
-from excel_operations import list_xls_files_in_dir
-from crew_operations import get_crew_jobs_list
+import os
+from authlib.integrations.starlette_client import OAuth, OAuthError
+from starlette.config import Config
+from starlette.responses import RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
+
+import gradio as gr
+from init import init_env
 
 from gradio_interface import run_gradio
-init_default_dirs()
 
-# start logging
-logger=init_logging()
+# init environment variables
+init_env()
 
-crews_list = []
-jobs_list = []
-templates_list = list_xls_files_in_dir(XLS_FOLDER)
-crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
+# Create a FastAPI app and mount the Gradio interface
+app = FastAPI()
 
-run_gradio()
+# Get OAuth ENV Vars
+GOOGLE_CLIENT_ID =  os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET =  os.environ.get('GOOGLE_CLIENT_SECRET')
+SECRET_KEY =  os.environ.get('SECRET_KEY')
+
+# Set up OAuth
+config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
+starlette_config = Config(environ=config_data)
+oauth = OAuth(starlette_config)
+oauth.register(
+    name='google',
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'},
+)
+
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
+# Dependency to get the current user
+def get_user(request: Request):
+    user = request.session.get('user')
+    if user:
+        return user['name']
+    return None
+
+## FastAPI Routes
+@app.get('/')
+def public(user: dict = Depends(get_user)):
+    if user:
+        return RedirectResponse(url='/gradio')
+    else:
+        return RedirectResponse(url='/login-demo')
+
+@app.route('/logout')
+async def logout(request: Request):
+    request.session.pop('user', None)
+    return RedirectResponse(url='/')
+
+@app.route('/login')
+async def login(request: Request):
+    redirect_uri = request.url_for('auth')
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@app.route('/auth')
+async def auth(request: Request):
+    try:
+        access_token = await oauth.google.authorize_access_token(request)
+    except OAuthError: # type: ignore
+        return RedirectResponse(url='/')
+    request.session['user'] = dict(access_token)["userinfo"]
+    return RedirectResponse(url='/')
+
+
+## Main processing
+with gr.Blocks() as login_demo:
+    gr.Button("Login", link="/login")
+
+#app = gr.mount_gradio_app(app, login_demo, path="/login-demo",server_name="localhost", server_port=8000)
+app = gr.mount_gradio_app(app, login_demo, path="/login-demo")
+
+def greet_username(request: gr.Request):
+    return request.username
+
+crewUI = run_gradio()
+
+app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
+
+if __name__ == '__main__':
+#    uvicorn.run(app)
+    print("Start application from commandline using:")
+    print("python -m uvicorn main:app --reload")

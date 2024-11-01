@@ -13,12 +13,13 @@ import glob
 import pandas as pd
 
 import argparse
-from logger import ComplexLogger
+from complex_logger import ComplexLogger
+from init import create_dir,reset_logs
 
 from generate_crew import read_variables_xls, snake_case
 from importlib import import_module
 
-from init_config import create_default_dir, CREWS_FOLDER, logfile, CREWS_FOLDER_NAME, output_log_sheet, reset_logs, XLS_FOLDER
+from config import CREWS_FOLDER, logfile, CREWS_FOLDER_NAME, output_log_sheet, XLS_FOLDER
 from excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
 
 def module_callback(crew, job, crewjob, details):
@@ -46,6 +47,13 @@ def module_callback(crew, job, crewjob, details):
         print(f"ERROR: {e}\n{traceback.format_exc()}")
 
     sys.stdout = console
+
+def upload_env_file(file, tenant_id):
+    # Save the uploaded file with a tenant-specific name
+    file_path = f".env.{tenant_id}"
+    with open(file_path, "wb") as f:
+        f.write(file.read())
+    return f"Environment file for tenant {tenant_id} uploaded successfully."
     
 def run_crew(crew,job, crewjob, details, input1,input2,input3,input4,input5):
     """
@@ -104,7 +112,6 @@ def get_crew_job(crewdir=CREWS_FOLDER):
     crewjob = gr.Dropdown(choices=crewjobs_list , label="Prepared teams")
     return crewjob
     
-
 def setup(template,crew, job):
     """
     This is used to generate a new crew-job combination
@@ -113,8 +120,8 @@ def setup(template,crew, job):
     (job, tasks) = job.split(' (', maxsplit=1) 
 
     crews_dir = f"{CREWS_FOLDER}{crew}-{job}/"
-    create_default_dir(crews_dir)
-    create_default_dir(f"{CREWS_FOLDER}{crew}-{job}/output/")
+    create_dir(crews_dir)
+    create_dir(f"{CREWS_FOLDER}{crew}-{job}/output/")
 
     read_variables_xls(template,crew, job, crews_dir)
     crewjob = get_crew_job(CREWS_FOLDER)

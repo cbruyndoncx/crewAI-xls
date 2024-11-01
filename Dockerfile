@@ -6,8 +6,8 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-#ARG PYTHON_VERSION=3.10.13
-ARG PYTHON_VERSION=3.11.8
+ARG PYTHON_VERSION=3.10.13
+#ARG PYTHON_VERSION=3.11.8
 FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
@@ -45,10 +45,13 @@ RUN python -m pip install -r requirements.txt
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 7860
-ENV GRADIO_SERVER_NAME="0.0.0.0"
+#EXPOSE 7860
+# Now using fastapi uvicorn standard port
+EXPOSE 8000
+#ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 # Run the application.
-CMD ["python main.py"]
-
+CMD ["python", "-m", "uvicorn", "main:app","--proxy-headers", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+#CMD uvicorn src.app:app --proxy-headers --host 0.0.0.0 --port 8000
+#CMD ["python3","./main.py"]
 #CMD ["some-command", "--option", "value"]
