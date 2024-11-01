@@ -36,7 +36,20 @@ just run locally as
 
 and follow the gradio instructions on screen to open your browser and use the UI.
 
-## Run in Docker container
+## Makefile Commands
+
+The `Makefile` provides several commands to manage Docker containers and the development environment:
+
+- **build**: Builds the Docker image with the default image name `crew-ai-xls`.
+- **run**: Runs the Docker container, stopping and removing any existing container with the same name.
+- **stop**: Stops the running Docker container.
+- **rm**: Removes the Docker container.
+- **logs**: Follows the logs from the running Docker container.
+- **rerun**: Stops, removes, rebuilds, and runs the Docker container.
+- **clean**: Cleans up all unused Docker images and containers.
+- **conda**: Activates the specified Conda environment.
+- **pyrun**: Runs the application using Uvicorn for local development.
+- **reqs**: Generates a `requirements.txt` file using `pipreqs`.
 To allow easy deployment a docker image is provided;
 
 ### Building and running your application
