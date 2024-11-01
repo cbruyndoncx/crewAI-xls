@@ -55,7 +55,9 @@ def upload_env_file(file, tenant_id):
         f.write(file.read())
     return f"Environment file for tenant {tenant_id} uploaded successfully."
     
-def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5, team_id):
+def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5, team_id=None):
+    if team_id is None:
+        team_id = 'default'
     """
     This is the main function that you will use to run your custom crew.
     """

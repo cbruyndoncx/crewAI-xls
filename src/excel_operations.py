@@ -25,7 +25,7 @@ def sanitize_for_excel(value):
     
     return sanitized_value
 
-def open_workbook(filename, team_id):
+def open_workbook(filename, team_id='default'):
     """
     Create a new workbook or load an existing one.
     """
@@ -40,7 +40,7 @@ def open_workbook(filename, team_id):
 
     return wb
 
-def save_workbook(wb, filename, team_id):
+def save_workbook(wb, filename, team_id='default'):
     # Adjust file path to include team directory
     team_file_path = f"{TEAM_FOLDER_TEMPLATE.format(team_id=team_id)}{filename}"
     wb.save(team_file_path)
