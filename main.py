@@ -78,6 +78,20 @@ async def logout(request: Request):
     request.session.pop('user', None)
     return RedirectResponse(url='/')
 
+@app.route('/register')
+async def register(request: Request):
+    return """
+    <form action="/register" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+        <label for="team">Team:</label><br>
+        <input type="text" id="team" name="team"><br>
+        <input type="submit" value="Register">
+    </form>
+    """
+
 @app.route('/login')
 async def login(request: Request):
     if DEMO_MODE:
@@ -86,7 +100,18 @@ async def login(request: Request):
         redirect_uri = request.url_for('auth')
         return await oauth.google.authorize_redirect(request, redirect_uri)
 
-@app.route('/auth')
+@app.post('/register')
+async def register_user(request: Request):
+    form = await request.form()
+    username = form.get('username')
+    password = form.get('password')
+    team = form.get('team')
+
+    # Here you would add logic to save the user and team to the database
+    # For now, we'll just print them
+    print(f"Registering user: {username}, Team: {team}")
+
+    return RedirectResponse(url='/login-demo')
 async def auth(request: Request):
     try:
         access_token = await oauth.google.authorize_access_token(request)
