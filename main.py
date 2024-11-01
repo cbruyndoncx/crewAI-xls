@@ -1,7 +1,7 @@
 # main.py
 
 import sys
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, HTTPException
 #from fastapi.middleware.wsgi import WSGIMiddleware
 #from fastapi.responses import RedirectResponse
 import uvicorn
@@ -22,7 +22,7 @@ DEMO_USERNAME = os.environ.get('DEMO_USERNAME', 'demo')
 DEMO_PASSWORD = os.environ.get('DEMO_PASSWORD', 'demo')
 
 from src.gradio_interface import run_gradio
-from hello import hello
+from src.google_sheets import get_teams_from_sheet
 
 # init environment variables
 init_env()
@@ -108,11 +108,21 @@ async def setup_team(request: Request):
     if not user:
         return RedirectResponse(url='/login')
 
-    return """
+    # Fetch teams from Google Sheets
+    try:
+        teams = get_teams_from_sheet(sheet_url='YOUR_GOOGLE_SHEET_URL', credentials_file='path/to/credentials.json')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error accessing Google Sheets: {e}")
+
+    # Render a form to select a team
+    team_options = "".join([f'<option value="{team["name"]}">{team["name"]}</option>' for team in teams])
+    return f"""
     <form action="/setup-team" method="post">
-        <label for="team">Team Name:</label><br>
-        <input type="text" id="team" name="team"><br>
-        <input type="submit" value="Create Team">
+        <label for="team">Select Team:</label><br>
+        <select id="team" name="team">
+            {team_options}
+        </select><br>
+        <input type="submit" value="Select Team">
     </form>
     """
 
