@@ -24,14 +24,16 @@ def sanitize_for_excel(value):
     
     return sanitized_value
 
-def open_workbook(filename):
+def open_workbook(filename, team_id):
     """
     Create a new workbook or load an existing one.
     """
+    # Adjust file path to include team directory
+    team_file_path = f"/data/team_{team_id}/{filename}"
     try:
-        wb = openpyxl.load_workbook(filename)
+        wb = openpyxl.load_workbook(team_file_path)
     except FileNotFoundError:
-        print(f"The file {filename} does not exist. Creating a new workbook.")
+        print(f"The file {team_file_path} does not exist. Creating a new workbook.")
         wb = openpyxl.Workbook()
         sheet = wb.create_sheet()
 
