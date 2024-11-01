@@ -1,4 +1,4 @@
-TEAM_FOLDER_TEMPLATE = "/data/team_{team_id}/"
+TEAM_FOLDER_TEMPLATE = "./data/team_{team_id}/"
 CREWS_FOLDER_NAME = "crews"
 CREWS_FOLDER = TEAM_FOLDER_TEMPLATE + CREWS_FOLDER_NAME + "/"
 XLS_FOLDER = "./xls/"    

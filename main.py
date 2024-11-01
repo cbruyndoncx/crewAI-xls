@@ -80,7 +80,7 @@ async def logout(request: Request):
 
 @app.route('/register')
 async def register(request: Request):
-    redirect_uri = request.url_for('auth')
+    redirect_uri = request.url_for('setup-team')
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.route('/login')
@@ -102,6 +102,7 @@ async def register_user(request: Request):
     print(f"Registering user: {username}, Team: {team}")
 
     return RedirectResponse(url='/login-demo')
+
 @app.route('/setup-team')
 async def setup_team(request: Request):
     user = get_user(request)
@@ -140,13 +141,15 @@ async def create_team(request: Request):
     print(f"Creating team: {team_name} for user: {user}")
 
     return RedirectResponse(url='/gradio')
+
+"""
     try:
         access_token = await oauth.google.authorize_access_token(request)
     except OAuthError: # type: ignore
         return RedirectResponse(url='/')
     request.session['user'] = dict(access_token)["userinfo"]
     return RedirectResponse(url='/')
-
+"""
 
 ## Main processing
 with gr.Blocks() as login_demo:
@@ -155,12 +158,11 @@ with gr.Blocks() as login_demo:
 #app = gr.mount_gradio_app(app, login_demo, path="/login-demo",server_name="localhost", server_port=8000)
 app = gr.mount_gradio_app(app, login_demo, path="/login-demo")
 
+crewUI = run_gradio()
+app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
+
 def greet_username(request: gr.Request):
     return request.username
-
-crewUI = run_gradio()
-
-app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
 
 if __name__ == '__main__':
 #    uvicorn.run(app)

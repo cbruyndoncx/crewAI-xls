@@ -33,7 +33,8 @@ def run_gradio():
     download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
-        gr.Button("Logout", link="/logout")
+        gr.Button("Setup Teaam", link="/setup-team")
+        gr.Button("Logout xx", link="/logout")
         gr.Markdown("# Your CREWAI XLS Runner")
         gr.Markdown("__Easy as 1 - 2 - 3__")
         with gr.Tab("0 - Upload Environment"):
