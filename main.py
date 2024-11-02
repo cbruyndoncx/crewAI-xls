@@ -49,16 +49,19 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # Dependency to get the current user
 def get_user(request: Request):
-    if DEMO_MODE:
-        user_email = DEMO_USERNAME
-    else:
-        user = request.session.get('user')
-        if user:
-            user_email = user['name']
-        else:
-            return None
-
     try:
+        if DEMO_MODE:
+            user_email = DEMO_USERNAME
+            logging.info(f"Demo mode active. Using demo user: {user_email}")
+        else:
+            user = request.session.get('user')
+            if user:
+                user_email = user['name']
+                logging.info(f"User retrieved from session: {user_email}")
+            else:
+                logging.warning("No user found in session.")
+                return None
+
         client = get_gspread_client(credentials_file='gsheet_credentials.json')
         sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
         users = get_users_from_sheet(sheet)
@@ -68,11 +71,13 @@ def get_user(request: Request):
         user_team = next((entry['team'] for entry in teams_users if entry['user'] == user_email), None)
         if user_team:
             os.environ['TENANT_ID'] = user_team
+            logging.info(f"Team found for user '{user_email}': {user_team}")
         else:
+            logging.error(f"No team found for user '{user_email}'.")
             raise ValueError(f"No team found for user '{user_email}'.")
 
     except Exception as e:
-        print(f"Error accessing Google Sheets: {e}")
+        logging.error(f"Error accessing Google Sheets: {e}")
         return None
 
     return user_email
@@ -107,19 +112,33 @@ async def logout(request: Request):
 
 @app.route('/auth')
 async def auth(request: Request):
-    if DEMO_MODE:
-        return RedirectResponse(url='/gradio')
-    else:
-        # HACK Google error
-        return RedirectResponse(url='/gradio')
-        # REENABLE
-        #redirect_uri = request.url_for('register')  
-        #return await oauth.google.authorize_redirect(request, redirect_uri)
+    try:
+        if DEMO_MODE:
+            logging.info("Demo mode active. Redirecting to Gradio interface.")
+            return RedirectResponse(url='/gradio')
+        else:
+            # HACK Google error
+            logging.info("Redirecting to Gradio interface due to Google error.")
+            return RedirectResponse(url='/gradio')
+            # REENABLE
+            #redirect_uri = request.url_for('register')  
+            #return await oauth.google.authorize_redirect(request, redirect_uri)
+    except Exception as e:
+        logging.error(f"Error during authentication: {e}")
+        return RedirectResponse(url='/')
 
 @app.route('/register')
 async def register(request: Request):
-    redirect_uri = request.url_for('create_team')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    try:
+        redirect_uri = request.url_for('create_team')
+        logging.info("Redirecting to Google for user registration.")
+        return await oauth.google.authorize_redirect(request, redirect_uri)
+    except OAuthError as e:
+        logging.error(f"OAuth error during registration: {e}")
+        return RedirectResponse(url='/')
+    except Exception as e:
+        logging.error(f"Unexpected error during registration: {e}")
+        return RedirectResponse(url='/')
     
 @app.post('/register')
 async def register_user(request: Request):
