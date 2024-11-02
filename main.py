@@ -1,6 +1,7 @@
 # main.py
 
 import sys
+import logging
 from fastapi import Depends, FastAPI, Request, HTTPException
 #from fastapi.middleware.wsgi import WSGIMiddleware
 #from fastapi.responses import RedirectResponse
