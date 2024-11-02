@@ -1,4 +1,5 @@
 Authlib
+icecream
 crewai
 crewai_tools
 fastapi
