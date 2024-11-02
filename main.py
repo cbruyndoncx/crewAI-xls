@@ -135,6 +135,15 @@ async def setup_team(request: Request):
         </select><br>
         <input type="submit" value="Select Team">
     </form>
+    <form action="/add-user-to-team" method="post">
+        <label for="team">Add User to Team:</label><br>
+        <select id="team" name="team">
+            {team_options}
+        </select><br>
+        <label for="email">User Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        <input type="submit" value="Add User">
+    </form>
     """)
 
 @app.post('/setup-team')
@@ -152,7 +161,25 @@ async def create_team(request: Request):
 
     return RedirectResponse(url='/gradio')
 
-"""
+@app.post('/add-user-to-team')
+async def add_user_to_team(request: Request):
+    user = get_user(request)
+    if not user:
+        return RedirectResponse(url='/login')
+
+    form = await request.form()
+    team_name = form.get('team')
+    user_email = form.get('email')
+
+    # Add the user to the team in Google Sheets
+    try:
+        client = get_gspread_client(credentials_file='gsheet_credentials.json')
+        sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+        add_user_to_team(sheet, team_name, user_email)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating Google Sheets: {e}")
+
+    return RedirectResponse(url='/setup-team')
     try:
         access_token = await oauth.google.authorize_access_token(request)
     except OAuthError: # type: ignore

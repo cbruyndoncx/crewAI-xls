@@ -29,3 +29,6 @@ def get_teams_users_from_sheet(sheet):
 
 
 
+def add_user_to_team(sheet, team_name, user_email):
+    teams_users_sheet = sheet.worksheet('teams_users')
+    teams_users_sheet.append_row([team_name, user_email])
