@@ -117,12 +117,16 @@ async def setup_team(request: Request):
 
     # Fetch teams from Google Sheets
     try:
-        teams = get_teams_from_sheet(sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/', credentials_file='gsheet_credentials.json')
+        client = get_gspread_client(credentials_file='gsheet_credentials.json'):
+        sheet = get_sheet_from_url(client = client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+        teams = get_teams_from_sheet(sheet)
+        users = get_users_from_sheet(sheet)
+        teams_users = get_teams_users_from_sheet(sheet)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error accessing Google Sheets: {e}")
 
     # Render a form to select a team
-    team_options = "".join([f'<option value="{team["name"]}">{team["name"]}</option>' for team in teams])
+    team_options = "".join([f'<option value="{team["team"]}">{team["team"]}</option>' for team in teams])
     return HTMLResponse(f"""
     <form action="/setup-team" method="post">
         <label for="team">Select Team:</label><br>
