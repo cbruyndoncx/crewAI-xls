@@ -80,7 +80,7 @@ async def logout(request: Request):
 
 @app.route('/register')
 async def register(request: Request):
-    redirect_uri = request.url_for('setup-team')
+    redirect_uri = request.url_for('create_team')
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.route('/login-auth')
@@ -88,7 +88,7 @@ async def login_auth(request: Request):
     if DEMO_MODE:
         return RedirectResponse(url='/gradio')
     else:
-        redirect_uri = request.url_for('setup-team')  # Change 'auth' to an existing route
+        redirect_uri = request.url_for('create_team')  # Change 'auth' to an existing route
         return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.post('/register')
