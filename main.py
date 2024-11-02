@@ -49,6 +49,9 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # Dependency to get the current user
 def get_user(request: Request):
+    # HACK
+    return DEMO_USERNAME
+    # END HACK
     if DEMO_MODE:
         # Bypass OAuth and use demo credentials
         auth_header = request.headers.get('Authorization')
@@ -83,8 +86,11 @@ async def auth(request: Request):
     if DEMO_MODE:
         return RedirectResponse(url='/gradio')
     else:
-        redirect_uri = request.url_for('register')  
-        return await oauth.google.authorize_redirect(request, redirect_uri)
+        # HACK Google error
+        return RedirectResponse(url='/gradio')
+        # REENABLE
+        #redirect_uri = request.url_for('register')  
+        #return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.route('/register')
 async def register(request: Request):
