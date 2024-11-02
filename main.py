@@ -34,7 +34,7 @@ app = FastAPI()
 # Get OAuth ENV Vars
 GOOGLE_CLIENT_ID =  os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET =  os.environ.get('GOOGLE_CLIENT_SECRET')
-SECRET_KEY =  os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
@@ -83,19 +83,14 @@ def get_user(request: Request):
 
     return user_email
     if DEMO_MODE:
-        # Bypass OAuth and use demo credentials
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            auth_type, credentials = auth_header.split()
-            if auth_type.lower() == 'basic':
-                username, password = credentials.split(':')
-                if username == DEMO_USERNAME and password == DEMO_PASSWORD:
-                    return DEMO_USERNAME
-        return None
+        logging.info("Demo mode active. Using demo credentials.")
+        return DEMO_USERNAME
     else:
         user = request.session.get('user')
         if user:
+            logging.info(f"User retrieved from session: {user['name']}")
             return user['name']
+        logging.warning("No user found in session.")
         return None
 
 ## FastAPI Routes
