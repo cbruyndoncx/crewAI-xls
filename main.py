@@ -49,18 +49,33 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # Dependency to get the current user
 def get_user(request: Request):
-    # HACK
-    user_email = DEMO_USERNAME  # Assuming DEMO_USERNAME is the email for demo purposes
+    if DEMO_MODE:
+        user_email = DEMO_USERNAME
+    else:
+        user = request.session.get('user')
+        if user:
+            user_email = user['name']
+        else:
+            return None
+
     try:
         client = get_gspread_client(credentials_file='gsheet_credentials.json')
         sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
-        add_user(sheet, user_email)
-    except ValueError as ve:
-        print(f"User already exists: {ve}")
+        users = get_users_from_sheet(sheet)
+        teams_users = get_teams_users_from_sheet(sheet)
+
+        # Find the team for the logged-in user
+        user_team = next((entry['team'] for entry in teams_users if entry['user'] == user_email), None)
+        if user_team:
+            os.environ['TENANT_ID'] = user_team
+        else:
+            raise ValueError(f"No team found for user '{user_email}'.")
+
     except Exception as e:
         print(f"Error accessing Google Sheets: {e}")
+        return None
+
     return user_email
-    # END HACK
     if DEMO_MODE:
         # Bypass OAuth and use demo credentials
         auth_header = request.headers.get('Authorization')
