@@ -14,7 +14,7 @@ def initialize_config(team_id='default'):
     LOG_FOLDER = "./log/"
     logfile = LOG_FOLDER + "output.log"
     output_log_sheet = OUT_FOLDER + "output_log.xlsx"
-    return CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
+    return CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
 
 CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_config(os.getenv('TENANT_ID', 'default'))
 
