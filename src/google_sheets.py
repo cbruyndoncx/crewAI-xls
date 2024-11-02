@@ -46,3 +46,14 @@ def add_team(sheet, team_name):
         teams_sheet.append_row([team_name])
     else:
         raise ValueError(f"Team '{team_name}' already exists.")
+def add_user_to_team(sheet, team_name, user_email):
+    teams_users_sheet = sheet.worksheet('teams_users')
+    existing_entries = teams_users_sheet.get_all_records()
+
+    # Check if the user is already in the team
+    for entry in existing_entries:
+        if entry['team'].upper() == team_name.upper() and entry['email'] == user_email:
+            raise ValueError(f"User '{user_email}' is already in team '{team_name}'.")
+
+    # Add the user to the team
+    teams_users_sheet.append_row([team_name.upper(), user_email])
