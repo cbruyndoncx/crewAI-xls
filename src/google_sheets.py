@@ -16,21 +16,21 @@ def get_sheet_from_url(client, sheet_url):
     
 # Function to get team data from Google Sheets
 def get_teams_from_sheet(sheet):
-    teams = sheet.worksheet('teams').get_all_records()
+    teams = sheet.get_worksheet(0).get_all_records()
     return teams
 
 def get_users_from_sheet(sheet):
-    users = sheet.worksheet('users').get_all_records()
+    users = sheet.get_worksheet(1).get_all_records()
     return users
 
 def get_teams_users_from_sheet(sheet):
-    teams_users = sheet.worksheet('teams_users').get_all_records()
+    teams_users = sheet.get_worksheet(2).get_all_records()
     return teams_users
 
 
 
 def add_user(sheet, user_email):
-    users_sheet = sheet.worksheet('users')
+    users_sheet = sheet.get_worksheet(1)
     existing_users = [user['email'] for user in users_sheet.get_all_records()]
 
     if user_email not in existing_users:
@@ -39,7 +39,7 @@ def add_user(sheet, user_email):
         raise ValueError(f"User '{user_email}' already exists.")
 def add_team(sheet, team_name):
     team_name = team_name.upper()
-    teams_sheet = sheet.worksheet('teams')
+    teams_sheet = sheet.get_worksheet(0)
     existing_teams = [team['team'].upper() for team in teams_sheet.get_all_records()]
     
     if team_name not in existing_teams:
@@ -47,7 +47,7 @@ def add_team(sheet, team_name):
     else:
         raise ValueError(f"Team '{team_name}' already exists.")
 def add_user_to_team(sheet, team_name, user_email):
-    teams_users_sheet = sheet.worksheet('teams_users')
+    teams_users_sheet = sheet.get_worksheet(2)
     existing_entries = teams_users_sheet.get_all_records()
 
     # Check if the user is already in the team
