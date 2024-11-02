@@ -10,6 +10,11 @@ def get_gspread_client(credentials_file):
 
 # Function to get team data from Google Sheets
 def get_teams_from_sheet(sheet_url, credentials_file):
+    # Access Google Sheets
+    client = get_gspread_client(credentials_file)
+    sheet = client.open_by_url(sheet_url).sheet1
+    teams = sheet.get_all_records()
+    return teams
 
 def fetch_data_from_sheets(credentials_file, sheet_name):
     # Access Google Sheets
