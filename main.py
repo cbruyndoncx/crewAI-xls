@@ -19,11 +19,6 @@ import gradio as gr
 from src.init import create_dir, XLS_FOLDER
 from dotenv import load_dotenv
 
-# Configuration for demo mode
-DEMO_MODE = os.environ.get('DEMO_MODE', 'false').lower() == 'true'
-DEMO_USERNAME = os.environ.get('DEMO_USERNAME', 'demo')
-DEMO_PASSWORD = os.environ.get('DEMO_PASSWORD', 'demo')
-
 from src.gradio_interface import run_gradio
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
 
@@ -39,23 +34,24 @@ def init_env():
 
     # Example usage: load environment variables for a specific tenant
     tenant_id = os.getenv('TENANT_ID', 'default')  # Default to 'default' if TENANT_ID is not set
-    load_dotenv(f".env.{tenant_id}")
-    ic(f".env.{tenant_id}")
-
-    #def load_tenant_env(tenant_id):
-    #    dotenv_path = f".env.{tenant_id}"
-    #    load_dotenv(dotenv_path=dotenv_path)
+    tenant_env = f".env.{tenant_id}"
+    load_dotenv(tenant_env)
+    ic(tenant_env)
 
 # init environment variables
 init_env()
 
+# Configuration for demo mode
+DEMO_MODE = os.getenv('DEMO_MODE', 'false').lower() == 'true'
+DEMO_USERNAME = os.getenv('DEMO_USERNAME', 'demo')
+DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'demo')
 
 # Get OAuth ENV Vars
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
-SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+SECRET_KEY = os.getenv('SECRET_KEY', 'your-default-secret-key')
 
-print('GOOGLE KEY' + GOOGLE_CLIENT_ID)
+ic(GOOGLE_CLIENT_ID)
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
@@ -122,15 +118,15 @@ def public(user: dict = Depends(get_user)):
     if user:
         return RedirectResponse(url='/gradio')
     else:
-        return RedirectResponse(url='/auth')
+        return RedirectResponse(url='/login-ui')
 
 @app.route('/logout')
 async def logout(request: Request):
     request.session.pop('user', None)
     return RedirectResponse(url='/')
 
-@app.route('/auth')
-async def auth(request: Request):
+@app.route('/login')
+async def login(request: Request):
     try:
         if DEMO_MODE:
             logging.info("Demo mode active. Redirecting to Gradio interface.")
@@ -140,7 +136,7 @@ async def auth(request: Request):
             #logging.info("Redirecting to Gradio interface due to Google error.")
             #return RedirectResponse(url='/gradio')
             # REENABLE
-            redirect_uri = request.url_for('register')  
+            redirect_uri = request.url_for('/auth')  
             return await oauth.google.authorize_redirect(request, redirect_uri)
     except Exception as e:
         logging.error(f"Error during authentication: {e}")
@@ -169,13 +165,13 @@ async def register_user(request: Request):
     # For now, we'll just print them
     print(f"Registering user: {username}, Team: {team}")
 
-    return RedirectResponse(url='/login')
+    return RedirectResponse(url='/login-ui')
 
 @app.route('/setup-team')
 async def setup_team(request: Request):
     user = get_user(request)
     if not user:
-        return RedirectResponse(url='/login')
+        return RedirectResponse(url='/login-ui')
 
     # Fetch teams from Google Sheets
     try:
@@ -217,7 +213,7 @@ async def setup_team(request: Request):
 async def create_team(request: Request):
     user = get_user(request)
     if not user:
-        return RedirectResponse(url='/login')
+        return RedirectResponse(url='/login-ui')
 
     form = await request.form()
     team_name = form.get('team')
@@ -232,7 +228,7 @@ async def create_team(request: Request):
 async def create_team(request: Request):
     user = get_user(request)
     if not user:
-        return RedirectResponse(url='/login')
+        return RedirectResponse(url='/login-ui')
 
     form = await request.form()
     new_team_name = form.get('new_team')
@@ -252,7 +248,7 @@ async def create_team(request: Request):
 async def add_user_to_team(request: Request):
     user = get_user(request)
     if not user:
-        return RedirectResponse(url='/login')
+        return RedirectResponse(url='/login-ui')
 
     form = await request.form()
     team_name = form.get('team')
@@ -275,11 +271,10 @@ async def add_user_to_team(request: Request):
     return RedirectResponse(url='/')
 
 ## Main processing
-with gr.Blocks() as login_demo:
-    gr.Button("Login", link="/auth")
+with gr.Blocks() as login_ui:
+    gr.Button("Login", link="/login")
 
-#app = gr.mount_gradio_app(app, login_demo, path="/login-demo",server_name="localhost", server_port=8000)
-app = gr.mount_gradio_app(app, login_demo, path="/login")
+app = gr.mount_gradio_app(app, login_ui, path="/login-ui")
 
 crewUI = run_gradio()
 app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
@@ -288,6 +283,5 @@ def greet_username(request: gr.Request):
     return request.username
 
 if __name__ == '__main__':
-#    uvicorn.run(app)
-    ic("Start application from commandline using:")
-    ic("python -m uvicorn main:app --reload")
+    logging.warning("Start application from commandline using:")
+    logging.warning("python -m uvicorn main:app --reload")
