@@ -71,26 +71,26 @@ def public(user: dict = Depends(get_user)):
     if user:
         return RedirectResponse(url='/gradio')
     else:
-        return RedirectResponse(url='/login-auth')
+        return RedirectResponse(url='/auth')
 
 @app.route('/logout')
 async def logout(request: Request):
     request.session.pop('user', None)
     return RedirectResponse(url='/')
 
+@app.route('/auth')
+async def auth(request: Request):
+    if DEMO_MODE:
+        return RedirectResponse(url='/gradio')
+    else:
+        redirect_uri = request.url_for('/register')  
+        return await oauth.google.authorize_redirect(request, redirect_uri)
+
 @app.route('/register')
 async def register(request: Request):
     redirect_uri = request.url_for('create_team')
     return await oauth.google.authorize_redirect(request, redirect_uri)
-
-@app.route('/login-auth')
-async def login_auth(request: Request):
-    if DEMO_MODE:
-        return RedirectResponse(url='/gradio')
-    else:
-        redirect_uri = request.url_for('create_team')  # Change 'auth' to an existing route
-        return await oauth.google.authorize_redirect(request, redirect_uri)
-
+    
 @app.post('/register')
 async def register_user(request: Request):
     form = await request.form()
@@ -101,7 +101,7 @@ async def register_user(request: Request):
     # For now, we'll just print them
     print(f"Registering user: {username}, Team: {team}")
 
-    return RedirectResponse(url='/login-ui')
+    return RedirectResponse(url='/login')
 
 @app.route('/setup-team')
 async def setup_team(request: Request):
@@ -153,10 +153,10 @@ async def create_team(request: Request):
 
 ## Main processing
 with gr.Blocks() as login_demo:
-    gr.Button("Login", link="/login-auth")
+    gr.Button("Login", link="/auth")
 
 #app = gr.mount_gradio_app(app, login_demo, path="/login-demo",server_name="localhost", server_port=8000)
-app = gr.mount_gradio_app(app, login_demo, path="/login-ui")
+app = gr.mount_gradio_app(app, login_demo, path="/login")
 
 crewUI = run_gradio()
 app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
