@@ -34,13 +34,6 @@ logging.basicConfig(
 # initialisations
 #######################################
 crews_dir = ""
-#CREWS_FOLDER_NAME = "crews"
-#CREWS_FOLDER = "./" + CREWS_FOLDER_NAME + "/"
-#XLS_FOLDER = "./xls/"    
-#OUT_FOLDER = CREWS_FOLDER  + "output/"
-#LOG_FOLDER = "./log/"
-#logfile = LOG_FOLDER + "output.log"
-#output_log_sheet = OUT_FOLDER + "output_log.xlsx"
 
 #######################################
 # Functions
@@ -50,10 +43,10 @@ def init_env():
     load_dotenv()
 
     # Load demo environment variables
-    load_dotenv(".env.demo")
+    load_dotenv("../.env.demo")
 
     # OAuth settings
-    load_dotenv(".env.google")
+    load_dotenv("../.env.google")
 
 def init_tenant():
     # Example usage: load environment variables for a specific tenant

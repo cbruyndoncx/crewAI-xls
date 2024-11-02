@@ -28,14 +28,10 @@ from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_
 # init environment variables
 init_env()
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
-
-# Create a FastAPI app and mount the Gradio interface
-app = FastAPI()
-
 # Get OAuth ENV Vars
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
@@ -47,6 +43,8 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'},
 )
 
+# Create a FastAPI app and mount the Gradio interface
+app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # Dependency to get the current user
@@ -115,11 +113,11 @@ async def auth(request: Request):
             return RedirectResponse(url='/gradio')
         else:
             # HACK Google error
-            logging.info("Redirecting to Gradio interface due to Google error.")
-            return RedirectResponse(url='/gradio')
+            #logging.info("Redirecting to Gradio interface due to Google error.")
+            #return RedirectResponse(url='/gradio')
             # REENABLE
-            #redirect_uri = request.url_for('register')  
-            #return await oauth.google.authorize_redirect(request, redirect_uri)
+            redirect_uri = request.url_for('register')  
+            return await oauth.google.authorize_redirect(request, redirect_uri)
     except Exception as e:
         logging.error(f"Error during authentication: {e}")
         return RedirectResponse(url='/')
@@ -226,6 +224,7 @@ async def create_team(request: Request):
         raise HTTPException(status_code=500, detail=f"Error updating Google Sheets: {e}")
 
     return RedirectResponse(url='/setup-team')
+
 async def add_user_to_team(request: Request):
     user = get_user(request)
     if not user:
