@@ -39,11 +39,11 @@ def module_callback(crew, job, crewjob, details):
         # Call the function
         gr.Info("Starting process...")
         run_crew(crew, job, crewjob, details)
-        print("\nDone.")
+        ic("\nDone.")
         gr.Info("Completed process!")
     except Exception as e:
         gr.Error("Could not complete process!")
-        print(f"ERROR: {e}\n{traceback.format_exc()}")
+        ic(f"ERROR: {e}\n{traceback.format_exc()}")
 
     sys.stdout = console
 
@@ -86,8 +86,8 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     (result, metrics) = custom_crew.run()
 
-    print('before xls out')
-    print(result)
+    ic('before xls out')
+    ic(result)
 
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
@@ -190,7 +190,7 @@ def map_variables_to_ui_fields(description, ui_fields):
         if i < len(ui_fields):
             ui_field_values[i] = var 
         else:
-            print(f"Warning: Not enough UI fields to map all variables. Variable '{var}' is ignored.")
+            ic(f"Warning: Not enough UI fields to map all variables. Variable '{var}' is ignored.")
             break
     
     return ui_field_values

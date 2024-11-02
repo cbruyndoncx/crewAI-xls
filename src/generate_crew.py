@@ -1,3 +1,4 @@
+from icecream import ic
 import sys
 import os
 from textwrap import dedent
@@ -29,9 +30,9 @@ def create_directory(directory_path):
     if not os.path.exists(directory_path):
         # If it doesn't exist, create it (including any intermediate directories)
         os.makedirs(directory_path)
-        print(f"Directory '{directory_path}' was created.")
+        ic(f"Directory '{directory_path}' was created.")
     else:
-        print(f"Directory '{directory_path}' already exists.")
+        ic(f"Directory '{directory_path}' already exists.")
 
 def replace_none_with_empty_string(records):
     for record in records:
@@ -209,14 +210,14 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
             with open(f"{crews_dir}crew.py", 'w') as file:
                 file.write(result)
             return
-    print(f"crew {select_crew} is not defined")
+    ic(f"crew {select_crew} is not defined")
     sys.exit(1)  # Exit with a non-zero value to indicate failure
 
 
 # This is the main function that you will use to run your custom crew.
 if __name__ == "__main__":
-    print("## Welcome to Crew AI XLS Crew ##")
-    print("---------------------------------")
+    ic("## Welcome to Crew AI XLS Crew ##")
+    ic("---------------------------------")
     input_crew = snake_case(input(dedent("""Specify your crew """)))
     input_job = snake_case(input(dedent("""Specify your job: """)))
 

@@ -1,5 +1,6 @@
 # main.py
 
+from icecream import ic
 import sys
 import logging
 from fastapi import Depends, FastAPI, Request, HTTPException
@@ -39,7 +40,7 @@ def init_env():
     # Example usage: load environment variables for a specific tenant
     tenant_id = os.getenv('TENANT_ID', 'default')  # Default to 'default' if TENANT_ID is not set
     load_dotenv(f".env.{tenant_id}")
-    print(f".env.{tenant_id}")
+    ic(f".env.{tenant_id}")
 
     #def load_tenant_env(tenant_id):
     #    dotenv_path = f".env.{tenant_id}"
@@ -288,5 +289,5 @@ def greet_username(request: gr.Request):
 
 if __name__ == '__main__':
 #    uvicorn.run(app)
-    print("Start application from commandline using:")
-    print("python -m uvicorn main:app --reload")
+    ic("Start application from commandline using:")
+    ic("python -m uvicorn main:app --reload")
