@@ -131,7 +131,7 @@ async def setup_team(request: Request):
         </select><br>
         <input type="submit" value="Select Team">
     </form>
-    """
+    """)
 
 @app.post('/setup-team')
 async def create_team(request: Request):
