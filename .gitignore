@@ -4,3 +4,10 @@ flagged/
 crews/
 out/
 .aider*
+.env
+log/
+g*.json
+.wip/
+data/*
+.git/
+.gitignore
