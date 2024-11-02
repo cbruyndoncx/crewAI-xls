@@ -28,13 +28,14 @@ from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_
 # init environment variables
 init_env()
 
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
+
 # Create a FastAPI app and mount the Gradio interface
 app = FastAPI()
 
 # Get OAuth ENV Vars
-GOOGLE_CLIENT_ID =  os.environ.get('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET =  os.environ.get('GOOGLE_CLIENT_SECRET')
-SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
