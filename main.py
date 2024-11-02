@@ -22,7 +22,7 @@ DEMO_USERNAME = os.environ.get('DEMO_USERNAME', 'demo')
 DEMO_PASSWORD = os.environ.get('DEMO_PASSWORD', 'demo')
 
 from src.gradio_interface import run_gradio
-from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team
+from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team
 
 # init environment variables
 init_env()
