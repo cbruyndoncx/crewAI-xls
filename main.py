@@ -14,7 +14,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 import gradio as gr
-from src.init import init_env, create_dir
+from src.init import init_env, create_dir, XLS_FOLDER
 
 # Configuration for demo mode
 DEMO_MODE = os.environ.get('DEMO_MODE', 'false').lower() == 'true'
