@@ -10,7 +10,7 @@ import uvicorn
 import os
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from starlette.config import Config
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 import gradio as gr
@@ -123,7 +123,7 @@ async def setup_team(request: Request):
 
     # Render a form to select a team
     team_options = "".join([f'<option value="{team["name"]}">{team["name"]}</option>' for team in teams])
-    return f"""
+    return HTMLResponse(f"""
     <form action="/setup-team" method="post">
         <label for="team">Select Team:</label><br>
         <select id="team" name="team">
