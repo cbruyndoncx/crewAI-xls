@@ -6,7 +6,7 @@ import glob
 from datetime import datetime
 import openpyxl
 
-from src.config import TEAM_FOLDER_TEMPLATE
+from src.init import TEAM_FOLDER_TEMPLATE
 
 # Function to sanitize a string for Excel
 def sanitize_for_excel(value):
