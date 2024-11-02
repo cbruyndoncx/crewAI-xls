@@ -3,7 +3,11 @@
 
 import os
 import sys
-from src.config import CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
+from src.config import XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
+
+# Initialize the CREWS_FOLDER with the default team_id
+team_id = os.getenv('TENANT_ID', 'default')
+CREWS_FOLDER = f"./data/team_{team_id}/crews/"
 
 from dotenv import load_dotenv
 
