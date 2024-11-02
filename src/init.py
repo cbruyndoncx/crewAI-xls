@@ -18,8 +18,6 @@ def initialize_config(team_id='default'):
 
 TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_config(os.getenv('TENANT_ID', 'default'))
 
-from dotenv import load_dotenv
-
 from src.complex_logger import ComplexLogger
 
 import logging
@@ -27,8 +25,6 @@ logging.basicConfig(
     level=logging.INFO,
     format='INFO:     %(message)s'
 )
-
-
 
 #######################################
 # initialisations
@@ -38,24 +34,6 @@ crews_dir = ""
 #######################################
 # Functions
 #######################################
-def init_env():
-    # Load environment variables from a .env file
-    load_dotenv()
-
-    # Load demo environment variables
-    load_dotenv("../.env.demo")
-
-    # OAuth settings
-    load_dotenv("../.env.google")
-
-def init_tenant():
-    # Example usage: load environment variables for a specific tenant
-    tenant_id = os.getenv('TENANT_ID', 'default')  # Default to 'default' if TENANT_ID is not set
-    load_dotenv(f".env.{tenant_id}")
-
-    #def load_tenant_env(tenant_id):
-    #    dotenv_path = f".env.{tenant_id}"
-    #    load_dotenv(dotenv_path=dotenv_path)
 
 def create_dir(folder):
     if not os.path.exists(folder):

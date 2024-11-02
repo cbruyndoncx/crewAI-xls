@@ -15,7 +15,8 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 import gradio as gr
-from src.init import init_env, create_dir, XLS_FOLDER
+from src.init import create_dir, XLS_FOLDER
+from dotenv import load_dotenv
 
 # Configuration for demo mode
 DEMO_MODE = os.environ.get('DEMO_MODE', 'false').lower() == 'true'
@@ -25,13 +26,35 @@ DEMO_PASSWORD = os.environ.get('DEMO_PASSWORD', 'demo')
 from src.gradio_interface import run_gradio
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
 
+def init_env():
+    # Load environment variables from a .env file
+    load_dotenv()
+
+    # Load demo environment variables
+    load_dotenv(".env.demo")
+
+    # OAuth settings
+    load_dotenv(".env.google")
+
+    # Example usage: load environment variables for a specific tenant
+    tenant_id = os.getenv('TENANT_ID', 'default')  # Default to 'default' if TENANT_ID is not set
+    load_dotenv(f".env.{tenant_id}")
+    print(f".env.{tenant_id}")
+
+    #def load_tenant_env(tenant_id):
+    #    dotenv_path = f".env.{tenant_id}"
+    #    load_dotenv(dotenv_path=dotenv_path)
+
 # init environment variables
 init_env()
+
 
 # Get OAuth ENV Vars
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
+
+print('GOOGLE KEY' + GOOGLE_CLIENT_ID)
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}

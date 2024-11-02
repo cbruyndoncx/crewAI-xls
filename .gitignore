@@ -4,7 +4,7 @@ flagged/
 crews/
 out/
 .aider*
-.env
+.env*
 log/
 g*.json
 .wip/
