@@ -22,7 +22,7 @@ DEMO_USERNAME = os.environ.get('DEMO_USERNAME', 'demo')
 DEMO_PASSWORD = os.environ.get('DEMO_PASSWORD', 'demo')
 
 from src.gradio_interface import run_gradio
-from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team
+from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
 
 # init environment variables
 init_env()
@@ -50,7 +50,16 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 # Dependency to get the current user
 def get_user(request: Request):
     # HACK
-    return DEMO_USERNAME
+    user_email = DEMO_USERNAME  # Assuming DEMO_USERNAME is the email for demo purposes
+    try:
+        client = get_gspread_client(credentials_file='gsheet_credentials.json')
+        sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+        add_user(sheet, user_email)
+    except ValueError as ve:
+        print(f"User already exists: {ve}")
+    except Exception as e:
+        print(f"Error accessing Google Sheets: {e}")
+    return user_email
     # END HACK
     if DEMO_MODE:
         # Bypass OAuth and use demo credentials

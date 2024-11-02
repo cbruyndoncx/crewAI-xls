@@ -29,7 +29,14 @@ def get_teams_users_from_sheet(sheet):
 
 
 
-def add_user_to_team(sheet, team_name, user_email):
+def add_user(sheet, user_email):
+    users_sheet = sheet.worksheet('users')
+    existing_users = [user['email'] for user in users_sheet.get_all_records()]
+
+    if user_email not in existing_users:
+        users_sheet.append_row([user_email])
+    else:
+        raise ValueError(f"User '{user_email}' already exists.")
     teams_users_sheet = sheet.worksheet('teams_users')
     teams_users_sheet.append_row([team_name, user_email])
 def add_team(sheet, team_name):
