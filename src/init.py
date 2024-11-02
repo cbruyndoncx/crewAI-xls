@@ -3,6 +3,8 @@
 
 import os
 import sys
+CREWS_FOLDER_NAME = "crews"
+
 def initialize_config(team_id='default'):
     TEAM_FOLDER_TEMPLATE = "./data/team_{team_id}/"
     CREWS_FOLDER_NAME = "crews"
