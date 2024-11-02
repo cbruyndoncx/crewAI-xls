@@ -22,7 +22,12 @@ def run_gradio():
     .gr-button, .gr-dropdown .wrap, .gr-radio label, .gr-input textarea {
         border: 2px solid #FFFFFF !important;
     }
-    .gr-button{
+    .gr-button-small {
+        font-weight: bold;
+        padding: 5px 10px;
+        margin: 0 5px;
+    }
+    .gr-button {
         font-weight: bold;
     }
     """
@@ -33,8 +38,9 @@ def run_gradio():
     download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
-        gr.Button("Setup Team", link="/setup-team")
-        gr.Button("Logout", link="/logout")
+        with gr.Row():
+            gr.Button("Setup Team", link="/setup-team", elem_classes="gr-button-small")
+            gr.Button("Logout", link="/logout", elem_classes="gr-button-small")
         gr.Markdown("# Your CREWAI XLS Runner")
         gr.Markdown("__Easy as 1 - 2 - 3__")
         with gr.Tab("0 - Upload Environment"):
