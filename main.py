@@ -83,7 +83,7 @@ async def auth(request: Request):
     if DEMO_MODE:
         return RedirectResponse(url='/gradio')
     else:
-        redirect_uri = request.url_for('/register')  
+        redirect_uri = request.url_for('register')  
         return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.route('/register')
