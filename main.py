@@ -135,6 +135,11 @@ async def setup_team(request: Request):
         </select><br>
         <input type="submit" value="Select Team">
     </form>
+    <form action="/create-team" method="post">
+        <label for="new_team">Create New Team:</label><br>
+        <input type="text" id="new_team" name="new_team" required><br>
+        <input type="submit" value="Create Team">
+    </form>
     <form action="/add-user-to-team" method="post">
         <label for="team">Add User to Team:</label><br>
         <select id="team" name="team">
@@ -161,7 +166,26 @@ async def create_team(request: Request):
 
     return RedirectResponse(url='/gradio')
 
-@app.post('/add-user-to-team')
+@app.post('/create-team')
+async def create_team(request: Request):
+    user = get_user(request)
+    if not user:
+        return RedirectResponse(url='/login')
+
+    form = await request.form()
+    new_team_name = form.get('new_team')
+
+    # Add the new team to Google Sheets
+    try:
+        client = get_gspread_client(credentials_file='gsheet_credentials.json')
+        sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+        add_team(sheet, new_team_name)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating Google Sheets: {e}")
+
+    return RedirectResponse(url='/setup-team')
 async def add_user_to_team(request: Request):
     user = get_user(request)
     if not user:
