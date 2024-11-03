@@ -16,7 +16,12 @@ def initialize_config(team_id='default'):
     output_log_sheet = OUT_FOLDER + "output_log.xlsx"
     return TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
 
-TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_config(os.getenv('TENANT_ID', 'default'))
+from fastapi import Request
+
+def get_team_id(request: Request):
+    return request.session.get('team_id', 'default')
+
+TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_config(get_team_id(request))
 
 from src.complex_logger import ComplexLogger
 

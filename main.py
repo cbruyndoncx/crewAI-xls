@@ -90,11 +90,11 @@ def get_user(request: Request):
         # Find the team for the logged-in user
         user_team = next((entry['team'] for entry in teams_users if entry['user'] == user_email), None)
         if user_team:
-            os.environ['TENANT_ID'] = user_team
+            request.session['team_id'] = user_team
             logging.info(f"Team found for user '{user_email}': {user_team}")
         else:
             # Set the team_id to the user's identification if no team is found
-            os.environ['TENANT_ID'] = user_email
+            request.session['team_id'] = user_email
             logging.info(f"No team found for user '{user_email}'. Using user identification as team_id.")
 
     except Exception as e:
