@@ -26,7 +26,11 @@ def initialize_team_config(request: Request):
     return initialize_config(team_id)
 
 # Example usage within a FastAPI route or function
-# TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_team_config(request)
+def initialize_directories_and_logging(request: Request):
+    TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_team_config(request)
+    init_default_dirs(CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER)
+    logger = init_logging(logfile)
+    return logger
 
 from src.complex_logger import ComplexLogger
 
@@ -50,24 +54,24 @@ def create_dir(folder):
         os.makedirs(folder, exist_ok=True)
     logging.info(folder + " created or exists")
     
-def init_default_dirs():
+def init_default_dirs(CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER):
     create_dir(CREWS_FOLDER)  
     create_dir(XLS_FOLDER)
     create_dir(OUT_FOLDER)
     create_dir(LOG_FOLDER)
 
-def init_logging():
+def init_logging(logfile):
     logger = ComplexLogger(logfile)
     logger.reset_logs()
     sys.stdout = ComplexLogger(logfile)
     return logger
 
-def read_logs():
+def read_logs(logfile):
     sys.stdout.flush()
     with open(logfile, "r") as f:
         tmplog = f.read()
         return tmplog
 
-def reset_logs():
+def reset_logs(logfile):
     logger = ComplexLogger(logfile)
     logger.reset_logs()
