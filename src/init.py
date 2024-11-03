@@ -23,25 +23,15 @@ crews_dir = ""
 #######################################
 
 def initialize_config(team_id='default'):
-    BASE_FOLDER = f"./data/team_{team_id}/"
-    CREWS_FOLDER = BASE_FOLDER + "crews/"
-    XLS_FOLDER = BASE_FOLDER + "xls/"
-    OUT_FOLDER = BASE_FOLDER + "output/"
-    LOG_FOLDER = BASE_FOLDER + "log/"
-    logfile = LOG_FOLDER + "output.log"
-    output_log_sheet = OUT_FOLDER + "output_log.xlsx"
-    
-    DIR = {
-        "base_folder": BASE_FOLDER,
-        "crews_folder": CREWS_FOLDER,
-        "xls_folder": XLS_FOLDER,
-        "out_folder": OUT_FOLDER,
-        "log_folder": LOG_FOLDER,
-        "logfile": logfile,
-        "output_log_sheet": output_log_sheet
+    return {
+        "base_folder": f"./data/team_{team_id}/",
+        "crews_folder": f"./data/team_{team_id}/crews/",
+        "xls_folder": f"./data/team_{team_id}/xls/",
+        "out_folder": f"./data/team_{team_id}/output/",
+        "log_folder": f"./data/team_{team_id}/log/",
+        "logfile": f"./data/team_{team_id}/log/output.log",
+        "output_log_sheet": f"./data/team_{team_id}/output/output_log.xlsx"
     }
-    
-    return DIR
 
 def get_team_id(request: Request):
     return request.session.get('team_id', 'default')
