@@ -1,35 +1,9 @@
-# main.py
-
+# init.py
 
 import os
 import sys
-CREWS_FOLDER_NAME = "crews"
-TEAM_FOLDER_TEMPLATE = "./data/team_{team_id}/"
-CREWS_FOLDER = TEAM_FOLDER_TEMPLATE.format(team_id='default') + CREWS_FOLDER_NAME + "/"
-XLS_FOLDER = "./xls/"
-OUT_FOLDER = CREWS_FOLDER + "output/"
-LOG_FOLDER = "./log/"
-logfile = LOG_FOLDER + "output.log"
-output_log_sheet = OUT_FOLDER + "output_log.xlsx"
-
-def initialize_config(team_id='default'):
-    return TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
 
 from fastapi import Request
-
-def get_team_id(request: Request):
-    return request.session.get('team_id', 'default')
-
-def initialize_team_config(request: Request):
-    team_id = get_team_id(request)
-    return initialize_config(team_id)
-
-# Example usage within a FastAPI route or function
-def initialize_directories_and_logging(request: Request):
-    TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_team_config(request)
-    init_default_dirs(CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER)
-    logger = init_logging(logfile)
-    return logger
 
 from src.complex_logger import ComplexLogger
 
@@ -48,12 +22,37 @@ crews_dir = ""
 # Functions
 #######################################
 
+def initialize_config(team_id='default'):
+    BASE_FOLDER="./data/team_" + team_id +"/"
+    CREWS_FOLDER = BASE_FOLDER + "crews/"
+    XLS_FOLDER = BASE_FOLDER + "xls/"
+    OUT_FOLDER = BASE_FOLDER + "output/"
+    LOG_FOLDER = BASE_FOLDER + "log/"
+    logfile = LOG_FOLDER + "output.log"
+    output_log_sheet = OUT_FOLDER + "output_log.xlsx"
+    return BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
+
+def get_team_id(request: Request):
+    return request.session.get('team_id', 'default')
+
+def initialize_team_config(request: Request):
+    team_id = get_team_id(request)
+    return initialize_config(team_id)
+
+# Example usage within a FastAPI route or function
+def initialize_directories_and_logging(request: Request):
+    BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_team_config(request)
+    init_default_dirs(BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER)
+    logger = init_logging(logfile)
+    return logger
+
 def create_dir(folder):
     if not os.path.exists(folder):
         os.makedirs(folder, exist_ok=True)
     logging.info(folder + " created or exists")
     
-def init_default_dirs(CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER):
+def init_default_dirs(BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER):
+    create_dir(BASE_FOLDER)  
     create_dir(CREWS_FOLDER)  
     create_dir(XLS_FOLDER)
     create_dir(OUT_FOLDER)
@@ -74,3 +73,4 @@ def read_logs(logfile):
 def reset_logs(logfile):
     logger = ComplexLogger(logfile)
     logger.reset_logs()
+
