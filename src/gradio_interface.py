@@ -58,7 +58,7 @@ def run_gradio():
             with gr.Row():
                 with gr.Column(scale=1, variant="compact"):            
                     gr.Markdown("### Download Templates")
-                    xls_files = list_xls_files_in_dir(XLS_FOLDER)
+                    xls_files = list_xls_files_in_dir(CFG['xls_folder'])
                     for xls_file in xls_files:
                         gr.File(value=xls_file, label=os.path.basename(xls_file))
                 with gr.Column(scale=1, variant="compact"):                       
@@ -122,7 +122,7 @@ def run_gradio():
                     gr.Markdown("### Download Results")
                     output_files = os.listdir(f"{CFG['crews_folder']}output")
                     for output_file in output_files:
-                        gr.File(value=f"{CREWS_FOLDER}output/{output_file}", label=os.path.basename(output_file))
+                        gr.File(value=f"{CFG['crews_folder']}output/{output_file}", label=os.path.basename(output_file))
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
