@@ -18,7 +18,7 @@ from importlib import import_module
 from src.complex_logger import ComplexLogger
 from src.init import create_dir,reset_logs
 from src.generate_crew import read_variables_xls, snake_case
-from src.init import CREWS_FOLDER, logfile, output_log_sheet, XLS_FOLDER, TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, initialize_config, CFG
+from src.init import initialize_config, CFG
 from icecream import ic
 from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
 
@@ -66,7 +66,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     """
     reset_logs()
     (crew, job) = crewjob.split('-', maxsplit=1)
-    crews_dir = f"{CFG['base_folder']}{CREWS_FOLDER_NAME}/{crew}-{job}"
+    crews_dir = f"{CFG['base_folder']}{CFG['crews_folder']}/{crew}-{job}"
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
@@ -98,10 +98,10 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     add_md_files_to_log_sheet(output_log_sheet,f"{CREWS_FOLDER}{crew}-{job}")
 
     # copy contents of output subdirectory to directory up one level
-    shutil.copytree(src=f"{crews_dir}/output", dst=f"{CFG['out_folder']}", dirs_exist_ok=True)
+    shutil.copytree(src=f"{crews_dir}/output", dst=CFG['out_folder'], dirs_exist_ok=True)
  
     download_files = gr.Markdown("Fetching")
-    outfiles = os.listdir(f"{CREWS_FOLDER}output")
+    outfiles = os.listdir(f"{CFG['crews_folder']}output")
     if (outfiles):
         download_files = gr.Column()
     #return (result['final_output'], metrics)
@@ -124,9 +124,9 @@ def setup(template,crew, job):
     (crew, agents) = crew.split(' (', maxsplit=1) 
     (job, tasks) = job.split(' (', maxsplit=1) 
 
-    crews_dir = f"{CREWS_FOLDER}{crew}-{job}/"
+    crews_dir = f"{CFG['crews_folder']}{crew}-{job}/"
     create_dir(crews_dir)
-    create_dir(f"{CREWS_FOLDER}{crew}-{job}/output/")
+    create_dir(f"{CFG['crews_folder']}{crew}-{job}/output/")
 
     read_variables_xls(template,crew, job, crews_dir)
     crewjob = get_crew_job(CREWS_FOLDER)

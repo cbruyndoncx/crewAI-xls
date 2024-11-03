@@ -6,7 +6,7 @@ import glob
 from datetime import datetime
 import openpyxl
 
-from src.init import TEAM_FOLDER_TEMPLATE
+from src.init import CFG
 
 # Function to sanitize a string for Excel
 def sanitize_for_excel(value):
@@ -31,7 +31,7 @@ def open_workbook(filename, team_id='default'):
     Create a new workbook or load an existing one.
     """
     # Adjust file path to include team directory
-    team_file_path = f"{TEAM_FOLDER_TEMPLATE.format(team_id=team_id)}{filename}"
+    team_file_path = f"{CFG['base_folder']}{filename}"
     try:
         wb = openpyxl.load_workbook(team_file_path)
     except FileNotFoundError:
@@ -43,7 +43,7 @@ def open_workbook(filename, team_id='default'):
 
 def save_workbook(wb, filename, team_id='default'):
     # Adjust file path to include team directory
-    team_file_path = f"{TEAM_FOLDER_TEMPLATE.format(team_id=team_id)}{filename}"
+    team_file_path = f"{CFG['base_folder']}{filename}"
     wb.save(team_file_path)
 
     return f"Workbook saved as {team_file_path}"

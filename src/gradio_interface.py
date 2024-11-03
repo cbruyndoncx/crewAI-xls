@@ -2,14 +2,14 @@ import os
 import gradio as gr
 from src.crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
 from src.excel_operations import list_xls_files_in_dir
-from src.init import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER, initialize_config, CFG
+from src.init import init_default_dirs, read_logs, init_logging, initialize_config, CFG
 
 # Initialize configuration
 CFG = initialize_config()
 init_default_dirs(CFG)
 
 # start logging
-logger = init_logging(CFG["logfile"])
+logger = init_logging(CFG['logfile'])
 
 def run_gradio():
     custom_css = """
@@ -35,7 +35,7 @@ def run_gradio():
     crews_list = []
     jobs_list = []
     templates_list = list_xls_files_in_dir(XLS_FOLDER)
-    crewjobs_list = get_crew_jobs_list(CREWS_FOLDER)
+    crewjobs_list = get_crew_jobs_list(CFG['crews_folder'])
     download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
@@ -120,7 +120,7 @@ def run_gradio():
                 with gr.Column():
                     download_files = gr.Markdown("init")
                     gr.Markdown("### Download Results")
-                    output_files = os.listdir(f"{CREWS_FOLDER}output")
+                    output_files = os.listdir(f"{CFG['crews_folder']}output")
                     for output_file in output_files:
                         gr.File(value=f"{CREWS_FOLDER}output/{output_file}", label=os.path.basename(output_file))
             with gr.Row():
