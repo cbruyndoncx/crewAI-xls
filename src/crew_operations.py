@@ -18,7 +18,7 @@ from importlib import import_module
 from src.complex_logger import ComplexLogger
 from src.init import create_dir,reset_logs
 from src.generate_crew import read_variables_xls, snake_case
-from src.init import CREWS_FOLDER, logfile, output_log_sheet, XLS_FOLDER, TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, initialize_config
+from src.init import CREWS_FOLDER, logfile, output_log_sheet, XLS_FOLDER, TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, initialize_config, CFG
 from icecream import ic
 from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
 

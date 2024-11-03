@@ -23,7 +23,8 @@ crews_dir = ""
 #######################################
 
 def initialize_config(team_id='default'):
-    return {
+    global CFG
+    CFG = {
         "base_folder": f"./data/team_{team_id}/",
         "crews_folder": f"./data/team_{team_id}/crews/",
         "xls_folder": f"./data/team_{team_id}/xls/",
