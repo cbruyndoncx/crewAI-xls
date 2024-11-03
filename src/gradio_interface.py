@@ -34,7 +34,7 @@ def run_gradio():
     """
     crews_list = []
     jobs_list = []
-    templates_list = list_xls_files_in_dir(XLS_FOLDER)
+    templates_list = list_xls_files_in_dir(CFG['xls_folder'])
     crewjobs_list = get_crew_jobs_list(CFG['crews_folder'])
     download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
