@@ -23,14 +23,25 @@ crews_dir = ""
 #######################################
 
 def initialize_config(team_id='default'):
-    BASE_FOLDER="./data/team_" + team_id +"/"
+    BASE_FOLDER = f"./data/team_{team_id}/"
     CREWS_FOLDER = BASE_FOLDER + "crews/"
     XLS_FOLDER = BASE_FOLDER + "xls/"
     OUT_FOLDER = BASE_FOLDER + "output/"
     LOG_FOLDER = BASE_FOLDER + "log/"
     logfile = LOG_FOLDER + "output.log"
     output_log_sheet = OUT_FOLDER + "output_log.xlsx"
-    return BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
+    
+    DIR = {
+        "base_folder": BASE_FOLDER,
+        "crews_folder": CREWS_FOLDER,
+        "xls_folder": XLS_FOLDER,
+        "out_folder": OUT_FOLDER,
+        "log_folder": LOG_FOLDER,
+        "logfile": logfile,
+        "output_log_sheet": output_log_sheet
+    }
+    
+    return DIR
 
 def get_team_id(request: Request):
     return request.session.get('team_id', 'default')
@@ -41,9 +52,9 @@ def initialize_team_config(request: Request):
 
 # Example usage within a FastAPI route or function
 def initialize_directories_and_logging(request: Request):
-    BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_team_config(request)
-    init_default_dirs(BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER)
-    logger = init_logging(logfile)
+    DIR = initialize_team_config(request)
+    init_default_dirs(DIR)
+    logger = init_logging(DIR["logfile"])
     return logger
 
 def create_dir(folder):
@@ -51,12 +62,12 @@ def create_dir(folder):
         os.makedirs(folder, exist_ok=True)
     logging.info(folder + " created or exists")
     
-def init_default_dirs(BASE_FOLDER, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER):
-    create_dir(BASE_FOLDER)  
-    create_dir(CREWS_FOLDER)  
-    create_dir(XLS_FOLDER)
-    create_dir(OUT_FOLDER)
-    create_dir(LOG_FOLDER)
+def init_default_dirs(DIR):
+    create_dir(DIR["base_folder"])
+    create_dir(DIR["crews_folder"])
+    create_dir(DIR["xls_folder"])
+    create_dir(DIR["out_folder"])
+    create_dir(DIR["log_folder"])
 
 def init_logging(logfile):
     logger = ComplexLogger(logfile)
