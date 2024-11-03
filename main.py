@@ -93,8 +93,9 @@ def get_user(request: Request):
             os.environ['TENANT_ID'] = user_team
             logging.info(f"Team found for user '{user_email}': {user_team}")
         else:
-            logging.error(f"No team found for user '{user_email}'.")
-            raise ValueError(f"No team found for user '{user_email}'.")
+            # Set the team_id to the user's identification if no team is found
+            os.environ['TENANT_ID'] = user_email
+            logging.info(f"No team found for user '{user_email}'. Using user identification as team_id.")
 
     except Exception as e:
         logging.error(f"Error accessing Google Sheets: {e}")
