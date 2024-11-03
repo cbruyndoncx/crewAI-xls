@@ -3,17 +3,15 @@
 
 import os
 import sys
-CREWS_FOLDER_NAME = "crews"
+TEAM_FOLDER_TEMPLATE = "./data/team_{team_id}/"
+CREWS_FOLDER = TEAM_FOLDER_TEMPLATE.format(team_id='default') + CREWS_FOLDER_NAME + "/"
+XLS_FOLDER = "./xls/"
+OUT_FOLDER = CREWS_FOLDER + "output/"
+LOG_FOLDER = "./log/"
+logfile = LOG_FOLDER + "output.log"
+output_log_sheet = OUT_FOLDER + "output_log.xlsx"
 
 def initialize_config(team_id='default'):
-    TEAM_FOLDER_TEMPLATE = "./data/team_{team_id}/"
-    CREWS_FOLDER_NAME = "crews"
-    CREWS_FOLDER = TEAM_FOLDER_TEMPLATE.format(team_id=team_id) + CREWS_FOLDER_NAME + "/"
-    XLS_FOLDER = "./xls/"
-    OUT_FOLDER = CREWS_FOLDER + "output/"
-    LOG_FOLDER = "./log/"
-    logfile = LOG_FOLDER + "output.log"
-    output_log_sheet = OUT_FOLDER + "output_log.xlsx"
     return TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet
 
 from fastapi import Request
