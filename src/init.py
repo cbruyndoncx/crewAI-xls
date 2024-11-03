@@ -3,6 +3,7 @@
 
 import os
 import sys
+CREWS_FOLDER_NAME = "crews"
 TEAM_FOLDER_TEMPLATE = "./data/team_{team_id}/"
 CREWS_FOLDER = TEAM_FOLDER_TEMPLATE.format(team_id='default') + CREWS_FOLDER_NAME + "/"
 XLS_FOLDER = "./xls/"
