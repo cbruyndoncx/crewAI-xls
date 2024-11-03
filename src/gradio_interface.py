@@ -5,10 +5,10 @@ from src.excel_operations import list_xls_files_in_dir
 from src.init import init_default_dirs, read_logs, init_logging, XLS_FOLDER, CREWS_FOLDER
 
 # Ensure default directories exist
-init_default_dirs()
+init_default_dirs(CFG)
 
 # start logging
-logger = init_logging()
+logger = init_logging(CFG["logfile"])
 
 def run_gradio():
     custom_css = """

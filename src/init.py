@@ -42,9 +42,9 @@ def initialize_team_config(request: Request):
 
 # Example usage within a FastAPI route or function
 def initialize_directories_and_logging(request: Request):
-    DIR = initialize_team_config(request)
-    init_default_dirs(DIR)
-    logger = init_logging(DIR["logfile"])
+    CFG = initialize_team_config(request)
+    init_default_dirs(CFG)
+    logger = init_logging(CFG["logfile"])
     return logger
 
 def create_dir(folder):
@@ -52,12 +52,12 @@ def create_dir(folder):
         os.makedirs(folder, exist_ok=True)
     logging.info(folder + " created or exists")
     
-def init_default_dirs(DIR):
-    create_dir(DIR["base_folder"])
-    create_dir(DIR["crews_folder"])
-    create_dir(DIR["xls_folder"])
-    create_dir(DIR["out_folder"])
-    create_dir(DIR["log_folder"])
+def init_default_dirs(CFG):
+    create_dir(CFG["base_folder"])
+    create_dir(CFG["crews_folder"])
+    create_dir(CFG["xls_folder"])
+    create_dir(CFG["out_folder"])
+    create_dir(CFG["log_folder"])
 
 def init_logging(logfile):
     logger = ComplexLogger(logfile)
