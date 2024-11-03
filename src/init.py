@@ -21,7 +21,12 @@ from fastapi import Request
 def get_team_id(request: Request):
     return request.session.get('team_id', 'default')
 
-TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_config(get_team_id(request))
+def initialize_team_config(request: Request):
+    team_id = get_team_id(request)
+    return initialize_config(team_id)
+
+# Example usage within a FastAPI route or function
+# TEAM_FOLDER_TEMPLATE, CREWS_FOLDER_NAME, CREWS_FOLDER, XLS_FOLDER, OUT_FOLDER, LOG_FOLDER, logfile, output_log_sheet = initialize_team_config(request)
 
 from src.complex_logger import ComplexLogger
 
