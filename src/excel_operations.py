@@ -6,8 +6,6 @@ import glob
 from datetime import datetime
 import openpyxl
 
-from src.init import CFG
-
 # Function to sanitize a string for Excel
 def sanitize_for_excel(value):
     if not isinstance(value, str):
@@ -26,27 +24,26 @@ def sanitize_for_excel(value):
     
     return sanitized_value
 
-def open_workbook(filename, team_id='default'):
+def open_workbook(filename):
     """
     Create a new workbook or load an existing one.
     """
     # Adjust file path to include team directory
-    team_file_path = f"{CFG['base_folder']}{filename}"
+    xls_file_path = f"{CFG['xls_folder']}{filename}"
     try:
-        wb = openpyxl.load_workbook(team_file_path)
+        wb = openpyxl.load_workbook(xls_file_path)
     except FileNotFoundError:
-        print(f"The file {team_file_path} does not exist. Creating a new workbook.")
+        print(f"The file {xls_file_path} does not exist. Creating a new workbook.")
         wb = openpyxl.Workbook()
         sheet = wb.create_sheet()
 
     return wb
 
-def save_workbook(wb, filename, team_id='default'):
-    # Adjust file path to include team directory
-    team_file_path = f"{CFG['base_folder']}{filename}"
-    wb.save(team_file_path)
+def save_workbook(wb, filename):
+    xls_file_path = f"{CFG['xls_folder']}{filename}"
+    wb.save(xls_file_path)
 
-    return f"Workbook saved as {team_file_path}"
+    return f"Workbook saved as {xls_file_path}"
 
 def write_log_sheet(filename, input, output, final, metrics):
 
@@ -77,10 +74,6 @@ def add_md_files_to_log_sheet(filename, directory):
     # Check for permission and existence of directory
     if os.path.exists(directory):
         md_files = glob.glob(os.path.join(directory, '*.md'))
-
-        # If you want to include subdirectories
-        # md_files = glob.glob(os.path.join(directory, '**/*.md'), recursive=True)
-
         print(md_files)
     else:
         print("Directory does not exist or cannot be accessed.")
@@ -104,11 +97,6 @@ def add_md_files_to_log_sheet(filename, directory):
             line = sanitize_for_excel(line)
             sheet.cell(row=row_index, column=1).value = "'"+line
 
-    # Remove the default sheet created by openpyxl if it's untouched
-    #if 'Sheet' in wb.sheetnames and wb['Sheet'].max_row == 1 and wb['Sheet'].max_column == 1:
-    #    del wb['Sheet']
-
-    # Save the workbook to an xlsx file
     print(save_workbook(wb, filename))
 
 
@@ -121,7 +109,7 @@ def list_xls_files_in_dir(directory):
     return xlsfiles
 
 def md_list(items):
-        return "\n".join(f"* {item}" for item in items)
+    return "\n".join(f"* {item}" for item in items)
     
 # Function to get distinct values from a named column in a named sheet
 def get_distinct_column_values_by_name(workbook_path, sheet_name, column_name):

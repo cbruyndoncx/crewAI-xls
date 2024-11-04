@@ -2,7 +2,6 @@ from icecream import ic
 import sys
 import os
 from textwrap import dedent
-from src.init import CFG
 
 import openpyxl
 from jinja2 import Environment, FileSystemLoader

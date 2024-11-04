@@ -13,51 +13,31 @@ logging.basicConfig(
     format='INFO:     %(message)s'
 )
 
-#######################################
-# initialisations
-#######################################
-
-#######################################
-# Functions
-#######################################
-
 def initialize_config(team_id='default'):
-    global CFG
     CFG = {
+        "team_id": team_id,
         "base_folder": f"./data/team_{team_id}/",
         "crews_folder": f"./data/team_{team_id}/crews/",
         "xls_folder": f"./data/team_{team_id}/xls/",
-        "out_folder": f"./data/team_{team_id}/output/",
+        "out_folder": f"./data/team_{team_id}/crews/output/",
         "log_folder": f"./data/team_{team_id}/log/",
         "logfile": f"./data/team_{team_id}/log/output.log",
         "output_log_sheet": f"./data/team_{team_id}/output/output_log.xlsx"
     }
-
-def get_team_id(request: Request):
-    return request.session.get('team_id', 'default')
-
-def initialize_team_config(request: Request):
-    team_id = get_team_id(request)
-    return initialize_config(team_id)
-
-# Example usage within a FastAPI route or function
-def initialize_directories_and_logging(request: Request):
-    CFG = initialize_team_config(request)
-    init_default_dirs(CFG)
-    logger = init_logging(CFG["logfile"])
-    return logger
+    create_dir(CFG["base_folder"])
+    create_dir(CFG["crews_folder"])
+    create_dir(CFG["xls_folder"])
+    create_dir(CFG["out_folder"])
+    create_dir(CFG["log_folder"])
+    
+    return CFG
 
 def create_dir(folder):
     if not os.path.exists(folder):
         os.makedirs(folder, exist_ok=True)
     logging.info(folder + " created or exists")
     
-def init_default_dirs(CFG):
-    create_dir(CFG["base_folder"])
-    create_dir(CFG["crews_folder"])
-    create_dir(CFG["xls_folder"])
-    create_dir(CFG["out_folder"])
-    create_dir(CFG["log_folder"])
+
 
 def init_logging(logfile):
     logger = ComplexLogger(logfile)

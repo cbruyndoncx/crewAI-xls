@@ -18,12 +18,8 @@ from importlib import import_module
 from src.complex_logger import ComplexLogger
 from src.init import create_dir,reset_logs
 from src.generate_crew import read_variables_xls, snake_case
-from src.init import initialize_config, CFG
 from icecream import ic
 from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
-
-# Initialize configuration
-CFG = initialize_config()
 
 def module_callback(crew, job, crewjob, details):
     """
@@ -43,7 +39,6 @@ def module_callback(crew, job, crewjob, details):
         # Call the function
         gr.Info("Starting process...")
         run_crew(crew, job, crewjob, details)
-        ic("\nDone.")
         gr.Info("Completed process!")
     except Exception as e:
         gr.Error("Could not complete process!")
@@ -66,7 +61,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     """
     reset_logs()
     (crew, job) = crewjob.split('-', maxsplit=1)
-    crews_dir = f"{CFG['base_folder']}{CFG['crews_folder']}/{crew}-{job}"
+    crews_dir = f"{CFG['crews_folder']}/{crew}-{job}"
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
@@ -95,7 +90,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
-    add_md_files_to_log_sheet(output_log_sheet,f"{CREWS_FOLDER}{crew}-{job}")
+    add_md_files_to_log_sheet(output_log_sheet,f"{CFG['crews_folder']}{crew}-{job}")
 
     # copy contents of output subdirectory to directory up one level
     shutil.copytree(src=f"{crews_dir}/output", dst=CFG['out_folder'], dirs_exist_ok=True)
@@ -112,7 +107,7 @@ def get_crew_jobs_list(crewdir):
     crewjobs_list.sort()
     return crewjobs_list
 
-def get_crew_job(crewdir=CREWS_FOLDER):   
+def get_crew_job(crewdir):   
     crewjobs_list = get_crew_jobs_list(crewdir)
     crewjob = gr.Dropdown(choices=crewjobs_list , label="Prepared teams")
     return crewjob
@@ -129,7 +124,7 @@ def setup(template,crew, job):
     create_dir(f"{CFG['crews_folder']}{crew}-{job}/output/")
 
     read_variables_xls(template,crew, job, crews_dir)
-    crewjob = get_crew_job(CREWS_FOLDER)
+    crewjob = get_crew_job(CFG['crews_folder'])
     
     return("Crew for Job " + crews_dir + " created!" , crewjob)
 
@@ -164,10 +159,10 @@ def upload_file(in_files):
     # theoretically allow for multiple, might add output file
     file_paths = [file.name for file in in_files]
     for file in in_files:
-        shutil.copy(file, XLS_FOLDER)    
+        shutil.copy(file, CFG["xls_folder"])    
     gr.Info("Files Uploaded!!!")    
 
-    templates_list = list_xls_files_in_dir(XLS_FOLDER)
+    templates_list = list_xls_files_in_dir(CFG["xls_folder"])
     template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
 
     return (file_paths, template)
@@ -255,6 +250,6 @@ def get_jobdetails(crewjob):
             prompt = file.read()
         return prompt
 
-    return gr.Textbox(lines=5, value=read_prompt_from_disk( f"{CREWS_FOLDER}{crewjob}/job_default_prompt.txt"), label="Got default prompt")
+    return gr.Textbox(lines=5, value=read_prompt_from_disk( f"{CFG['crews_folder']}{crewjob}/job_default_prompt.txt"), label="Got default prompt")
 
 

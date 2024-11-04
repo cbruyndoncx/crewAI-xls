@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 
 from src.gradio_interface import run_gradio
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
+from src.init import initialize_config
 
 def init_env():
     # Load environment variables from a .env file
@@ -39,6 +40,9 @@ def init_env():
 
 # init environment variables
 init_env()
+
+CFG = {}
+CFG = initialize_config("demo")
 
 # Configuration for demo mode
 DEMO_MODE = os.getenv('DEMO_MODE', 'false').lower() == 'true'
@@ -66,6 +70,8 @@ oauth.register(
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
+team_id = ""
+
 # Dependency to get the current user
 def get_user(request: Request):
     try:
@@ -81,36 +87,32 @@ def get_user(request: Request):
                 logging.warning("No user found in session.")
                 return None
 
-        client = get_gspread_client(credentials_file='gsheet_credentials.json')
-        sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
-        users = get_users_from_sheet(sheet)
-        teams_users = get_teams_users_from_sheet(sheet)
+        if team_id == "":
+            client = get_gspread_client(credentials_file='gsheet_credentials.json')
+            sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+            users = get_users_from_sheet(sheet)
+            teams_users = get_teams_users_from_sheet(sheet)
 
-        # Find the team for the logged-in user
-        user_team = next((entry['team'] for entry in teams_users if entry['user'] == user_email), None)
-        if user_team:
-            request.session['team_id'] = user_team
-            logging.info(f"Team found for user '{user_email}': {user_team}")
+            # Find the team for the logged-in user
+            user_team = next((entry['team'] for entry in teams_users if entry['user'] == user_email), None)
+            if user_team:
+                request.session['team_id'] = user_team
+                logging.info(f"Team found for user '{user_email}': {user_team}")
+            else:
+                # Set the team_id to the user's identification if no team is found
+                request.session['team_id'] = user_email
+                logging.info(f"No team found for user '{user_email}'. Using user identification as team_id.")
+            team_id = request.session['team_id']
+            CFG = initialize_config(team_id)
+            logger = init_logging(CFG["logfile"])
         else:
-            # Set the team_id to the user's identification if no team is found
-            request.session['team_id'] = user_email
-            logging.info(f"No team found for user '{user_email}'. Using user identification as team_id.")
+            logging.info(f"'{team_id}' already set")
 
     except Exception as e:
         logging.error(f"Error accessing Google Sheets: {e}")
         return None
 
     return user_email
-    if DEMO_MODE:
-        logging.info("Demo mode active. Using demo credentials.")
-        return DEMO_USERNAME
-    else:
-        user = request.session.get('user')
-        if user:
-            logging.info(f"User retrieved from session: {user['name']}")
-            return user['name']
-        logging.warning("No user found in session.")
-        return None
 
 ## FastAPI Routes
 @app.get('/')
@@ -276,7 +278,7 @@ with gr.Blocks() as login_ui:
 
 app = gr.mount_gradio_app(app, login_ui, path="/login-ui")
 
-crewUI = run_gradio()
+crewUI = run_gradio(CFG)
 app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
 
 def greet_username(request: gr.Request):

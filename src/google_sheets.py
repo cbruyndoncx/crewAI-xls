@@ -57,4 +57,3 @@ def add_user_to_team(sheet, team_name, user_email):
 
     # Add the user to the team
     teams_users_sheet.append_row([team_name.upper(), user_email])
-from src.init import XLS_FOLDER
