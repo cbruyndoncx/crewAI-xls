@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 
 from src.gradio_interface import run_gradio
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
-from src.init import initialize_config
+from src.init import initialize_config, init_logging
 
 def init_env():
     # Load environment variables from a .env file
@@ -43,6 +43,9 @@ init_env()
 
 CFG = {}
 CFG = initialize_config("demo")
+
+logfile = CFG['logfile']
+logger = init_logging(logfile)
 
 # Configuration for demo mode
 DEMO_MODE = os.getenv('DEMO_MODE', 'false').lower() == 'true'
@@ -78,6 +81,7 @@ def get_user(request: Request):
         if DEMO_MODE:
             user_email = DEMO_USERNAME
             logging.info(f"Demo mode active. Using demo user: {user_email}")
+            team_id = "team_demo"
         else:
             user = request.session.get('user')
             if user:

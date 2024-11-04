@@ -14,6 +14,7 @@ logging.basicConfig(
 )
 
 def initialize_config(team_id='default'):
+    global CFG
     CFG = {
         "team_id": team_id,
         "base_folder": f"./data/team_{team_id}/",
@@ -39,7 +40,7 @@ def create_dir(folder):
     
 
 
-def init_logging(logfile):
+def init_logging(logfile=CFG['logfile']):
     logger = ComplexLogger(logfile)
     logger.reset_logs()
     sys.stdout = ComplexLogger(logfile)
