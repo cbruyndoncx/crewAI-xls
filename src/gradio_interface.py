@@ -42,7 +42,8 @@ def run_gradio():
     crews_list = []
     jobs_list = []
     download_files=gr.Markdown("running")  
-    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio, State() as state:
+    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
+        state = State()
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
 
         with gr.Row():
