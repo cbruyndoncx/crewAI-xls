@@ -89,7 +89,7 @@ def get_job_prompt(template, select_crew, select_job):
 def clean_dict(d):
     return {k: v for k, v in d.items() if k is not None}
 
-def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
+def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
 
     # Load the workbook and select the active worksheet
     workbook = openpyxl.load_workbook(template_filename)
@@ -130,7 +130,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 # Process the record as needed
                 record['task_name'] = snake_case(record['task'])
                 record['context'] = snake_case(record['context'])
-                record['crews_dir'] = crews_dir
+                record['crew_dir'] = crew_dir
                 if record['output_file'] : 
                     record['output_file'] = f"{CFG.get_setting('crews_dir')}output/{record['output_file']}"
                 file.write(env.get_template('task_template.py.j2').render(clean_dict(record)))
@@ -142,7 +142,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 crew_task_list_template+=env.get_template('crew_task_list_template.py.j2').render(clean_dict(record))
                 job_records.append(record)
     # JOB PROMPT
-    write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{crews_dir}job_default_prompt.txt")
+    write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{crew_dir}job_default_prompt.txt")
     
     # CUSTOM VARS 
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
@@ -188,7 +188,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
             for member in member_records:
                 record['agent_name'] = snake_case(record['agent'])
                 if member['crewmember'] == record['agent_name']: 
-                    record['crews_dir'] = crews_dir
+                    record['crew_dir'] = crew_dir
                     file.write(env.get_template('agent_template.py.j2').render(clean_dict(record)))
                     crew_agent_list_template+=env.get_template('crew_agent_list_template.py.j2').render(clean_dict(record))
 

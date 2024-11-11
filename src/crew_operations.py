@@ -58,7 +58,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     reset_logs(CFG.get_setting('logfile'))
     crews_folder = CFG.get_setting('crews_folder')
     (crew, job) = crewjob.split('-', maxsplit=1)
-    crews_dir = CFG.get_setting('crews_dir')
+    crew_dir = CFG.get_setting('crew_dir')
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
@@ -119,12 +119,12 @@ def setup(template,crew, job):
     (job, tasks) = job.split(' (', maxsplit=1) 
 
     #crews_dir = f"{CFG.get_setting('crews_folder')}{crew}-{job}/"
-    CFG.set_setting('crews_dir',f"{CFG.get_setting('crews_folder')}{crew}-{job}/")
-    print(CFG.get_setting('crews_dir'))
-    create_dir( CFG.get_setting('crews_dir'))
-    create_dir(f"{CFG.get_setting('crews_dir')}output/")
+    CFG.set_setting('crew_dir',f"{CFG.get_setting('crews_folder')}{crew}-{job}/")
+    print(CFG.get_setting('crew_dir'))
+    create_dir( CFG.get_setting('crew_dir'))
+    create_dir(f"{CFG.get_setting('crew_dir')}output/")
 
-    read_variables_xls(template,crew, job, CFG.get_setting('crews_dir'))
+    read_variables_xls(template,crew, job, CFG.get_setting('crew_dir'))
     crewjob = get_crew_job(CFG.get_setting('crews_folder'))
     
     return ("Crew for Job " + CFG.get_setting('crews_dir') + " created!" , crewjob)
