@@ -5,6 +5,8 @@ import re
 import glob
 from datetime import datetime
 import openpyxl
+import logging
+from .config import CFG
 
 # Function to sanitize a string for Excel
 def sanitize_for_excel(value):
@@ -29,18 +31,18 @@ def open_workbook(filename):
     Create a new workbook or load an existing one.
     """
     # Adjust file path to include team directory
-    xls_file_path = f"{CFG['xls_folder']}{filename}"
+    xls_file_path = f"{CFG.get_setting('xls_folder')}{filename}"
     try:
         wb = openpyxl.load_workbook(xls_file_path)
     except FileNotFoundError:
-        print(f"The file {xls_file_path} does not exist. Creating a new workbook.")
+        logging.info(f"The file {xls_file_path} does not exist. Creating a new workbook.")
         wb = openpyxl.Workbook()
         sheet = wb.create_sheet()
 
     return wb
 
 def save_workbook(wb, filename):
-    xls_file_path = f"{CFG['xls_folder']}{filename}"
+    xls_file_path = f"{CFG.get_setting('xls_folder')}{filename}"
     wb.save(xls_file_path)
 
     return f"Workbook saved as {xls_file_path}"
@@ -53,7 +55,7 @@ def write_log_sheet(filename, input, output, final, metrics):
     # Select the default sheet
     log_sheet = wb.active
 
-    # Add some column headers
+    # Add column headers
     log_sheet.append(["Timestamp", "Input","Output", "Final Result", "Metrics"])
 
     # Get the current timestamp
@@ -63,7 +65,7 @@ def write_log_sheet(filename, input, output, final, metrics):
     log_sheet.append([timestamp, input, sanitize_for_excel(output), sanitize_for_excel(final),sanitize_for_excel(metrics)])
 
     # Save the workbook to an xlsx file
-    print(save_workbook(wb, filename))
+    logging.info(save_workbook(wb, filename))
 
 def add_md_files_to_log_sheet(filename, directory):
     
@@ -74,12 +76,12 @@ def add_md_files_to_log_sheet(filename, directory):
     # Check for permission and existence of directory
     if os.path.exists(directory):
         md_files = glob.glob(os.path.join(directory, '*.md'))
-        print(md_files)
+        logging.info(md_files)
     else:
-        print("Directory does not exist or cannot be accessed.")
+        logging.warning("Directory does not exist or cannot be accessed.")
 
     #md_files = glob.glob(directory+'/*.md')
-    print(md_files)
+    logging.info(md_files)
 
     # Add content of each markdown file to a new sheet
     for md_file in md_files:
@@ -97,16 +99,19 @@ def add_md_files_to_log_sheet(filename, directory):
             line = sanitize_for_excel(line)
             sheet.cell(row=row_index, column=1).value = "'"+line
 
-    print(save_workbook(wb, filename))
+    logging.info(save_workbook(wb, filename))
 
 
 def list_xls_files_in_dir(directory):
     """
     This is used to generate the list of template files to choose from
     """
-    files_in_directory = os.listdir(directory)
-    xlsfiles = [directory + file for file in files_in_directory if file.endswith('.xls') or file.endswith('.xlsx')]
-    return xlsfiles
+    if directory:
+        files_in_directory = os.listdir(directory)
+        xlsfiles = [directory + file for file in files_in_directory if file.endswith('.xls') or file.endswith('.xlsx')]
+        return xlsfiles
+    else:
+        return []
 
 def md_list(items):
     return "\n".join(f"* {item}" for item in items)

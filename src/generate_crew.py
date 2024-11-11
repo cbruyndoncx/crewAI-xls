@@ -94,7 +94,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
     workbook = openpyxl.load_workbook(template_filename)
     
     # Set up the Jinja2 environment and specify the directory containing templates
-    env = Environment(loader=FileSystemLoader('templates'))
+    env = Environment(loader=FileSystemLoader('src/templates'))
     crew_agent_list_template = ''
     crew_task_list_template = ''
     
@@ -109,15 +109,15 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
     with open(f"{crews_dir}llm_providers.py", 'w') as file:
         llm_records = replace_none_with_empty_string(llm_records)
         for record in llm_records:
-            llm_list_template+=env.get_template('llm_list_template.py').render(clean_dict(record))
+            llm_list_template+=env.get_template('llm_list_template.py.j2').render(clean_dict(record))
         models['llm_list']=llm_list_template
-        file.write(env.get_template('llm_class_template.py').render(models))
+        file.write(env.get_template('llm_class_template.py.j2').render(models))
 
     # TASKS 
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
     # If you want to append to an existing file instead, use 'a' mode.
     with open(f"{crews_dir}tasks.py", 'w') as file:
-        file.write(env.get_template('tasks_class_template.py').render(models))
+        file.write(env.get_template('tasks_class_template.py.j2').render(models))
     
     # Add each task details
     job_records = []
@@ -132,13 +132,13 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 record['crews_dir'] = crews_dir
                 if record['output_file'] : 
                     record['output_file'] = f"{crews_dir}output/{record['output_file']}"
-                file.write(env.get_template('task_template.py').render(clean_dict(record)))
+                file.write(env.get_template('task_template.py.j2').render(clean_dict(record)))
                 if record['assigned_agent'] == '' :
                     record['assigned_agent_name'] = 'None'
                 else:
                     record['assigned_agent_name'] = snake_case(record['assigned_agent'])
 
-                crew_task_list_template+=env.get_template('crew_task_list_template.py').render(clean_dict(record))
+                crew_task_list_template+=env.get_template('crew_task_list_template.py.j2').render(clean_dict(record))
                 job_records.append(record)
     # JOB PROMPT
     write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{crews_dir}job_default_prompt.txt")
@@ -178,7 +178,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
     # If you want to append to an existing file instead, use 'a' mode.
     with open(f"{crews_dir}agents.py", 'w') as file:
-        file.write(env.get_template('agents_class_template.py').render(models))
+        file.write(env.get_template('agents_class_template.py.j2').render(models))
 
     # Add each agent details
     with open(f"{crews_dir}agents.py", 'a') as file:
@@ -188,8 +188,8 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
                 record['agent_name'] = snake_case(record['agent'])
                 if member['crewmember'] == record['agent_name']: 
                     record['crews_dir'] = crews_dir
-                    file.write(env.get_template('agent_template.py').render(clean_dict(record)))
-                    crew_agent_list_template+=env.get_template('crew_agent_list_template.py').render(clean_dict(record))
+                    file.write(env.get_template('agent_template.py.j2').render(clean_dict(record)))
+                    crew_agent_list_template+=env.get_template('crew_agent_list_template.py.j2').render(clean_dict(record))
 
     # CREW
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
@@ -205,7 +205,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crews_dir):
             record['crew_agent_list']=crew_agent_list
             record['crew_task_list']=crew_task_list
 
-            result=env.get_template('crew_class_template.py').render(clean_dict(record))
+            result=env.get_template('crew_class_template.py.j2').render(clean_dict(record))
 
             with open(f"{crews_dir}crew.py", 'w') as file:
                 file.write(result)

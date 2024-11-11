@@ -2,17 +2,16 @@ import os
 import gradio as gr
 from src.crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
 from src.excel_operations import list_xls_files_in_dir
-from src.init import read_logs
-#, init_logging, initialize_config, CFG
+from src.config import CFG, read_logs, get_user, get_team_id
 
-# Initialize configuration
-#CFG = initialize_config()
-#init_default_dirs(CFG)
+from icecream import ic
+import logging
 
-# start logging
-#logger = init_logging(CFG['logfile'])
+from fastapi import Depends
 
-def run_gradio(CFG):
+
+def run_gradio():
+
     custom_css = """
     #console-logs textarea {
         background-color: black; 
@@ -33,13 +32,18 @@ def run_gradio(CFG):
         font-weight: bold;
     }
     """
+    #crews_folder = CFG.get_setting('crews_folder')
+    #xls_folder = CFG.get_setting('xls_folder')
+
+    #templates_list = list_xls_files_in_dir(CFG.get_setting('xls_folder'))
+    #crewjobs_list = get_crew_jobs_list(CFG.get_setting('crews_folder'))
+    
     crews_list = []
     jobs_list = []
-    templates_list = list_xls_files_in_dir(CFG['xls_folder'])
-    crewjobs_list = get_crew_jobs_list(CFG['crews_folder'])
     download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
+
         with gr.Row():
             gr.Button("Setup Team", link="/setup-team", elem_classes="gr-button-small")
             gr.Button("Logout", link="/logout", elem_classes="gr-button-small")
@@ -59,7 +63,7 @@ def run_gradio(CFG):
             with gr.Row():
                 with gr.Column(scale=1, variant="compact"):            
                     gr.Markdown("### Download Templates")
-                    xls_files = list_xls_files_in_dir(CFG['xls_folder'])
+                    xls_files = list_xls_files_in_dir(CFG.get_setting('xls_folder'))
                     for xls_file in xls_files:
                         gr.File(value=xls_file, label=os.path.basename(xls_file))
                 with gr.Column(scale=1, variant="compact"):                       
@@ -72,7 +76,7 @@ def run_gradio(CFG):
             with gr.Row():
                 gr.Markdown("### TEMPLATES ")  
                 with gr.Column():       
-                    template = gr.Dropdown(choices=templates_list, label='' , elem_classes="gr-dropdown")
+                    template = gr.Dropdown(choices=list_xls_files_in_dir(CFG.get_setting('xls_folder')), label='' , elem_classes="gr-dropdown")
                     upload_button.upload(upload_file, upload_button, outputs=[xls_template, template])
                 with gr.Column():     
                     read_template_btn = gr.Button("Get Crews and Jobs defined", elem_classes="gr-button")
@@ -98,7 +102,7 @@ def run_gradio(CFG):
                 with gr.Column(scale=1, variant="default"):
                     #get_crew_jobs_btn = gr.Button("Get prepared teams and")
                     gr.Markdown("## Complete the prompt ")
-                    crewjob = gr.Dropdown(choices=crewjobs_list, label="Select team", allow_custom_value=True , elem_classes="gr-dropdown")
+                    crewjob = gr.Dropdown(choices=get_crew_jobs_list(CFG.get_setting('crews_folder')), label="Select team", allow_custom_value=True , elem_classes="gr-dropdown")
                     jobdetails = gr.Textbox(lines=5, label="Specify what exactly needs to be done", elem_classes="gr-input")
                     input1 = gr.Textbox(lines=1, visible=False, label="input 1", elem_classes="gr-input")
                     input2 = gr.Textbox(lines=1, visible=False, label="input 2", elem_classes="gr-input")
@@ -121,22 +125,24 @@ def run_gradio(CFG):
                 with gr.Column():
                     download_files = gr.Markdown("init")
                     gr.Markdown("### Download Results")
-                    output_files = os.listdir(f"{CFG['crews_folder']}output")
-                    for output_file in output_files:
-                        gr.File(value=f"{CFG['crews_folder']}output/{output_file}", label=os.path.basename(output_file))
+                    if CFG.get_setting('crews_folder') is not None:
+                        #print(f"{CFG.get_setting('crews_folder')}output")
+                        output_files = os.listdir(f"{CFG.get_setting('crews_folder')}output")
+                        for output_file in output_files:
+                            gr.File(value=f"{CFG.get_setting('crews_folder')}output/{output_file}", label=os.path.basename(output_file))
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
                         t = gr.Timer(3, active=True)
                         t.tick(lambda x:x, logs)
-                        crewUI_gradio.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
+                        #crewUI_gradio.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
         setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
         run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files])
-
-    return crewUI_gradio.queue()
+        #ic(crewUI_gradio)
+    return  crewUI_gradio.queue()
 
     #crewUI.queue().launch(show_error=True, auth=get_authenticated())
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))

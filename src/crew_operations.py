@@ -5,21 +5,18 @@ import shutil
 import os
 import sys
 import re
-import json
 import traceback
 from datetime import datetime
-import openpyxl
-import glob
 import pandas as pd
 
 import argparse
 from importlib import import_module
 
 from src.complex_logger import ComplexLogger
-from src.init import create_dir,reset_logs
-from src.generate_crew import read_variables_xls, snake_case
+from src.config import CFG, get_user, create_dir,reset_logs
+from src.generate_crew import read_variables_xls
 from icecream import ic
-from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir, get_distinct_column_values_by_name
+from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir
 
 def module_callback(crew, job, crewjob, details):
     """
@@ -53,15 +50,14 @@ def upload_env_file(file, tenant_id):
         f.write(file.read())
     return f"Environment file for tenant {tenant_id} uploaded successfully."
     
-def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5, team_id=None):
-    if team_id is None:
-        team_id = 'default'
+def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5):
     """
     This is the main function that you will use to run your custom crew.
     """
     reset_logs()
+    crews_folder = CFG.get_setting('crews_folder')
     (crew, job) = crewjob.split('-', maxsplit=1)
-    crews_dir = f"{CFG['crews_folder']}/{crew}-{job}"
+    crews_dir = f"{crews_folder}/{crew}-{job}"
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
@@ -85,29 +81,31 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     (result, metrics) = custom_crew.run()
 
-    ic('before xls out')
     ic(result)
 
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
-    add_md_files_to_log_sheet(output_log_sheet,f"{CFG['crews_folder']}{crew}-{job}")
+    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'),f"{CFG.get_setting('crews_folder')}{crew}-{job}")
 
     # copy contents of output subdirectory to directory up one level
-    shutil.copytree(src=f"{crews_dir}/output", dst=CFG['out_folder'], dirs_exist_ok=True)
+    shutil.copytree(src=f"{crews_dir}/output", dst=CFG.get_setting('out_folder'), dirs_exist_ok=True)
  
     download_files = gr.Markdown("Fetching")
-    outfiles = os.listdir(f"{CFG['crews_folder']}output")
+    outfiles = os.listdir(f"{CFG.get_setting('crews_folder')}output")
     if (outfiles):
         download_files = gr.Column()
     #return (result['final_output'], metrics)
     return (result, metrics, download_files)
 
 def get_crew_jobs_list(crewdir):
-    crewjobs_list = [f for f in os.listdir(crewdir) if not f.startswith('output')]    
-    crewjobs_list.sort()
-    return crewjobs_list
+    if crewdir:
+        crewjobs_list = [f for f in os.listdir(crewdir) if not f.startswith('output')]    
+        crewjobs_list.sort()
+        return crewjobs_list
+    else:
+        return []
 
-def get_crew_job(crewdir):   
+def get_crew_job(crewdir):
     crewjobs_list = get_crew_jobs_list(crewdir)
     crewjob = gr.Dropdown(choices=crewjobs_list , label="Prepared teams")
     return crewjob
@@ -119,21 +117,22 @@ def setup(template,crew, job):
     (crew, agents) = crew.split(' (', maxsplit=1) 
     (job, tasks) = job.split(' (', maxsplit=1) 
 
-    crews_dir = f"{CFG['crews_folder']}{crew}-{job}/"
-    create_dir(crews_dir)
-    create_dir(f"{CFG['crews_folder']}{crew}-{job}/output/")
+    #crews_dir = f"{CFG.get_setting('crews_folder')}{crew}-{job}/"
+    CFG.set_setting('crews_dir',f"{CFG.get_setting('crews_folder')}{crew}-{job}/")
+    print(CFG.get_setting('crews_dir'))
+    create_dir( CFG.get_setting('crews_dir'))
+    create_dir(f"{CFG.get_setting('crews_dir')}output/")
 
-    read_variables_xls(template,crew, job, crews_dir)
-    crewjob = get_crew_job(CFG['crews_folder'])
+    read_variables_xls(template,crew, job, CFG.get_setting('crews_dir'))
+    crewjob = get_crew_job(CFG.get_setting('crews_folder'))
     
-    return("Crew for Job " + crews_dir + " created!" , crewjob)
+    return ("Crew for Job " + CFG.get_setting('crews_dir') + " created!" , crewjob)
 
 def get_crews_details(template):
     df = pd.read_excel(template, sheet_name='crewmembers', usecols=['crewmember', 'crew'])
 
     # Group the DataFrame by 'Crew' and agents into lists
     grouped_crews = df.groupby('crew')['crewmember'].apply(list)
-    
     return [(f"{crew} ({', '.join(agent)})") for crew, agent in grouped_crews.items()]
 
 def get_jobs_details(template):
@@ -155,20 +154,20 @@ def get_crews_jobs_from_template(template, input_crew, input_job):
     
     return (crew, job)
 
-def upload_file(in_files):  
+def upload_file(in_files): 
     # theoretically allow for multiple, might add output file
     file_paths = [file.name for file in in_files]
     for file in in_files:
-        shutil.copy(file, CFG["xls_folder"])    
-    gr.Info("Files Uploaded!!!")    
+        shutil.copy(file, CFG.get_setting("xls_folder"))    
+    gr.Info(f"Files Uploaded!!! to {CFG.get_setting('xls_folder')}")    
 
-    templates_list = list_xls_files_in_dir(CFG["xls_folder"])
+    templates_list = list_xls_files_in_dir(CFG.get_setting("xls_folder"))
     template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
 
     return (file_paths, template)
 
 def extract_variables(details):
-    from textwrap import dedent
+    #from textwrap import dedent
     
     # Regular expression pattern to find {variable} occurrences
     pattern = re.compile(r'\{(.*?)\}')
@@ -249,7 +248,11 @@ def get_jobdetails(crewjob):
         with open(file_name, 'r') as file:
             prompt = file.read()
         return prompt
+    
+    job_txt = f"{CFG.get_setting('crews_folder')}{crewjob}/job_default_prompt.txt"
+    print(CFG.get_setting('crews_folder'))
+    ic(job_txt)
 
-    return gr.Textbox(lines=5, value=read_prompt_from_disk( f"{CFG['crews_folder']}{crewjob}/job_default_prompt.txt"), label="Got default prompt")
+    return gr.Textbox(lines=5, value=read_prompt_from_disk(job_txt ), label="Got default prompt")
 
 

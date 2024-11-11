@@ -1,5 +1,5 @@
 import inspect
-
+from src.config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY
 def describe_crew_instances(crew_instance):
     description = "Crew Instance Description:\n"
 

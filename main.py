@@ -1,66 +1,28 @@
 # main.py
 
 from icecream import ic
-import sys
 import logging
-from fastapi import Depends, FastAPI, Request, HTTPException
-#from fastapi.middleware.wsgi import WSGIMiddleware
-#from fastapi.responses import RedirectResponse
-import uvicorn
-#from auth import app as auth_app  # Import the FastAPI app for authentication
 
-import os
-from authlib.integrations.starlette_client import OAuth, OAuthError
-from starlette.config import Config
+from fastapi import Depends, FastAPI, Request, HTTPException
 from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.config import Config
+from authlib.integrations.starlette_client import OAuth, OAuthError
 
 import gradio as gr
-from dotenv import load_dotenv
 
 from src.gradio_interface import run_gradio
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
-from src.init import initialize_config, init_logging
 
-def init_env():
-    # Load environment variables from a .env file
-    load_dotenv()
+from src.config import GlobalConfig, init_logging,set_team_config, get_user, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, DEMO_MODE
 
-    # Load demo environment variables
-    load_dotenv(".env.demo")
-
-    # OAuth settings
-    load_dotenv(".env.google")
-
-    # Example usage: load environment variables for a specific tenant
-    tenant_id = os.getenv('TENANT_ID', 'default')  # Default to 'default' if TENANT_ID is not set
-    tenant_env = f".env.{tenant_id}"
-    load_dotenv(tenant_env)
-    ic(tenant_env)
-
-# init environment variables
-init_env()
-
-CFG = {}
-CFG = initialize_config("demo")
-
-logfile = CFG['logfile']
-logger = init_logging(logfile)
-
-# Configuration for demo mode
-DEMO_MODE = os.getenv('DEMO_MODE', 'false').lower() == 'true'
-DEMO_USERNAME = os.getenv('DEMO_USERNAME', 'demo')
-DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'demo')
-
-# Get OAuth ENV Vars
-GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-default-secret-key')
-
-ic(GOOGLE_CLIENT_ID)
+# Create a FastAPI app and mount the Gradio interface
+global app
+app = FastAPI()
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
+ic(config_data)
 starlette_config = Config(environ=config_data)
 oauth = OAuth(starlette_config)
 oauth.register(
@@ -69,54 +31,7 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'},
 )
 
-# Create a FastAPI app and mount the Gradio interface
-app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-
-team_id = ""
-
-# Dependency to get the current user
-def get_user(request: Request):
-    try:
-        if DEMO_MODE:
-            user_email = DEMO_USERNAME
-            logging.info(f"Demo mode active. Using demo user: {user_email}")
-            team_id = "team_demo"
-        else:
-            user = request.session.get('user')
-            if user:
-                user_email = user['name']
-                logging.info(f"User retrieved from session: {user_email}")
-            else:
-                logging.warning("No user found in session.")
-                return None
-
-        if team_id == "":
-            client = get_gspread_client(credentials_file='gsheet_credentials.json')
-            sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
-            users = get_users_from_sheet(sheet)
-            teams_users = get_teams_users_from_sheet(sheet)
-
-            # Find the team for the logged-in user
-            user_team = next((entry['team'] for entry in teams_users if entry['user'] == user_email), None)
-            if user_team:
-                request.session['team_id'] = user_team
-                logging.info(f"Team found for user '{user_email}': {user_team}")
-            else:
-                # Set the team_id to the user's identification if no team is found
-                request.session['team_id'] = user_email
-                logging.info(f"No team found for user '{user_email}'. Using user identification as team_id.")
-            team_id = request.session['team_id']
-            CFG = initialize_config(team_id)
-            logger = init_logging(CFG["logfile"])
-        else:
-            logging.info(f"'{team_id}' already set")
-
-    except Exception as e:
-        logging.error(f"Error accessing Google Sheets: {e}")
-        return None
-
-    return user_email
 
 ## FastAPI Routes
 @app.get('/')
@@ -126,29 +41,40 @@ def public(user: dict = Depends(get_user)):
     else:
         return RedirectResponse(url='/login-ui')
 
-@app.route('/logout')
+@app.get('/logout')
 async def logout(request: Request):
     request.session.pop('user', None)
     return RedirectResponse(url='/')
 
-@app.route('/login')
+@app.route('/auth')
+async def auth(request: Request):
+    try:
+        access_token = await oauth.google.authorize_access_token(request)
+    except OAuthError: # type: ignore
+        return RedirectResponse(url='/')
+    request.session['user'] = dict(access_token)["userinfo"]
+
+    return RedirectResponse(url='/')
+
+@app.get('/login')
 async def login(request: Request):
     try:
-        if DEMO_MODE:
+        if DEMO_MODE == 'true':
             logging.info("Demo mode active. Redirecting to Gradio interface.")
+            set_team_config('demo')
             return RedirectResponse(url='/gradio')
         else:
             # HACK Google error
             #logging.info("Redirecting to Gradio interface due to Google error.")
             #return RedirectResponse(url='/gradio')
             # REENABLE
-            redirect_uri = request.url_for('/auth')  
+            redirect_uri = request.url_for('auth')  
             return await oauth.google.authorize_redirect(request, redirect_uri)
     except Exception as e:
         logging.error(f"Error during authentication: {e}")
         return RedirectResponse(url='/')
 
-@app.route('/register')
+@app.get('/register')
 async def register(request: Request):
     try:
         redirect_uri = request.url_for('create_team')
@@ -173,7 +99,7 @@ async def register_user(request: Request):
 
     return RedirectResponse(url='/login-ui')
 
-@app.route('/setup-team')
+@app.get('/setup-team')
 async def setup_team(request: Request):
     user = get_user(request)
     if not user:
@@ -276,17 +202,18 @@ async def add_user_to_team(request: Request):
     request.session['user'] = dict(access_token)["userinfo"]
     return RedirectResponse(url='/')
 
+
 ## Main processing
 with gr.Blocks() as login_ui:
     gr.Button("Login", link="/login")
 
 app = gr.mount_gradio_app(app, login_ui, path="/login-ui")
 
-crewUI = run_gradio(CFG)
+crewUI = run_gradio()
+
+#app=gr.mount_gradio_app(app, blocks=crewUI, path="/gradio")
 app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
 
-def greet_username(request: gr.Request):
-    return request.username
 
 if __name__ == '__main__':
     logging.warning("Start application from commandline using:")
