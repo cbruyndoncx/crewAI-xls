@@ -1,6 +1,7 @@
 import os
 import gradio as gr
 from src.crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
+from gradio import State
 from src.excel_operations import list_xls_files_in_dir
 from src.config import CFG, read_logs, get_user, get_team_id
 
@@ -41,7 +42,7 @@ def run_gradio():
     crews_list = []
     jobs_list = []
     download_files=gr.Markdown("running")  
-    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
+    with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio, State() as state:
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
 
         with gr.Row():
@@ -138,9 +139,9 @@ def run_gradio():
                         t.tick(lambda x:x, logs)
                         #crewUI_gradio.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
 
-        read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
-        setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
-        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files])
+        read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job], _state=state)
+        setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob], _state=state)
+        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files], _state=state)
         #ic(crewUI_gradio)
     return  crewUI_gradio.queue()
 
