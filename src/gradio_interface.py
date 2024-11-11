@@ -140,9 +140,9 @@ def run_gradio():
                         t.tick(lambda x:x, logs)
                         #crewUI_gradio.load(read_logs, None, logs, lambda: gr.Timer(active=True), None, t)
 
-        read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job], _state=state)
-        setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob], _state=state)
-        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files], _state=state)
+        read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job], outputs=[crew, job])
+        setup_btn.click(setup, inputs=[template,crew,job], outputs=[setup_result, crewjob])
+        run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5], outputs=[output, metrics, download_files])
         #ic(crewUI_gradio)
     return  crewUI_gradio.queue()
 
