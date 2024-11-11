@@ -15,7 +15,6 @@ from .google_sheets import get_gspread_client, get_sheet_from_url, get_teams_fro
 # Load all environment variables
 load_dotenv()
 load_dotenv('.env.demo')
-# OAuth settings
 load_dotenv('.env.google')
 
 logging.info("Initializing global configurations...")
@@ -41,14 +40,10 @@ class GlobalConfig:
         return cls._instance
 
     def _initialize(self, user_specific_options=None):
-        # Initialize default configuration settings
         self.settings = {
             'default_option_1': 'value1',
             'default_option_2': 'value2',
-            # Add more default options as needed
         }
-
-        # Update with user-specific options if provided
         if user_specific_options:
             self.settings.update(user_specific_options)
 
@@ -59,7 +54,6 @@ class GlobalConfig:
         self.settings[key] = value
 
     def update_user_settings(self, new_user_options):
-        # Update the configuration with new user-specific options.
         if new_user_options:
             self.settings.update(new_user_options)
 
