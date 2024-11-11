@@ -17,6 +17,7 @@ load_dotenv()
 load_dotenv('.env.demo')
 load_dotenv('.env.google')
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Initializing global configurations...")
 
 # Configuration for demo mode
