@@ -58,7 +58,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     reset_logs(CFG.get_setting('logfile'))
     crews_folder = CFG.get_setting('crews_folder')
     (crew, job) = crewjob.split('-', maxsplit=1)
-    crews_dir = f"{crews_folder}/{crew}-{job}"
+    crews_dir = CFG.get_setting('crews_dir')
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
@@ -86,10 +86,10 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
-    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'),f"{CFG.get_setting('crews_folder')}{crew}-{job}")
+    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'), CFG.get_setting('crews_dir'))
 
     # copy contents of output subdirectory to directory up one level
-    shutil.copytree(src=f"{crews_dir}/output", dst=CFG.get_setting('out_folder'), dirs_exist_ok=True)
+    shutil.copytree(src=f"{CFG.get_setting('crews_dir')}/output", dst=CFG.get_setting('out_folder'), dirs_exist_ok=True)
  
     download_files = gr.Markdown("Fetching")
     outfiles = os.listdir(f"{CFG.get_setting('crews_folder')}output")
