@@ -57,7 +57,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     """
     reset_logs(CFG.get_setting('logfile'))
     crews_folder = CFG.get_setting('crews_folder')
-    (crew, job) = crewjob.split('-', maxsplit=1)
+    crewjob = f"{crew}-{job}"
     crew_dir = CFG.get_setting('crew_dir')
     select_language='en'
 
