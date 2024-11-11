@@ -1,9 +1,17 @@
 from crewai import Agent
 from textwrap import dedent
 
-from tools.browser_tools import BrowserTools
-from tools.calculator_tools import CalculatorTools
-from tools.search_tools import SearchTools
+import sys
+import os
+
+# Add the parent directory of crews_folder to sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
+sys.path.insert(0, parent_dir)
+
+from src.tools.browser_tools import BrowserTools
+from src.tools.calculator_tools import CalculatorTools
+from src.tools.search_tools import SearchTools
 
 ### Install duckduckgo-search for this example:
 ### !pip install -U duckduckgo-search
