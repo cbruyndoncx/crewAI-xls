@@ -66,7 +66,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     # Import the  module dynamically
     # Note this is incompatible with langtrace
-    module_crew_name = f"{crews_dir}.crew"
+    module_crew_name = f"data.team_{crew}.crews.{crew}-{job}.crew"
     crew_module = import_module(module_crew_name)
     CustomCrew = getattr(crew_module, 'CustomCrew')
     custom_crew = CustomCrew(expanded_details, select_language)
