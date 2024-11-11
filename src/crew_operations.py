@@ -22,6 +22,7 @@ def module_callback(crew, job, crewjob, details):
     """
     Callback function to run the crew job.
     """
+    logfile = CFG.get_setting('logfile')
     console = sys.stdout
     sys.stdout = ComplexLogger(logfile)
 
