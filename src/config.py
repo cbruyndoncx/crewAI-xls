@@ -136,13 +136,12 @@ async def get_user(request: Request):
 
     return {
         "user": user_email
-    }  
+    }
 
-def set_team_config(team_id, mode = 'team'):
-
+def set_team_config(team_id, mode='team'):
     if team_id:
         NEWCFG = {
-            "mode" : mode,
+            "mode": mode,
             "team_id": team_id,
             "base_folder": f"./data/team_{team_id}/",
             "crews_folder": f"./data/team_{team_id}/crews/",
@@ -151,14 +150,8 @@ def set_team_config(team_id, mode = 'team'):
             "log_folder": f"./data/team_{team_id}/log/",
             "logfile": f"./data/team_{team_id}/log/output.log",
             "output_log_sheet": f"./data/team_{team_id}/output/output_log.xlsx"
-        } 
-
-
-        # create base and other dependent folders
-        if not os.path.exists(NEWCFG["base_folder"]):
-            create_default_dirs(NEWCFG)
-
-        # Updating user-specific settings dynamically
+        }
+        create_default_dirs(NEWCFG)
         CFG.update_user_settings(NEWCFG)
 
 def create_default_dirs(CFG):
