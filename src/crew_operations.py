@@ -127,7 +127,7 @@ def setup(template,crew, job):
     read_variables_xls(template,crew, job, CFG.get_setting('crew_dir'))
     crewjob = get_crew_job(CFG.get_setting('crews_folder'))
     
-    return ("Crew for Job " + CFG.get_setting('crews_dir') + " created!" , crewjob)
+    return ("Crew for Job " + CFG.get_setting('crew_dir') + " created!" , crewjob)
 
 def get_crews_details(template):
     df = pd.read_excel(template, sheet_name='crewmembers', usecols=['crewmember', 'crew'])
