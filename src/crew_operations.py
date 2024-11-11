@@ -86,10 +86,10 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
-    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'), CFG.get_setting('crews_dir'))
+    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'), CFG.get_setting('crew_dir'))
 
     # copy contents of output subdirectory to directory up one level
-    shutil.copytree(src=f"{CFG.get_setting('crews_dir')}/output", dst=CFG.get_setting('out_folder'), dirs_exist_ok=True)
+    shutil.copytree(src=f"{CFG.get_setting('crew_dir')}/output", dst=CFG.get_setting('out_folder'), dirs_exist_ok=True)
  
     download_files = gr.Markdown("Fetching")
     outfiles = os.listdir(f"{CFG.get_setting('crews_folder')}output")
@@ -118,7 +118,7 @@ def setup(template,crew, job):
     (crew, agents) = crew.split(' (', maxsplit=1) 
     (job, tasks) = job.split(' (', maxsplit=1) 
 
-    #crews_dir = f"{CFG.get_setting('crews_folder')}{crew}-{job}/"
+    #crew_dir = f"{CFG.get_setting('crews_folder')}{crew}-{job}/"
     CFG.set_setting('crew_dir',f"{CFG.get_setting('crews_folder')}{crew}-{job}/")
     print(CFG.get_setting('crew_dir'))
     create_dir( CFG.get_setting('crew_dir'))

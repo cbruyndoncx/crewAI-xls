@@ -107,7 +107,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
     
     # LLMs
     llm_list_template=''
-    with open(f"{CFG.get_setting('crews_dir')}llm_providers.py", 'w') as file:
+    with open(f"{CFG.get_setting('crew_dir')}llm_providers.py", 'w') as file:
         llm_records = replace_none_with_empty_string(llm_records)
         for record in llm_records:
             llm_list_template+=env.get_template('llm_list_template.py.j2').render(clean_dict(record))
@@ -117,12 +117,12 @@ def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
     # TASKS 
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
     # If you want to append to an existing file instead, use 'a' mode.
-    with open(f"{CFG.get_setting('crews_dir')}tasks.py", 'w') as file:
+    with open(f"{CFG.get_setting('crew_dir')}tasks.py", 'w') as file:
         file.write(env.get_template('tasks_class_template.py.j2').render(models))
     
     # Add each task details
     job_records = []
-    with open(f"{CFG.get_setting('crews_dir')}tasks.py", 'a') as file:
+    with open(f"{CFG.get_setting('crew_dir')}tasks.py", 'a') as file:
         task_records=replace_none_with_empty_string(task_records)
         for record in task_records:
             record['job']=snake_case(record['job'])
@@ -130,9 +130,9 @@ def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
                 # Process the record as needed
                 record['task_name'] = snake_case(record['task'])
                 record['context'] = snake_case(record['context'])
-                record['crew_dir'] = crew_dir
+                record['crew_dir'] = CFG.get_setting('crew_dir')
                 if record['output_file'] : 
-                    record['output_file'] = f"{CFG.get_setting('crews_dir')}output/{record['output_file']}"
+                    record['output_file'] = f"{CFG.get_setting('crew_dir')}output/{record['output_file']}"
                 file.write(env.get_template('task_template.py.j2').render(clean_dict(record)))
                 if record['assigned_agent'] == '' :
                     record['assigned_agent_name'] = 'None'
@@ -142,7 +142,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
                 crew_task_list_template+=env.get_template('crew_task_list_template.py.j2').render(clean_dict(record))
                 job_records.append(record)
     # JOB PROMPT
-    write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{crew_dir}job_default_prompt.txt")
+    write_prompt_to_disk(get_job_prompt(template_filename, select_crew, select_job), f"{CFG.get_setting('crew_dir')}job_default_prompt.txt")
     
     # CUSTOM VARS 
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
@@ -178,17 +178,17 @@ def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
     # AGENTS
     # Open the file in write mode ('w'). If the file doesn't exist, it will be created.
     # If you want to append to an existing file instead, use 'a' mode.
-    with open(f"{CFG.get_setting('crews_dir')}agents.py", 'w') as file:
+    with open(f"{CFG.get_setting('crew_dir')}agents.py", 'w') as file:
         file.write(env.get_template('agents_class_template.py.j2').render(models))
 
     # Add each agent details
-    with open(f"{CFG.get_setting('crews_dir')}agents.py", 'a') as file:
+    with open(f"{CFG.get_setting('crew_dir')}agents.py", 'a') as file:
         agent_records=replace_none_with_empty_string(agent_records)
         for record in agent_records:
             for member in member_records:
                 record['agent_name'] = snake_case(record['agent'])
                 if member['crewmember'] == record['agent_name']: 
-                    record['crew_dir'] = crew_dir
+                    record['crew_dir'] = CFG.get_setting('crew_dir')
                     file.write(env.get_template('agent_template.py.j2').render(clean_dict(record)))
                     crew_agent_list_template+=env.get_template('crew_agent_list_template.py.j2').render(clean_dict(record))
 
@@ -208,7 +208,7 @@ def read_variables_xls(template_filename, select_crew, select_job, crew_dir):
 
             result=env.get_template('crew_class_template.py.j2').render(clean_dict(record))
 
-            with open(f"{CFG.get_setting('crews_dir')}crew.py", 'w') as file:
+            with open(f"{CFG.get_setting('crew_dir')}crew.py", 'w') as file:
                 file.write(result)
             return
     ic(f"crew {select_crew} is not defined")
@@ -222,9 +222,9 @@ if __name__ == "__main__":
     input_crew = snake_case(input(dedent("""Specify your crew """)))
     input_job = snake_case(input(dedent("""Specify your job: """)))
 
-    crews_dir = f"./crews/{input_crew}-{input_job}/"
+    crew_dir = f"./crews/{input_crew}-{input_job}/"
     xls_template = "./xls/crews_cb_3.xlsx"
-    create_directory(crews_dir)
+    create_directory(crew_dir)
 
-    read_variables_xls(xls_template,input_crew, input_job, crews_dir)    
+    read_variables_xls(xls_template,input_crew, input_job, crew_dir)    
 

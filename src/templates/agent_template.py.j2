@@ -24,7 +24,7 @@
         )
 
         # Function to write the extracted print statements into a markdown file.
-        markdown_file="{{crews_dir}}agent_{{agent_name}}.md"
+        markdown_file="{{crew_dir}}agent_{{agent_name}}.md"
         with open(markdown_file, 'w') as f:
             f.write("## {{agent_name}}"+ '\n')
             f.write(f"Role: {tempAgent.role}"+ '\n')
