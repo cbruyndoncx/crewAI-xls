@@ -54,7 +54,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     """
     This is the main function that you will use to run your custom crew.
     """
-    reset_logs()
+    reset_logs(CFG.get_setting('logfile'))
     crews_folder = CFG.get_setting('crews_folder')
     (crew, job) = crewjob.split('-', maxsplit=1)
     crews_dir = f"{crews_folder}/{crew}-{job}"
