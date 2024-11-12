@@ -44,21 +44,20 @@ def module_callback(crew, job, crewjob, details):
 
     sys.stdout = console
 
-def upload_env_file(file, tenant_id):
+def upload_env_file(file, tenant_id, state):
     # Save the uploaded file with a tenant-specific name
     file_path = f".env.{tenant_id}"
     with open(file_path, "wb") as f:
         f.write(file.read())
-    return f"Environment file for tenant {tenant_id} uploaded successfully."
+    return (f"Environment file for tenant {tenant_id} uploaded successfully.", state)
     
-def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5):
+def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5, state):
     """
     This is the main function that you will use to run your custom crew.
     """
     reset_logs(CFG.get_setting('logfile'))
-    crews_folder = CFG.get_setting('crews_folder')
-    crewjob = f"{crew}-{job}"
-    crew_dir = CFG.get_setting('crew_dir')
+    (crew, job) = crewjob.split('-', maxsplit=1)
+
     select_language='en'
 
     input_mapping = get_input_mapping(details,input1,input2,input3,input4,input5)
@@ -66,7 +65,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     # Import the  module dynamically
     # Note this is incompatible with langtrace
-    module_crew_name = f"data.team_{crew}.crews.{crew}-{job}.crew"
+    module_crew_name = f"data.team_{CFG.get_setting('team_id')}.crews.{crew}-{job}.crew"
     crew_module = import_module(module_crew_name)
     CustomCrew = getattr(crew_module, 'CustomCrew')
     custom_crew = CustomCrew(expanded_details, select_language)
@@ -86,7 +85,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
 
     #write_log_sheet(output_log_sheet,details, read_logs(), result['final_output'], json.dumps(metrics, indent=4))
     #write_log_sheet(output_log_sheet,details, read_logs(), result, json.dumps(metrics, indent=4))
-    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'), CFG.get_setting('crew_dir'))
+    add_md_files_to_log_sheet(CFG.get_setting('output_log_sheet'), CFG.get_setting('out_folder'))
 
     # copy contents of output subdirectory to directory up one level
     shutil.copytree(src=f"{CFG.get_setting('crew_dir')}/output", dst=CFG.get_setting('out_folder'), dirs_exist_ok=True)
@@ -96,7 +95,7 @@ def run_crew(crew, job, crewjob, details, input1, input2, input3, input4, input5
     if (outfiles):
         download_files = gr.Column()
     #return (result['final_output'], metrics)
-    return (result, metrics, download_files)
+    return (result, metrics, download_files, state)
 
 def get_crew_jobs_list(crewdir):
     if crewdir:
@@ -111,7 +110,7 @@ def get_crew_job(crewdir):
     crewjob = gr.Dropdown(choices=crewjobs_list , label="Prepared teams")
     return crewjob
     
-def setup(template,crew, job):
+def setup(template,crew, job, state):
     """
     This is used to generate a new crew-job combination
     """
@@ -127,7 +126,7 @@ def setup(template,crew, job):
     read_variables_xls(template,crew, job, CFG.get_setting('crew_dir'))
     crewjob = get_crew_job(CFG.get_setting('crews_folder'))
     
-    return ("Crew for Job " + CFG.get_setting('crew_dir') + " created!" , crewjob)
+    return ("Crew for Job " + CFG.get_setting('crew_dir') + " created!" , crewjob, state)
 
 def get_crews_details(template):
     df = pd.read_excel(template, sheet_name='crewmembers', usecols=['crewmember', 'crew'])
@@ -143,7 +142,7 @@ def get_jobs_details(template):
     grouped_jobs = df.groupby('job')['task'].apply(list)
     return [(f"{job} ({', '.join(task)})") for job, task in grouped_jobs.items()]
 
-def get_crews_jobs_from_template(template, input_crew, input_job):
+def get_crews_jobs_from_template(template, input_crew, input_job, state):
     """
     This is used to fetch list of available crews and jobs in selected template
     """
@@ -153,9 +152,9 @@ def get_crews_jobs_from_template(template, input_crew, input_job):
     crew = gr.Radio(choices=get_crews_details(template), label="Select crew", elem_classes="gr.dropdown")
     job = gr.Radio(choices=get_jobs_details(template), label="Select job", elem_classes="gr.dropdown")
     
-    return (crew, job)
+    return (crew, job, state)
 
-def upload_file(in_files): 
+def upload_file(in_files, state): 
     # theoretically allow for multiple, might add output file
     file_paths = [file.name for file in in_files]
     for file in in_files:
@@ -165,7 +164,7 @@ def upload_file(in_files):
     templates_list = list_xls_files_in_dir(CFG.get_setting("xls_folder"))
     template = gr.Dropdown(choices=templates_list, label="1) Select from templates")
 
-    return (file_paths, template)
+    return (file_paths, template, state)
 
 def extract_variables(details):
     #from textwrap import dedent
@@ -218,7 +217,7 @@ def get_input_mapping(details, input1, input2, input3, input4, input5):
     
     return input_mapping
 
-def parse_details(details):
+def parse_details(details, state):
 
     # Map variables to UI fields
     mapped_variables = get_mapped_variables(details)
@@ -242,9 +241,9 @@ def parse_details(details):
     if input_vars > 4:
         local_input5 = gr.Textbox(lines=1, visible=True, label=mapped_variables[4])
     
-    return (local_input1, local_input2, local_input3, local_input4, local_input5)
+    return (local_input1, local_input2, local_input3, local_input4, local_input5, state)
     
-def get_jobdetails(crewjob):
+def get_jobdetails(crewjob, state):
     def read_prompt_from_disk(file_name):
         with open(file_name, 'r') as file:
             prompt = file.read()
@@ -254,6 +253,6 @@ def get_jobdetails(crewjob):
     print(CFG.get_setting('crews_folder'))
     ic(job_txt)
 
-    return gr.Textbox(lines=5, value=read_prompt_from_disk(job_txt ), label="Got default prompt")
+    return (gr.Textbox(lines=5, value=read_prompt_from_disk(job_txt ), label="Got default prompt"), state)
 
 

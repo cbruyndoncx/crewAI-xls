@@ -42,7 +42,7 @@ def open_workbook(filename):
     return wb
 
 def save_workbook(wb, filename):
-    xls_file_path = f"{CFG.get_setting('xls_folder')}{filename}"
+    xls_file_path = f"{filename}"
     wb.save(xls_file_path)
 
     return f"Workbook saved as {xls_file_path}"

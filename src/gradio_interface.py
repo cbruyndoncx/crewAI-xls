@@ -2,7 +2,7 @@ import os
 import gradio as gr
 from src.crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
 from src.excel_operations import list_xls_files_in_dir
-from src.config import CFG, read_logs, get_user, get_team_id
+from src.config import CFG, get_config, read_logs, get_user, get_team_id
 
 from icecream import ic
 import logging
@@ -42,7 +42,7 @@ def run_gradio():
     jobs_list = []
     download_files=gr.Markdown("running")  
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
-        state = gr.State(CFG)
+        state = gr.State(get_config())
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
 
         with gr.Row():
@@ -135,15 +135,16 @@ def run_gradio():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
-                        t = gr.Timer(10, active=True)
-                        t.tick(lambda x:x, logs)
-                        crewUI_gradio.load(read_logs, state.value.get_setting('logfile'), logs, lambda: gr.Timer(active=True), None, t)
+                        #t = gr.Timer(10, active=True)
+                        #t.tick(lambda x:x, logs)
+                        #crewUI_gradio.load(read_logs, state.value.get_setting('logfile'), logs, lambda: gr.Timer(active=True), None, t)
 
         read_template_btn.click(get_crews_jobs_from_template, inputs=[template, crew, job, state], outputs=[crew, job, state])
         setup_btn.click(setup, inputs=[template, crew, job, state], outputs=[setup_result, crewjob, state])
         run_crew_btn.click(run_crew,inputs=[crew,job, crewjob,jobdetails,input1,input2,input3,input4,input5,state], outputs=[output, metrics, download_files, state])
         #ic(crewUI_gradio)
     return  crewUI_gradio.queue()
+
 
     #crewUI.queue().launch(show_error=True, auth=get_authenticated())
     #demo.queue().launch(share=True, show_error=True, auth=("user", "pwd"))

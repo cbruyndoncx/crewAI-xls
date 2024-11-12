@@ -81,7 +81,7 @@ def get_team_id(user_email: str) -> str:
                 logging.info(f"Team found for user '{user_email}': {user_team}")
             else:
                 # Set the team_id to the user's identification if no team is found
-                team_id = user_email
+                team_id = user_email.replace("@", "_at_").replace(".com", "_dot_com")
                 logging.info(f"No team found for user '{user_email}'. Using user identification as team_id.")
 
         set_team_config(team_id)
@@ -150,10 +150,13 @@ def set_team_config(team_id, mode='team'):
             "out_folder": f"./data/team_{team_id}/crews/output/",
             "log_folder": f"./data/team_{team_id}/log/",
             "logfile": f"./data/team_{team_id}/log/output.log",
-            "output_log_sheet": f"./data/team_{team_id}/output/output_log.xlsx"
+            "output_log_sheet": f"./data/team_{team_id}/crews/output/output_log.xlsx"
         }
         create_default_dirs(NEWCFG)
         CFG.update_user_settings(NEWCFG)
+
+def get_config():
+    return CFG
 
 def create_default_dirs(CFG):
     # create base and other dependent folders
