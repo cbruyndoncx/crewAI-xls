@@ -2,7 +2,7 @@ import os
 import gradio as gr
 from src.crew_operations import upload_env_file, get_crews_jobs_from_template, get_crew_jobs_list, setup, get_jobdetails, parse_details, run_crew, upload_file
 from src.excel_operations import list_xls_files_in_dir
-from src.config import CFG, get_config, read_logs, get_user, get_team_id
+from src.config import CFG, get_config, read_logs, get_user, get_team_id, create_default_dirs
 
 from icecream import ic
 import logging

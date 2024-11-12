@@ -13,7 +13,7 @@ import argparse
 from importlib import import_module
 
 from src.complex_logger import ComplexLogger
-from src.config import CFG, get_user, create_dir,reset_logs
+from src.config import CFG, get_user, create_dir, reset_logs, create_default_dirs
 from src.generate_crew import read_variables_xls
 from icecream import ic
 from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir
