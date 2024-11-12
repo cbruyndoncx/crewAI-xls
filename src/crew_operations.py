@@ -117,7 +117,8 @@ def setup(template,crew, job, state):
     (crew, agents) = crew.split(' (', maxsplit=1) 
     (job, tasks) = job.split(' (', maxsplit=1) 
 
-    #crew_dir = f"{CFG.get_setting('crews_folder')}{crew}-{job}/"
+    # Ensure directories are created
+    create_default_dirs(CFG.settings)
     CFG.set_setting('crew_dir',f"{CFG.get_setting('crews_folder')}{crew}-{job}/")
     print(CFG.get_setting('crew_dir'))
     create_dir( CFG.get_setting('crew_dir'))

@@ -38,9 +38,15 @@ def run_gradio():
     #templates_list = list_xls_files_in_dir(CFG.get_setting('xls_folder'))
     #crewjobs_list = get_crew_jobs_list(CFG.get_setting('crews_folder'))
     
-    crews_list = []
+    # Initialize the CFG instance
+    cfg_instance = get_config()
+
+    # Ensure directories are created
+    create_default_dirs(cfg_instance.settings)
+
+    crews_list = get_crew_jobs_list(cfg_instance.get_setting('crews_folder'))
     jobs_list = []
-    download_files=gr.Markdown("running")  
+    download_files = gr.Markdown("running")
     with gr.Blocks(theme='freddyaboulton/dracula_revamped', css=custom_css) as crewUI_gradio:
         state = gr.State(get_config())
     #with gr.Blocks(theme=gr.themes.Soft(primary_hue="indigo", secondary_hue="slate")) as demo:
