@@ -1,4 +1,4 @@
-# main.py
+# excel_operations.py
 
 import os
 import re
@@ -6,7 +6,6 @@ import glob
 from datetime import datetime
 import openpyxl
 import logging
-from .config import CFG
 
 # Function to sanitize a string for Excel
 def sanitize_for_excel(value):
@@ -26,14 +25,13 @@ def sanitize_for_excel(value):
     
     return sanitized_value
 
-def open_workbook(filename):
+def open_workbook(xls_file_path):
     """
     Create a new workbook or load an existing one.
     """
-    # Adjust file path to include team directory
-    xls_file_path = f"{CFG.get_setting('xls_folder')}{filename}"
     try:
         wb = openpyxl.load_workbook(xls_file_path)
+        
     except FileNotFoundError:
         logging.info(f"The file {xls_file_path} does not exist. Creating a new workbook.")
         wb = openpyxl.Workbook()
@@ -41,8 +39,8 @@ def open_workbook(filename):
 
     return wb
 
-def save_workbook(wb, filename):
-    xls_file_path = f"{filename}"
+def save_workbook(wb, xls_file_path):
+
     wb.save(xls_file_path)
 
     return f"Workbook saved as {xls_file_path}"

@@ -13,12 +13,12 @@ class Config:
 
 # Initialize the configuration and state
 config = Config()
-state = gr.State(config)
+
 
 # Define a function to update the configuration and state
 def update_config(new_value, state):
     # Update the configuration
-    state.value.update_setting("setting1", new_value)
+    state.update_setting("setting1", new_value)
     # Return a message to indicate the update and the updated state
     return f"Updated setting1 to: {new_value}", state
 
@@ -30,6 +30,7 @@ def use_config(input_text, state):
 
 # Create a Gradio interface
 with gr.Blocks() as demo:
+    state = gr.State(config)
     with gr.Row():
         input_text = gr.Textbox(label="Enter some text")
         setting_input = gr.Textbox(label="Update Setting1")

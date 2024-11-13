@@ -11,10 +11,10 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 
 import gradio as gr
 
-from src.gradio_interface import run_gradio
+from src.gradio_interface import *
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
 
-from src.config import GlobalConfig, init_logging,set_team_config, get_user, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, DEMO_MODE
+from src.config import GlobalConfig, init_logging, get_user, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, DEMO_MODE
 
 # Create a FastAPI app and mount the Gradio interface
 global app
@@ -35,8 +35,9 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 ## FastAPI Routes
 @app.get('/')
-def public(user: dict = Depends(get_user)):
+def public(user: str = Depends(get_user)):
     if user:
+        logging.info(f"in /public, got {user}, redirecting to /gradio ")
         return RedirectResponse(url='/gradio')
     else:
         return RedirectResponse(url='/login-ui')
@@ -52,7 +53,11 @@ async def auth(request: Request):
         access_token = await oauth.google.authorize_access_token(request)
     except OAuthError: # type: ignore
         return RedirectResponse(url='/')
-    request.session['user'] = dict(access_token)["userinfo"]
+    user = dict(access_token)["userinfo"]
+    request.session['user'] = user['email']
+    logging.info(f"in /auth {user['email']}" )
+    CFG.set_setting('user', user['email'])
+    #sessCFG.value.set_setting('user', user['email'])
 
     return RedirectResponse(url='/')
 
@@ -61,13 +66,13 @@ async def login(request: Request):
     try:
         if DEMO_MODE == 'true':
             logging.info("Demo mode active. Redirecting to Gradio interface.")
-            set_team_config('demo')
+            user = 'demo'
+            request.session['user'] = user
+            logging.info(f"in /login DEMO {user}" )
+            CFG.set_setting('user', user )
+            #sessCFG.value.set_setting('user', user )
             return RedirectResponse(url='/gradio')
         else:
-            # HACK Google error
-            #logging.info("Redirecting to Gradio interface due to Google error.")
-            #return RedirectResponse(url='/gradio')
-            # REENABLE
             redirect_uri = request.url_for('auth')  
             return await oauth.google.authorize_redirect(request, redirect_uri)
     except Exception as e:
@@ -202,16 +207,23 @@ async def add_user_to_team(request: Request):
     request.session['user'] = dict(access_token)["userinfo"]
     return RedirectResponse(url='/')
 
-
 ## Main processing
 with gr.Blocks() as login_ui:
     gr.Button("Login", link="/login")
 
 app = gr.mount_gradio_app(app, login_ui, path="/login-ui")
 
-crewUI = run_gradio()
+CFG = GlobalConfig()
+logfile = CFG.get_setting('log_file')
+logger = init_logging(logfile)
 
-#app=gr.mount_gradio_app(app, blocks=crewUI, path="/gradio")
+#@app.route('/gradio')
+#async def gradio_route(request: Request):
+
+crewUI = run_gradio(CFG)
+
+# initialise with demo user, as workaround
+#crewUI = run_gradio(request=Request({"type": "http", "session": {"user": {"email": "demo@demo.com"}}}))
 app = gr.mount_gradio_app(app, blocks=crewUI, path="/gradio", auth_dependency=get_user)
 
 

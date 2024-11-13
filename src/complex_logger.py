@@ -7,7 +7,7 @@ class ComplexLogger:
 
         self.filename = f"{filename}"
         self.terminal = sys.stdout
-        #self.reset_logs()
+        self.reset_logs()
         self.log = open(self.filename, "w")
         self.flush()
 
