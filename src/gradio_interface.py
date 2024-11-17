@@ -282,6 +282,10 @@ def run_gradio(CFG):
                         logging.info("Timer tick: Updating logs")
                         logging.debug("Timer tick: Attempting to update logs component")
                         logging.info("Timer tick: Updating logs")
+                        logging.debug("Timer tick: Attempting to update logs component")
+                        logging.info("Timer tick: Updating logs")
+                        logging.debug("Timer tick: Attempting to update logs component")
+                        logging.info("Timer tick: Updating logs")
 
         crewUI_gradio.load(update_user, inputs=[grUser, sessCFG], outputs=[grUser, grTeamId,grCrewsFolder, grXlsFolder, grTemplate, crewjob, sessCFG])
         read_template_btn.click(get_crews_jobs_from_template, inputs=[grTemplate, crew, job], outputs=[crew, job])
