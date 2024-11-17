@@ -158,7 +158,7 @@ def read_logs(logfile):
             return tmplog
     else:
         # Return a message or handle the case where the file does not exist
-        return "Log file does not exist."
+        return "Log file does not exist or is empty."
 
 def reset_logs(logfile):
     logger = ComplexLogger(logfile)
