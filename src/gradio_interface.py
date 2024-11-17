@@ -276,9 +276,8 @@ def run_gradio(CFG):
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
-                        #t = gr.Timer(10, active=True)
-                        #t.tick(lambda x:x, logs)
-                        #crewUI_gradio.load(read_logs, sessCFG.get_setting('logfile'), logs, lambda: gr.Timer(active=True), None, t)
+                        t = gr.Timer(10, active=True)
+                        t.tick(lambda: read_logs(sessCFG.value.get_setting('log_file')), outputs=logs)
 
         crewUI_gradio.load(update_user, inputs=[grUser, sessCFG], outputs=[grUser, grTeamId,grCrewsFolder, grXlsFolder, grTemplate, crewjob, sessCFG])
         read_template_btn.click(get_crews_jobs_from_template, inputs=[grTemplate, crew, job], outputs=[crew, job])
