@@ -259,7 +259,9 @@ def run_gradio(CFG):
                 with gr.Column(scale=2):
                     gr.Markdown("## Wait for results below")
                     gr.Markdown("#### (or watch progress in the console at the bottom)")
-                    output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox") 
+                    with gr.Accordion('Answer:', open=True):
+                        #output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox") 
+                        output = gr.Markdown(elem_classes="gr-textbox") 
                     
             with gr.Row():
                 with gr.Column():
