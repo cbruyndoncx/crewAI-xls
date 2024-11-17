@@ -85,7 +85,9 @@ def run_crew(sessCFG, crew, job, crewjob, details, input1, input2, input3, input
     if (outfiles):
         download_files = gr.Column()
     #return (result['final_output'], metrics)
-    return (result, metrics, download_files)
+    # Convert result to a string suitable for Markdown
+    result_markdown = f"## Results\n\n{result}\n\n### Metrics\n\n{json.dumps(metrics, indent=4)}"
+    return (result_markdown, metrics, download_files)
 
 def run_gradio(CFG):
     
