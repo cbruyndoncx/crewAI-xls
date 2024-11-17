@@ -49,7 +49,9 @@ class GlobalConfig:
 
     def _initialize(self, user_specific_options=None):
         self.settings = { "user" : "demo"}
-        if user_specific_options:
+        # Ensure log_file is set with a default value if not provided
+        if "log_file" not in self.settings:
+            self.settings["log_file"] = GlobalSettings.LOG_FILE_TEMPLATE.format(team_id="default")
             self.settings.update(user_specific_options)
 
     def get_setting(self, key):
