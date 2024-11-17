@@ -145,7 +145,7 @@ def create_dir(folder):
 def init_logging(logfile):
     logger = ComplexLogger(logfile)
     logger.reset_logs()
-    sys.stdout = ComplexLogger(logfile)
+    sys.stdout = logger  # Ensure sys.stdout is set to the logger instance
     return logger
 
 def read_logs(logfile):
