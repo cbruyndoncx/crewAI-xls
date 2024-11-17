@@ -83,15 +83,11 @@ def run_crew(sessCFG, crew, job, crewjob, details, input1, input2, input3, input
     # copy contents of output subdirectory to directory up one level
     shutil.copytree(src=f"{crew_dir}/output", dst=output_folder, dirs_exist_ok=True)
  
-    download_files = gr.Markdown("Fetching")
-
     outfiles = os.listdir(output_folder)
 
     # make all files in output folder downloadable
-    if (outfiles):
-        download_files = gr.Files()
-        for outfile in outfiles:
-            download_files.add(gr.File(value=f"{output_folder}/{outfile}", label=os.path.basename(outfile)))
+    if outfiles:
+        download_files = [gr.File(value=f"{output_folder}/{outfile}", label=os.path.basename(outfile)) for outfile in outfiles]
     else:
         download_files = gr.Markdown("No files to download")
     
