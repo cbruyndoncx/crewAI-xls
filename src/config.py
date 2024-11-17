@@ -166,6 +166,12 @@ def read_logs(logfile):
         # Return a message or handle the case where the file does not exist
         return "Log file does not exist or is empty."
 
+def reset_logs(logfile):
+    if logfile is not None and os.path.exists(logfile):
+        with open(logfile, "w") as f:
+            f.truncate(0)
+    logging.info(f"Logs reset for file: {logfile}")
+
 def log_and_return(logfile):
     log_content = read_logs(logfile)
     logging.debug(f"Log content to be displayed: {log_content}")
