@@ -157,6 +157,7 @@ def read_logs(logfile):
         with open(logfile, "r") as f:
             tmplog = f.read()
             logging.info("Log content read successfully")
+            logging.debug(f"Log content: {tmplog}")
             return tmplog
     else:
         # Return a message or handle the case where the file does not exist
