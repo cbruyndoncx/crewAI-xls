@@ -175,6 +175,8 @@ def reset_logs(logfile):
 def log_and_return(logfile):
     log_content = read_logs(logfile)
     logging.debug(f"Log content to be displayed: {log_content}")
+    if not log_content:
+        logging.warning("Log content is empty or None.")
     return log_content
     logger = ComplexLogger(logfile)
     logger.reset_logs()
