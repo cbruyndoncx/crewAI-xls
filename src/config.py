@@ -149,12 +149,14 @@ def init_logging(logfile):
     return logger
 
 def read_logs(logfile):
+    logging.info("Reading logs from file: " + logfile)
     sys.stdout.flush()
     # Check if the log file exists
     if logfile is not None and os.path.exists(logfile):
         # Read the contents of the log file
         with open(logfile, "r") as f:
             tmplog = f.read()
+            logging.info("Log content read successfully")
             return tmplog
     else:
         # Return a message or handle the case where the file does not exist
