@@ -271,7 +271,7 @@ def run_gradio(CFG):
                     
             with gr.Row():
                 with gr.Column():
-                    download_files = gr.Accordion("Download Files")
+                    download_files = gr.Files(label="Download Files")
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
