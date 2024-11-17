@@ -270,7 +270,8 @@ def run_gradio(CFG):
                         output = gr.Markdown(elem_classes="gr-textbox") 
                     
             with gr.Row():
-                download_files = gr.Column()
+                with gr.Column():
+                    download_files = gr.Accordion("Download Files")
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
