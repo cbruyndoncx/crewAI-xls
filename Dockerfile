@@ -37,7 +37,8 @@ WORKDIR /app
 # into this layer.
 COPY requirements.txt requirements.txt
 
-RUN python -m pip install -r requirements.txt
+#RUN python -m pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Switch to the non-privileged user to run the application.
 #USER appuser
@@ -51,7 +52,7 @@ EXPOSE 8000
 #ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 # Run the application.
-CMD ["python", "-m", "uvicorn", "main:app","--proxy-headers", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["python", "-m", "uvicorn", "main:app","--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
 #CMD uvicorn src.app:app --proxy-headers --host 0.0.0.0 --port 8000
 #CMD ["python3","./main.py"]
 #CMD ["some-command", "--option", "value"]
