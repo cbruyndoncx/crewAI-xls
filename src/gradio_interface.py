@@ -87,7 +87,7 @@ def run_crew(sessCFG, crew, job, crewjob, details, input1, input2, input3, input
 
     # make all files in output folder downloadable
     if outfiles:
-        download_files = [gr.File(value=f"{output_folder}/{outfile}", label=os.path.basename(outfile)) for outfile in outfiles]
+        download_files = [f"{output_folder}/{outfile}" for outfile in outfiles]
     else:
         download_files = gr.Markdown("No files to download")
     
