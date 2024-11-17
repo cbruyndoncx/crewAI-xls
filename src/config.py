@@ -53,7 +53,10 @@ class GlobalConfig:
             self.settings.update(user_specific_options)
 
     def get_setting(self, key):
-        return self.settings.get(key)
+        value = self.settings.get(key)
+        if value is None:
+            logging.warning(f"Setting '{key}' not found in configuration.")
+        return value
 
     def set_setting(self, key, value):
         self.settings[key] = value
