@@ -166,7 +166,10 @@ def read_logs(logfile):
         # Return a message or handle the case where the file does not exist
         return "Log file does not exist or is empty."
 
-def reset_logs(logfile):
+def log_and_return(logfile):
+    log_content = read_logs(logfile)
+    logging.debug(f"Log content to be displayed: {log_content}")
+    return log_content
     logger = ComplexLogger(logfile)
     logger.reset_logs()
 
