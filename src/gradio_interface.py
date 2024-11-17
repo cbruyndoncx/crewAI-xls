@@ -277,7 +277,7 @@ def run_gradio(CFG):
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
                         t = gr.Timer(10, active=True)
-                        t.tick(fn=lambda: log_and_return(sessCFG.value.get_setting('log_file') or ""), outputs=logs)
+                        t.tick(fn=lambda sessCFG: log_and_return(sessCFG.value.get_setting('log_file') or ""), inputs=[sessCFG], outputs=logs)
                         logging.debug("Timer tick: Attempting to update logs component")
                         logging.info("Timer tick: Updating logs")
                         logging.debug("Timer tick: Attempting to update logs component")
