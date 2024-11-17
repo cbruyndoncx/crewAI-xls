@@ -5,7 +5,7 @@ import gradio as gr
 from importlib import import_module
 from src.crew_operations import  get_crews_jobs_from_template, get_crew_jobs_list, setup, parse_details, get_input_mapping
 from src.excel_operations import write_log_sheet, add_md_files_to_log_sheet, list_xls_files_in_dir
-from src.config import get_team_id, read_logs, reset_logs, log_and_return
+from src.config import get_team_id, read_logs, reset_logs, init_logging
 
 from icecream import ic
 import logging
@@ -36,8 +36,9 @@ def run_crew(sessCFG, crew, job, crewjob, details, input1, input2, input3, input
     """
     This is the main function that you will use to run your custom crew.
     """
+    log_file = sessCFG.get_setting('log_file')
     
-    reset_logs(sessCFG.get_setting('log_file'))
+    init_logging(log_file)
     logging.info(f"CREW: {crew} - JOB: {job} = CREWJOB: {crewjob}") 
     (crew, job) = crewjob.split('-', maxsplit=1)
 
@@ -276,8 +277,10 @@ def run_gradio(CFG):
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
-                        t = gr.Timer(10, active=True)
-                        t.tick(fn=lambda: log_and_return(sessCFG.value.get_setting('log_file') or ""), inputs=[], outputs=[logs])
+                        t = gr.Timer(3, active=True)
+                        #t.tick(fn=lambda: log_and_return(sessCFG.value.get_setting('log_file') or ""), inputs=[], outputs=[logs])
+                        t.tick(fn=lambda: read_logs(sessCFG.value.get_setting('log_file') or ""), inputs=[], outputs=[logs])
+                        
                         logging.debug("Timer tick: Attempting to update logs component")
                         logging.info("Timer tick: Updating logs")
 

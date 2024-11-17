@@ -155,6 +155,30 @@ def init_logging(logfile):
     sys.stdout = logger  # Ensure sys.stdout is set to the logger instance
     return logger
 
+class ComplexLogger(object):
+    def __init__(self, logfile):
+        self.terminal = sys.stdout
+        self.log = open(logfile, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
+
+    def reset_logs(self):
+        self.log.truncate(0)
+
+    def read_logs(self):
+        self.log.seek(0)
+        return self.log.read()
+
+    def close(self):
+        self.log.close()
+
+
 def read_logs(logfile):
     logging.info("Reading logs from file: " + logfile)
     sys.stdout.flush()
@@ -175,7 +199,7 @@ def reset_logs(logfile):
         with open(logfile, "w") as f:
             f.truncate(0)
     logging.info(f"Logs reset for file: {logfile}")
-
+"""
 def log_and_return(logfile):
     log_content = read_logs(logfile)
     logging.debug(f"Log content to be displayed: {log_content}")
@@ -185,3 +209,4 @@ def log_and_return(logfile):
     logger = ComplexLogger(logfile)
     logger.reset_logs()
 
+"""
