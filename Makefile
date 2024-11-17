@@ -40,8 +40,10 @@ clean:
 CONDA_NAME ?= mypi310
 conda:
 	conda activate $(CONDA_NAME)
-pyrun:
+pyrundev:
 	python -m uvicorn main:app --reload
+pyrunprod:
+	python -m uvicorn main:app
 reqs:
 	pipreqs --ignore templates .
 

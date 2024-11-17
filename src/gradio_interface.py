@@ -66,14 +66,17 @@ def run_crew(sessCFG, crew, job, crewjob, details, input1, input2, input3, input
 
     (result, metrics) = custom_crew.run()
 
-    ic(result)
-    
     crews_folder = sessCFG.get_setting('crews_folder')
     output_folder = sessCFG.get_setting('output_folder')
     output_log_sheet = sessCFG.get_setting('output_log_sheet')
     crew_dir = f"{crews_folder}{crew}-{job}/"
     logfile = sessCFG.get_setting('log_file')
 
+    result_file=f"{output_folder}_{crew}-{job}_result.md"
+    result_markdown = f"### Answer: \n\n{result}\n"
+    with open(result_file, 'w') as f:
+        f.write(f"{result_markdown}")
+    
     write_log_sheet(output_log_sheet,details, read_logs(logfile), result.raw.replace('\n\n', '\n'), json.dumps(metrics, indent=4))
     add_md_files_to_log_sheet(output_log_sheet, output_folder)
 
@@ -81,12 +84,17 @@ def run_crew(sessCFG, crew, job, crewjob, details, input1, input2, input3, input
     shutil.copytree(src=f"{crew_dir}/output", dst=output_folder, dirs_exist_ok=True)
  
     download_files = gr.Markdown("Fetching")
+
     outfiles = os.listdir(output_folder)
+
+    # make all files in output folder downloadable
     if (outfiles):
-        download_files = gr.Column()
-    #return (result['final_output'], metrics)
-    # Convert result to a string suitable for Markdown
-    result_markdown = f"## Results\n\n{result}\n\n### Metrics\n\n{json.dumps(metrics, indent=4)}"
+        download_files = gr.Files()
+        for outfile in outfiles:
+            download_files.add(gr.File(value=f"{output_folder}/{outfile}", label=os.path.basename(outfile)))
+    else:
+        download_files = gr.Markdown("No files to download")
+    
     return (result_markdown, metrics, download_files)
 
 def run_gradio(CFG):
@@ -261,19 +269,12 @@ def run_gradio(CFG):
                 with gr.Column(scale=2):
                     gr.Markdown("## Wait for results below")
                     gr.Markdown("#### (or watch progress in the console at the bottom)")
-                    with gr.Accordion('Answer:', open=True):
+                    with gr.Accordion('Results:', open=True):
                         #output = gr.Textbox(lines=20, label="Final output", elem_classes="gr-textbox") 
                         output = gr.Markdown(elem_classes="gr-textbox") 
                     
             with gr.Row():
-                with gr.Column():
-                    download_files = gr.Markdown("init")
-                    gr.Markdown("### Download Results")
-                    if sessCFG.value.get_setting('crews_folder') is not None:
-                        #print(f"{CFG.get_setting('crews_folder')}output")
-                        output_files = os.listdir(f"{crews_folder}output")
-                        for output_file in output_files:
-                            gr.File(value=f"{crews_folder}output/{output_file}", label=os.path.basename(output_file))
+                download_files = gr.Column()
             with gr.Row():
                 with gr.Column():
                     with gr.Accordion("Console Logs"):

@@ -27,8 +27,6 @@ def get_teams_users_from_sheet(sheet):
     teams_users = sheet.get_worksheet(2).get_all_records()
     return teams_users
 
-
-
 def add_user(sheet, user_email):
     users_sheet = sheet.get_worksheet(1)
     existing_users = [user['user'] for user in users_sheet.get_all_records()]

@@ -22,7 +22,6 @@ app = FastAPI()
 
 # Set up OAuth
 config_data = {'GOOGLE_CLIENT_ID': GOOGLE_CLIENT_ID, 'GOOGLE_CLIENT_SECRET': GOOGLE_CLIENT_SECRET}
-ic(config_data)
 starlette_config = Config(environ=config_data)
 oauth = OAuth(starlette_config)
 oauth.register(
@@ -100,7 +99,7 @@ async def register_user(request: Request):
 
     # Here you would add logic to save the user and team to the database
     # For now, we'll just print them
-    print(f"Registering user: {username}, Team: {team}")
+    logging.info(f"Registering user: {username}, Team: {team}")
 
     return RedirectResponse(url='/login-ui')
 
@@ -157,7 +156,7 @@ async def create_team(request: Request):
 
     # Here you would add logic to save the team to the database
     # For now, we'll just print the team name
-    print(f"Creating team: {team_name} for user: {user}")
+    logging.info(f"Creating team: {team_name} for user: {user}")
 
     return RedirectResponse(url='/gradio')
 
