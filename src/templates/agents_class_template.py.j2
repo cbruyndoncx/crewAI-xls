@@ -54,95 +54,58 @@ class BaseAgents(LLMProviders):
 
     
     def main_job(self, based_upon_agent):
-        def case_websearch():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[
-                SearchTools.search_internet,
-                BrowserTools.scrape_and_summarize_website,
-                CalculatorTools.calculate
-                ]
-            
-        def case_webscrape():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[
-                     web_scrape_tool
-                ]
-            
-        def case_webRAG():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[
-                    web_search_tool
-                ]
-        
-        def case_ytchannelRAG():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[
-                    youtube_channel_rag_tool
-                ]
-            
-        def case_ytvideoRAG():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[
-                    youtube_video_rag_tool
-                ]
-            
-        def case_browse():
-            serper_dev_tool = SerperDevTool()
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[
-                     serper_dev_tool,
-                ]
-
-        def case_summarize():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[]
-            #self.llm=self.OpenAIGPT35
-
-        def case_translate():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[]
-    
-        def case_default():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[]
-
-        def case_calculate():
-            self.role=""
-            self.backstory=""
-            self.goal=""
-            self.tools=[self.calculatortools]
-
-        handle_case_functions = {
-            'websearch': case_websearch,
-            'browse': case_browse,
-            'webscrape': case_webscrape,
-            'webRAG': case_webRAG,
-            'ytchannel': case_ytchannelRAG,
-            'ytvideo': case_ytvideoRAG,
-            'calculate': case_calculate,
-            'summarize': case_summarize,
-            'translate': case_translate
+        tool_configurations = {
+            'websearch': {
+                'tools': [SearchTools.search_internet, BrowserTools.scrape_and_summarize_website, CalculatorTools.calculate],
+                'role': '',
+                'backstory': ''
+            },
+            'webscrape': {
+                'tools': [web_scrape_tool],
+                'role': '',
+                'backstory': ''
+            },
+            'webRAG': {
+                'tools': [web_search_tool],
+                'role': '',
+                'backstory': ''
+            },
+            'ytchannelRAG': {
+                'tools': [youtube_channel_rag_tool],
+                'role': '',
+                'backstory': ''
+            },
+            'ytvideoRAG': {
+                'tools': [youtube_video_rag_tool],
+                'role': '',
+                'backstory': ''
+            },
+            'browse': {
+                'tools': [SerperDevTool()],
+                'role': '',
+                'backstory': ''
+            },
+            'calculate': {
+                'tools': [CalculatorTools.calculate],
+                'role': '',
+                'backstory': ''
+            },
+            'summarize': {
+                'tools': [],
+                'role': '',
+                'backstory': ''
+            },
+            'translate': {
+                'tools': [],
+                'role': '',
+                'backstory': ''
+            }
         }
-        # The get method of dictionaries accepts a default value if key doesn't exist.
-        return handle_case_functions.get(based_upon_agent, case_default)()
+
+        config = tool_configurations.get(based_upon_agent, {'tools': [], 'role': '', 'backstory': ''})
+        self.tools = config['tools']
+        self.role = config['role']
+        self.backstory = config['backstory']
 
 # This is an example of how to define custom agents.
 # You can define as many agents as you want.
