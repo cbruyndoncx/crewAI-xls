@@ -129,13 +129,6 @@ def run_gradio(CFG):
                  
         return (grUser, grTeamId, grCrewsFolder, grXlsFolder , grTemplate, crewjob, sessCFG )  
 
-    def upload_env_file(file, tenant_id):
-        # Save the uploaded file with a tenant-specific name
-        file_path = f"{xls_folder}.env.{tenant_id}"
-        with open(file_path, "wb") as f:
-            f.write(file.read())
-        return (f"Environment file for tenant {tenant_id} uploaded successfully.")
-
     def upload_file(in_files, sessCFG ): 
         # theoretically allow for multiple, might add output file
         
@@ -192,19 +185,7 @@ def run_gradio(CFG):
             gr.Button("Setup Team", link="/setup-team", elem_classes="gr-button-small")
             gr.Button("Logout", link="/logout", elem_classes="gr-button-small")
         gr.Markdown("# Your CREWAI XLS Runner")
-        gr.Markdown("__Easy as 1 - 2 - 3__")
-
-        
-        with gr.Tab("0 - Upload Environment"):
-            with gr.Row():
-                gr.Markdown("### Upload Environment File")
-                env_file = gr.File(label="Select .env file")
-                tenant_id = gr.Textbox(label="Tenant ID")
-                upload_env_btn = gr.Button("Upload", elem_classes="gr-button")
-                upload_env_result = gr.Markdown("")
-
-            upload_env_btn.click(upload_env_file, inputs=[env_file, tenant_id], outputs=[upload_env_result])
-        
+        gr.Markdown("__Easy as 1 - 2 - 3__")      
 
         with gr.Tab("1 - Setup Template"):
             with gr.Row():
