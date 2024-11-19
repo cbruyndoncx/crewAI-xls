@@ -6,9 +6,14 @@ from .config import GSHEET_CREDENTIALS_FILE
 # Set up the Google Sheets API client
 def get_gspread_client(credentials_file):
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(GSHEET_CREDENTIALS_FILE, scope)
-    client = gspread.authorize(creds)
-    return client
+    try:
+        creds = ServiceAccountCredentials.from_json_keyfile_name(GSHEET_CREDENTIALS_FILE, scope)
+        client = gspread.authorize(creds)
+        return client
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Credentials file '{GSHEET_CREDENTIALS_FILE}' not found.")
+    except Exception as e:
+        raise Exception(f"An error occurred while loading the credentials: {e}")
 
 # Function to get team data from Google Sheets
 def get_sheet_from_url(client, sheet_url):
