@@ -69,7 +69,14 @@ def setup(template,crew, job):
     read_variables_xls(template,crew, job, crew_dir)
     crewjob = get_crew_job(crews_folder)
     
-    return ("Crew for Job " + crew_dir + " created!" , crewjob)
+    # Read environment variables from Excel and write them to a .env file
+    env_vars = read_env_from_excel(template, 'Environment')
+    env_file_path = os.path.join(crew_dir, '.env')
+    with open(env_file_path, 'w') as env_file:
+        for key, value in env_vars.items():
+            env_file.write(f"{key}={value}\n")
+
+    return ("Crew for Job " + crew_dir + " created!", crewjob)
 
 def get_crews_details(template):
     df = pd.read_excel(template, sheet_name='crewmembers', usecols=['crewmember', 'crew'])
