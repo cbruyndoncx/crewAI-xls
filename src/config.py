@@ -99,7 +99,7 @@ def get_team_id(user: str) -> str:
                 logging.warning("No user passed")
                 return None
 
-            client = get_gspread_client(credentials_file='gsheet_credentials.json')
+            client = get_gspread_client(credentials_file=GSHEET_CREDENTIALS_FILE)
             sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
             users = get_users_from_sheet(sheet)
             teams_users = get_teams_users_from_sheet(sheet)

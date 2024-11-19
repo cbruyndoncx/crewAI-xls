@@ -111,7 +111,7 @@ async def setup_team(request: Request):
 
     # Fetch teams from Google Sheets
     try:
-        client = get_gspread_client(credentials_file='gsheet_credentials.json')
+        client = get_gspread_client(credentials_file=GSHEET_CREDENTIALS_FILE)
         sheet = get_sheet_from_url(client = client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
         teams = get_teams_from_sheet(sheet)
         users = get_users_from_sheet(sheet)
