@@ -3,7 +3,7 @@ import os
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Set up the Google Sheets API client
-def get_gspread_client(credentials_file=GSHEET_CREDENTIALS_FILE):
+def get_gspread_client(credentials_file):
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     try:
         creds = ServiceAccountCredentials.from_json_keyfile_name(GSHEET_CREDENTIALS_FILE, scope)
