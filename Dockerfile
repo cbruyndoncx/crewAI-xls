@@ -45,11 +45,11 @@ RUN pip install -r requirements.txt
 # Copy the source code into the container.
 COPY . .
 
+# Copy the .env.example file to .env
+COPY wip/.env.example .env
+
 # Expose the port that the application listens on.
-#EXPOSE 7860
-# Now using fastapi uvicorn standard port
 EXPOSE 8000
-#ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 # Run the application.
 CMD ["python", "-m", "uvicorn", "main:app","--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
