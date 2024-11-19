@@ -14,7 +14,7 @@ import gradio as gr
 from src.gradio_interface import *
 from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
 
-from src.config import GlobalConfig, init_logging, get_user, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, DEMO_MODE
+from src.config import GlobalConfig, init_logging, get_user, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, DEMO_MODE, GSHEET_CREDENTIALS_FILE, GSHEET_URL
 
 # Create a FastAPI app and mount the Gradio interface
 global app
@@ -171,8 +171,8 @@ async def create_team(request: Request):
 
     # Add the new team to Google Sheets
     try:
-        client = get_gspread_client(credentials_file='gsheet_credentials.json')
-        sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+        client = get_gspread_client(GSHEET_CREDENTIALS_FILE)
+        sheet = get_sheet_from_url(client=client, sheet_url=GSHEET_URL)
         add_team(sheet, new_team_name)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
@@ -192,8 +192,8 @@ async def add_user_to_team(request: Request):
 
     # Add the user to the team in Google Sheets
     try:
-        client = get_gspread_client(credentials_file='gsheet_credentials.json')
-        sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+        client = get_gspread_client(GSHEET_CREDENTIALS_FILE)
+        sheet = get_sheet_from_url(client=client, sheet_url=GSHEET_URL)
         add_user_to_team(sheet, team_name, user_email)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating Google Sheets: {e}")
