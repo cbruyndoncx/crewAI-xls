@@ -58,54 +58,64 @@ class BaseAgents(LLMProviders):
             'websearch': {
                 'tools': [SearchTools.search_internet, BrowserTools.scrape_and_summarize_website, CalculatorTools.calculate],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'webscrape': {
                 'tools': [web_scrape_tool],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'webRAG': {
                 'tools': [web_search_tool],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'ytchannelRAG': {
                 'tools': [youtube_channel_rag_tool],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'ytvideoRAG': {
                 'tools': [youtube_video_rag_tool],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'browse': {
                 'tools': [SerperDevTool()],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'calculate': {
                 'tools': [CalculatorTools.calculate],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'summarize': {
                 'tools': [],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             },
             'translate': {
                 'tools': [],
                 'role': '',
-                'backstory': ''
+                'backstory': '',
+                'goal': ''
             }
         }
 
-        config = tool_configurations.get(based_upon_agent, {'tools': [], 'role': '', 'backstory': ''})
+        config = tool_configurations.get(based_upon_agent, {'tools': [], 'role': '', 'backstory': '', 'goal': ''})
         self.tools = config['tools']
         self.role = config['role']
         self.backstory = config['backstory']
+        self.goal = config['goal']
 
 # This is an example of how to define custom agents.
 # You can define as many agents as you want.
