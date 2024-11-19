@@ -33,6 +33,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("No SECRET_KEY set for Flask application")
 
+GSHEET_CREDENTIALS_FILE = os.getenv('GSHEET_CREDENTIALS_FILE', 'gsheet_credentials.json')
+
 class GlobalSettings:
     BASE_FOLDER_TEMPLATE = "./data/team_{team_id}/"
     CREWS_FOLDER_TEMPLATE = "./data/team_{team_id}/crews/"

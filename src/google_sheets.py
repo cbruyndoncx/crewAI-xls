@@ -1,10 +1,12 @@
 import gspread
+import os
 from oauth2client.service_account import ServiceAccountCredentials
+from .config import GSHEET_CREDENTIALS_FILE
 
 # Set up the Google Sheets API client
 def get_gspread_client(credentials_file):
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_file, scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name(GSHEET_CREDENTIALS_FILE, scope)
     client = gspread.authorize(creds)
     return client
 
