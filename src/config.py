@@ -34,6 +34,9 @@ if not SECRET_KEY:
     raise ValueError("No SECRET_KEY set for Flask application")
 
 GSHEET_CREDENTIALS_FILE = os.getenv('GSHEET_CREDENTIALS_FILE', 'gsheet_credentials.json')
+GSHEET_URL = os.getenv('GSHEET_URL')
+if not GSHEET_URL:
+    raise ValueError("No GSHEET_URL set for application")
 
 class GlobalSettings:
     BASE_FOLDER_TEMPLATE = "./data/team_{team_id}/"
@@ -100,7 +103,7 @@ def get_team_id(user: str) -> str:
                 return None
 
             client = get_gspread_client(GSHEET_CREDENTIALS_FILE)
-            sheet = get_sheet_from_url(client=client, sheet_url='https://docs.google.com/spreadsheets/d/1C84WFsdTs5X0O5hbN7tCqxytLCe4srLQy3OcEtGKsqw/')
+            sheet = get_sheet_from_url(client=client, sheet_url=GSHEET_URL)
             users = get_users_from_sheet(sheet)
             teams_users = get_teams_users_from_sheet(sheet)
 
