@@ -69,7 +69,7 @@ def setup(template,crew, job):
     crewjob = get_crew_job(crews_folder)
     
     # Read environment variables from Excel and write them to a .env file
-    env_vars = read_env_from_excel(template, 'Environment')
+    env_vars = read_env_from_excel(template, 'environment')
     env_file_path = os.path.join(crew_dir, '.env')
     with open(env_file_path, 'w') as env_file:
         for key, value in env_vars.items():
