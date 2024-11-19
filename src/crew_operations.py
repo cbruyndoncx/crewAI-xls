@@ -7,8 +7,7 @@ import gradio as gr
 from icecream import ic
 
 from src.config import create_dir
-from src.generate_crew import read_variables_xls
-from src.excel_operations import read_env_from_excel
+from src.generate_crew import read_variables_xls, read_env_from_excel
 
 """
 def module_callback(crew, job, crewjob, details):

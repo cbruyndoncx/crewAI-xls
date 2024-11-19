@@ -68,6 +68,26 @@ def read_variables_sheet(sheet):
 
     return all_records
 
+ def read_env_from_excel(workbook_path, sheet_name):
+     """
+     Reads environment variables from a specified sheet in an Excel workbook.
+
+     :param workbook_path: The path to the Excel workbook.
+     :param sheet_name: The name of the worksheet to read variables from.
+     :return: A dictionary of environment variables.
+     """
+     workbook = openpyxl.load_workbook(workbook_path)
+     sheet = workbook[sheet_name]
+
+     env_vars = {}
+     for row in sheet.iter_rows(min_row=2, values_only=True):
+         key, value = row
+         if key and value:
+             env_vars[key] = str(value)
+
+     workbook.close()
+     return env_vars
+
 def write_prompt_to_disk(prompt, file_name):
     with open(file_name, 'w') as file:
         file.write(prompt)
