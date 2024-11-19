@@ -26,8 +26,15 @@ DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'demo')
 
 # Get OAuth ENV Vars
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+if not GOOGLE_CLIENT_ID:
+    raise ValueError("No GOOGLE_CLIENT_ID set for application")
+
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-default-secret-key')
+if not GOOGLE_CLIENT_SECRET:
+    raise ValueError("No GOOGLE_CLIENT_SECRET set for application")
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("No SECRET_KEY set for Flask application")
 
 class GlobalSettings:
     BASE_FOLDER_TEMPLATE = "./data/team_{team_id}/"
