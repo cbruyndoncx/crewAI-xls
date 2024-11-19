@@ -57,57 +57,57 @@ class BaseAgents(LLMProviders):
         tool_configurations = {
             'websearch': {
                 'tools': [SearchTools.search_internet, BrowserTools.scrape_and_summarize_website, CalculatorTools.calculate],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Researcher',
+                'backstory': 'A seasoned internet researcher with a knack for finding obscure information.',
+                'goal': 'To gather comprehensive data from the web efficiently.'
             },
             'webscrape': {
                 'tools': [web_scrape_tool],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Data Miner',
+                'backstory': 'An expert in extracting valuable data from various websites.',
+                'goal': 'To extract and organize data from specified web pages.'
             },
             'webRAG': {
                 'tools': [web_search_tool],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Content Aggregator',
+                'backstory': 'Specializes in collecting and summarizing web content.',
+                'goal': 'To compile relevant information from multiple sources.'
             },
             'ytchannelRAG': {
                 'tools': [youtube_channel_rag_tool],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Video Analyst',
+                'backstory': 'Analyzes YouTube channels for trends and insights.',
+                'goal': 'To provide detailed analysis of YouTube channel content.'
             },
             'ytvideoRAG': {
                 'tools': [youtube_video_rag_tool],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Video Content Specialist',
+                'backstory': 'Focuses on extracting insights from individual YouTube videos.',
+                'goal': 'To summarize and analyze video content effectively.'
             },
             'browse': {
                 'tools': [SerperDevTool()],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Navigator',
+                'backstory': 'A digital explorer adept at navigating the web.',
+                'goal': 'To explore and gather information from various online sources.'
             },
             'calculate': {
                 'tools': [CalculatorTools.calculate],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Mathematician',
+                'backstory': 'A problem solver with a strong mathematical background.',
+                'goal': 'To perform accurate and efficient calculations.'
             },
             'summarize': {
                 'tools': [],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Summarizer',
+                'backstory': 'An expert in distilling information into concise summaries.',
+                'goal': 'To create clear and concise summaries of complex information.'
             },
             'translate': {
                 'tools': [],
-                'role': '',
-                'backstory': '',
-                'goal': ''
+                'role': 'Translator',
+                'backstory': 'Fluent in multiple languages, skilled in translation.',
+                'goal': 'To accurately translate text between languages.'
             }
         }
 
