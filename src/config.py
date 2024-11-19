@@ -12,9 +12,7 @@ from .complex_logger import ComplexLogger
 from .google_sheets import get_gspread_client, get_sheet_from_url, get_teams_from_sheet, get_users_from_sheet, get_teams_users_from_sheet, add_user_to_team, add_team, add_user
 
 # Load all environment variables
-load_dotenv()
-load_dotenv('.env.demo')
-load_dotenv('.env.google')
+load_dotenv('.env')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info("Initializing global configurations...")
