@@ -1,4 +1,8 @@
 __pycache__/
+
+# Ignore environment variables and credentials
+.env
+gsheet_credentials.json
 db/
 flagged/
 crews/
