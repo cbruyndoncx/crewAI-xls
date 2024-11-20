@@ -36,6 +36,7 @@ if not SECRET_KEY:
     raise ValueError("No SECRET_KEY set for Flask application")
 
 try:
+    global GSHEET_CREDENTIALS_FILE
     GSHEET_CREDENTIALS_FILE = os.getenv('GSHEET_CREDENTIALS_FILE', 'gsheet_credentials.json')
     if not os.path.exists(GSHEET_CREDENTIALS_FILE):
         raise FileNotFoundError(f"Credentials file not found: {GSHEET_CREDENTIALS_FILE}")
