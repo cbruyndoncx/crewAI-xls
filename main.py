@@ -16,7 +16,7 @@ from src.google_sheets import get_gspread_client, get_sheet_from_url, get_teams_
 
 from src.config import GlobalConfig, init_logging, get_user, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, DEMO_MODE, GSHEET_CREDENTIALS_FILE, GSHEET_URL
 
-# Create a FastAPI app and mount the Gradio interface
+logging.info(f"Using Google Sheets credentials file: {GSHEET_CREDENTIALS_FILE}")
 global app
 app = FastAPI()
 
