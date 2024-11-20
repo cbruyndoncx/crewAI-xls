@@ -23,12 +23,14 @@ DEMO_PASSWORD = os.getenv('DEMO_PASSWORD', 'demo')
 
 # Get OAuth ENV Vars
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+print(GOOGLE_CLIENT_ID)
 if not GOOGLE_CLIENT_ID:
     raise ValueError("No GOOGLE_CLIENT_ID set for application")
 
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 if not GOOGLE_CLIENT_SECRET:
     raise ValueError("No GOOGLE_CLIENT_SECRET set for application")
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("No SECRET_KEY set for Flask application")
@@ -125,6 +127,7 @@ def get_team_id(user: str) -> str:
 
 #async def get_user(request: Request, session_settings: dict = Depends(get_session_settings)):
 async def get_user(request: Request):
+    user = ''
     try:
         if DEMO_MODE:
             user_email  = DEMO_USERNAME

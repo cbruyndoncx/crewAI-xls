@@ -45,8 +45,8 @@ RUN pip install -r requirements.txt
 # Copy the source code into the container.
 COPY . .
 
-# Copy the .env.example file to .env
-COPY wip/.env.example .env
+# Copy the .env file or define in environment
+# ToDo
 
 # Expose the port that the application listens on.
 EXPOSE 8000
