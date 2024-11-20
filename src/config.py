@@ -35,7 +35,14 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("No SECRET_KEY set for Flask application")
 
-GSHEET_CREDENTIALS_FILE = os.getenv('GSHEET_CREDENTIALS_FILE', 'gsheet_credentials.json')
+try:
+    GSHEET_CREDENTIALS_FILE = os.getenv('GSHEET_CREDENTIALS_FILE', 'gsheet_credentials.json')
+    if not os.path.exists(GSHEET_CREDENTIALS_FILE):
+        raise FileNotFoundError(f"Credentials file not found: {GSHEET_CREDENTIALS_FILE}")
+    logging.info(f"Using Google Sheets credentials file: {GSHEET_CREDENTIALS_FILE}")
+except Exception as e:
+    logging.error(f"Error loading Google Sheets credentials: {e}")
+    raise
 GSHEET_URL = os.getenv('GSHEET_URL')
 if not GSHEET_URL:
     raise ValueError("No GSHEET_URL set for application")
