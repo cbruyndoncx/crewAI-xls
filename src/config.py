@@ -133,7 +133,8 @@ async def get_user(request: Request):
             user_email  = DEMO_USERNAME
             logging.info(f"Demo mode active. Using demo user: {user_email}")
         else:
-            user = request.session['user'] 
+            user = request.session.get('user', None)
+            logging.info(f"Retrieved user from session: {user}")
             if user:
                     logging.info(f"Got real user {user}")
             else:

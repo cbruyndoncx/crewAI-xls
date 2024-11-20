@@ -216,7 +216,9 @@ async def add_user_to_team(request: Request):
         access_token = await oauth.google.authorize_access_token(request)
     except OAuthError: # type: ignore
         return RedirectResponse(url='/')
-    request.session['user'] = dict(access_token)["userinfo"]
+    user_info = dict(access_token)["userinfo"]
+    request.session['user'] = user_info['email']
+    logging.info(f"User logged in: {user_info['email']}")
     return RedirectResponse(url='/')
 
 ## Main processing
