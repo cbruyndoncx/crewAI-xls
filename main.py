@@ -69,6 +69,11 @@ async def auth(request: Request):
     request.session['user'] = user['email']
     logging.info(f"in /auth {user['email']}" )
     CFG.set_setting('user', user['email'])
+    team_id = get_team_id(user['email'])
+    if team_id:
+        CFG.update_team_settings(team_id)
+    else:
+        logging.warning("No team ID found for user.")
     #sessCFG.value.set_setting('user', user['email'])
 
     return RedirectResponse(url='/')
