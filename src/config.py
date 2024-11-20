@@ -98,7 +98,7 @@ def get_team_id(user: str) -> str:
 
     try:
         if DEMO_MODE:
-            team_id = "demo"
+            team_id = "demo_team"
         else:
             if not user:
                 logging.warning("No user passed")

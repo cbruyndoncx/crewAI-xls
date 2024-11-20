@@ -87,7 +87,11 @@ async def login(request: Request):
             request.session['user'] = user
             logging.info(f"in /login DEMO {user}" )
             CFG.set_setting('user', user )
-            #sessCFG.value.set_setting('user', user )
+            team_id = get_team_id(user)
+            if team_id:
+                CFG.update_team_settings(team_id)
+            else:
+                logging.warning("No team ID found for demo user.")
             return RedirectResponse(url='/gradio')
         else:
             redirect_uri = request.url_for('auth')  
