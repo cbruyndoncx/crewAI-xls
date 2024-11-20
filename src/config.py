@@ -135,11 +135,11 @@ def get_team_id(user: str) -> str:
 
 #async def get_user(request: Request, session_settings: dict = Depends(get_session_settings)):
 async def get_user(request: Request):
-    user = ''
+
     try:
         if DEMO_MODE:
-            user_email  = DEMO_USERNAME
-            logging.info(f"Demo mode active. Using demo user: {user_email}")
+            user = DEMO_USERNAME
+            logging.info(f"Demo mode active. Using demo user: {user}")
         else:
             user = request.session.get('user', None)
             logging.info(f"Retrieved user from session: {user}")
@@ -147,7 +147,7 @@ async def get_user(request: Request):
                     logging.info(f"Got real user {user}")
             else:
                 # default to demo vfor initial CFG dependency
-                return { "user" : "demo"}
+                user = DEMO_USERNAME
 
     except Exception as e:
         logging.error(f"Error accessing user info: {e}")

@@ -6,11 +6,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 def get_gspread_client(credentials_file):
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     try:
-        creds = ServiceAccountCredentials.from_json_keyfile_name(GSHEET_CREDENTIALS_FILE, scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_file, scope)
         client = gspread.authorize(creds)
         return client
     except FileNotFoundError:
-        raise FileNotFoundError(f"Credentials file '{GSHEET_CREDENTIALS_FILE}' not found.")
+        raise FileNotFoundError(f"Credentials file '{credentials_file}' not found.")
     except Exception as e:
         raise Exception(f"An error occurred while loading the credentials: {e}")
 

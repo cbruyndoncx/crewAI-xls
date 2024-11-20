@@ -258,7 +258,7 @@ def run_gradio(CFG):
                 with gr.Column():
                     with gr.Accordion("Console Logs"):
                         logs = gr.Textbox(label="", lines=30, elem_id="console-logs", elem_classes="gr-textbox")
-                        t = gr.Timer(3, active=True)
+                        t = gr.Timer(60, active=True)
                         #t.tick(fn=lambda: log_and_return(sessCFG.value.get_setting('log_file') or ""), inputs=[], outputs=[logs])
                         t.tick(fn=lambda: read_logs(sessCFG.value.get_setting('log_file') or ""), inputs=[], outputs=[logs])
                         
