@@ -9,17 +9,25 @@ There is a set of basic agents which have tools defined. This is only a subset o
 
 ### CrewAI
 CrewAI is a framework for managing and executing tasks using AI agents. It allows for quick prototyping and iterations without having to edit code.
-A new clean requirements.txt is generated; command is in .sh file
+A new clean `requirements.txt` is generated using the command in the `requirements-versions.sh` file.
 
-#### CrewAI package
-Default pip install of the package
+#### CrewAI Package
+Install the CrewAI package using pip:
+```
+pip install crewai
+```
 
 #### Tools
-Default install of the crewai tools
+Install the CrewAI tools using pip:
+```
+pip install crewai_tools
+```
 
 #### Langchain
-Langchain is a library for building applications with language models. It provides tools for managing and orchestrating language model interactions.
-Other langchain packages that are used are listed in requirements.txt
+Langchain is a library for building applications with language models. It provides tools for managing and orchestrating language model interactions. Other Langchain packages used are listed in `requirements.txt`.
+Install Langchain using pip:
+```
+pip install langchain
 
 ### XLS
 Excel format is xlsx, list of sheets are read and loaded.
@@ -45,14 +53,17 @@ The application is containerized using Docker. Below are the key configurations 
   ```
 
 ### Run locally
-First, get the project dependencies installed
- 
-`pip install -r requirements.txt`
+First, install the project dependencies:
+```
+pip install -r requirements.txt
+```
 
-just run locally as
-`python3 main.py`
+To run the application locally, execute:
+```
+python3 main.py
+```
 
-and follow the gradio instructions on screen to open your browser and use the UI.
+Follow the Gradio instructions displayed on the screen to open your browser and use the UI.
 
 ## Makefile Commands
 
@@ -68,14 +79,16 @@ The `Makefile` provides several commands to manage Docker containers and the dev
 - **conda**: Activates the specified Conda environment. This is useful for managing dependencies in a consistent environment.
 - **pyrun**: Runs the application using Uvicorn for local development. This command is useful for testing the application locally before deploying.
 - **reqs**: Generates a `requirements.txt` file using `pipreqs`.
-To allow easy deployment a docker image is provided;
+To allow easy deployment, a Docker image is provided:
 
 ### Building and running your application
 
 When you're ready, start your application by running:
-`docker compose up --build`.
+```
+docker compose up --build
+```
 
-Your application will be available at http://localhost:8000.
+Your application will be available at [http://localhost:8000](http://localhost:8000).
 
 ### Deploying your application to the cloud
 
@@ -87,8 +100,7 @@ you'll want to build the image for that platform, e.g.:
 
 Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
 
-Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
-docs for more detail on building and pushing.
+Consult Docker's [Getting Started Guide](https://docs.docker.com/go/get-started-sharing/) for more details on building and pushing Docker images.
 
 ### References
 * [Docker's Python guide](https://docs.docker.com/language/python/)
